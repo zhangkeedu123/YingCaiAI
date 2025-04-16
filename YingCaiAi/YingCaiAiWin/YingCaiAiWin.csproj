@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\applicationIcon-256.png" />
+    <None Remove="Assets\downloaded-image.jpg" />
+    <None Remove="Assets\pexels-johannes-plenio-1103970.jpg" />
+    <None Remove="Assets\WinUiGallery\ai.png" />
+    <None Remove="Assets\WinUiGallery\books.png" />
+    <None Remove="Assets\WinUiGallery\data.png" />
+    <None Remove="Assets\WinUiGallery\huashu.png" />
+    <None Remove="Assets\WinUiGallery\jiqijiankong.png" />
+    <None Remove="Assets\WinUiGallery\user.png" />
+    <None Remove="Assets\WinUiGallery\users.png" />
+    <None Remove="Assets\WinUiGallery\xitongshezhi.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+    <PackageReference Include="WPF-UI" Version="4.0.2" />
+    <PackageReference Include="WPF-UI.Tray" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\applicationIcon-256.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\downloaded-image.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\pexels-johannes-plenio-1103970.jpg" />
+    <Resource Include="Assets\WinUiGallery\ai.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\books.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\data.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\huashu.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\jiqijiankong.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\user.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\users.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\WinUiGallery\xitongshezhi.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<!-- 或指定具体版本如 10.0 -->
+	</PropertyGroup>
+</Project>
