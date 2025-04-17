@@ -5,6 +5,7 @@
 using System.Collections.ObjectModel;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using YingCaiAiService.IService;
 using YingCaiAiWin.Models;
 namespace YingCaiAiWin.ViewModels;
 
@@ -20,17 +21,21 @@ public partial class DashboardViewModel : ViewModel
     [ObservableProperty]
     private List<DataColor> _colors = [];
 
+     private readonly IUserInfoService _userService;
 
-    public DashboardViewModel(INavigationService navigationService)
+    public DashboardViewModel(INavigationService navigationService, IUserInfoService _userInfoService)
     {
         if (!_isInitialized)
         {
+            _userService = _userInfoService;
             InitializeViewModel();
         }
+       
     }
     private void InitializeViewModel()
     {
-       
+        var dd = _userService.DeleteUserAsync(1);
+
         CardItems = new()
     {
         new CardItem

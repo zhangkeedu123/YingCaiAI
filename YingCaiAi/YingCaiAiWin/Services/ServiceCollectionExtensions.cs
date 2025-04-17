@@ -2,9 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Wpf.Ui.Abstractions;
+using YingCaiAiService.IService;
+using YingCaiAiService.Service;
 
 namespace YingCaiAiWin.Services
 {
@@ -18,6 +21,80 @@ namespace YingCaiAiWin.Services
             >();
 
             return services;
+        }
+
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            
+            var assembly = new[]
+            {
+                Assembly.GetExecutingAssembly(), // 主程序集
+                typeof(IBaseService).Assembly, // 服务接口所在程序集
+            };
+            // 注册单例服务
+            RegisterServices<ISingletonService>(services, assembly, ServiceLifetime.Singleton);
+
+            // 注册作用域服务
+            RegisterServices<IScopedService>(services, assembly, ServiceLifetime.Scoped);
+
+            // 注册瞬时服务
+            RegisterServices<ITransientService>(services, assembly, ServiceLifetime.Transient);
+
+            return services;
+        }
+
+        private static void RegisterServices<TServiceInterface>(
+            IServiceCollection services,
+            Assembly [] assembly,
+            ServiceLifetime lifetime)
+        {
+            var serviceTypes = assembly.SelectMany(a => a.GetTypes())
+                .Where(t => t.IsClass &&
+                          !t.IsAbstract &&
+                          typeof(TServiceInterface).IsAssignableFrom(t));
+
+            foreach (var serviceType in serviceTypes)
+            {
+                // 获取服务实现的所有接口（排除生命周期标记接口）
+                var interfaces = serviceType.GetInterfaces()
+                    .Where(i => i != typeof(IBaseService) &&
+                              i != typeof(ISingletonService) &&
+                              i != typeof(IScopedService) &&
+                              i != typeof(ITransientService));
+
+                foreach (var interfaceType in interfaces)
+                {
+                    switch (lifetime)
+                    {
+                        case ServiceLifetime.Singleton:
+                            services.AddSingleton(interfaceType, serviceType);
+                            break;
+                        case ServiceLifetime.Scoped:
+                            services.AddScoped(interfaceType, serviceType);
+                            break;
+                        case ServiceLifetime.Transient:
+                            services.AddTransient(interfaceType, serviceType);
+                            break;
+                    }
+                }
+
+                // 如果没有实现特定接口，但继承了生命周期基类，注册自身
+                if (!interfaces.Any() && serviceType.IsAssignableTo(typeof(TServiceInterface)))
+                {
+                    switch (lifetime)
+                    {
+                        case ServiceLifetime.Singleton:
+                            services.AddSingleton(serviceType);
+                            break;
+                        case ServiceLifetime.Scoped:
+                            services.AddScoped(serviceType);
+                            break;
+                        case ServiceLifetime.Transient:
+                            services.AddTransient(serviceType);
+                            break;
+                    }
+                }
+            }
         }
     }
 }

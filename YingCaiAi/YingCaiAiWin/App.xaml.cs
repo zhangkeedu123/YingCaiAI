@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Wpf.Ui;
+using YingCaiAiService;
+using YingCaiAiService.IService;
+using YingCaiAiService.Service;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
 namespace YingCaiAiWin
@@ -27,6 +30,9 @@ namespace YingCaiAiWin
          (context, services) =>
          {
              _ = services.AddNavigationViewPageProvider();
+
+             //注册service层服务
+             _ = services.AddApplicationServices();
 
              // App Host
              _ = services.AddHostedService<ApplicationHostService>();
@@ -54,6 +60,12 @@ namespace YingCaiAiWin
 
              // Configuration
              _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
+
+             // 配置数据库帮助类
+             _ = services.AddScoped<DapperHelper>(provider =>
+                 new DapperHelper("Host=localhost;Database=mydatabase;Username=myuser;Password=mypassword"));
+
+
          }
      )
      .Build();

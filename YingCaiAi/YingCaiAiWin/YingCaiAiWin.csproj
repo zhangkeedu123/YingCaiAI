@@ -30,6 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\YingCaiAiModel\YingCaiAiModel.csproj" />
+    <ProjectReference Include="..\YingCaiAiService\YingCaiAiService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Assets\applicationIcon-256.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
