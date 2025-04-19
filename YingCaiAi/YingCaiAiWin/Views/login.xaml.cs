@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,18 +15,32 @@ using System.Windows.Shapes;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Controls;
+using YingCaiAiWin.Services;
 
 namespace YingCaiAiWin.Views
 {
     public partial class Login : FluentWindow  // 修改基类为WPF UI的Window
     {
-        public Login()
+        private INavigationWindow? _navigationWindow;
+        public Login(INavigationWindow navigationWindow)
         {
+            _navigationWindow = navigationWindow;
             InitializeComponent();
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
+           
+            if (Application.Current.Windows.OfType<MainWindow>().Any())
+            {
+
+                _navigationWindow!.ShowWindow();
+
+                _ = _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
+                // 关闭登录窗口
+                Application.Current.Windows.OfType<Login>().FirstOrDefault()?.Close();
+            }
+
             //string username = UsernameTextBox.Text;
             //string password = PasswordBox.Password;
 

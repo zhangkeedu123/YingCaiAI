@@ -39,13 +39,13 @@ public class ApplicationHostService(IServiceProvider serviceProvider) : IHostedS
     {
         await Task.CompletedTask;
 
-        if (!Application.Current.Windows.OfType<MainWindow>().Any())
-        {
-            _navigationWindow = (serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow)!;
-            _navigationWindow!.ShowWindow();
+        //if (!Application.Current.Windows.OfType<MainWindow>().Any())
+        //{
+        //    _navigationWindow = (serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow)!;
+        //    _navigationWindow!.ShowWindow();
 
-            _ = _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
-        }
+        //    _ = _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
+        //}
 
         await Task.CompletedTask;
     }

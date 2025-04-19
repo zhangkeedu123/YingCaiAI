@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices.JavaScript;
 using System.Windows.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using YingCaiAiService.IService;
 using YingCaiAiService.Service;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
+using YingCaiAiWin.Views;
 namespace YingCaiAiWin
 {
     /// <summary>
@@ -58,15 +60,17 @@ namespace YingCaiAiWin
              _ = services.AddSingleton<Views.Pages.SettingsPage>();
              _ = services.AddSingleton<ViewModels.SettingsViewModel>();
 
+             _ = services.AddSingleton<Views.Login>();//注册登录窗口
              // Configuration
              _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
 
              // 配置数据库帮助类
              _ = services.AddScoped<DapperHelper>(provider =>
                  new DapperHelper("Host=localhost;Database=mydatabase;Username=myuser;Password=mypassword"));
-
-
+            
+            
          }
+
      )
      .Build();
 
@@ -83,6 +87,8 @@ namespace YingCaiAiWin
         /// </summary>
         private async void OnStartup(object sender, StartupEventArgs e)
         {
+           var loginWindow = _host.Services.GetRequiredService<Login>();
+            loginWindow.Show();
             await _host.StartAsync();
         }
 
