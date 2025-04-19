@@ -21,54 +21,52 @@ namespace YingCaiAiWin.Views
     {
         public Login()
         {
-           // InitializeComponent();
-            
-            // 添加系统主题适配支持
-            //Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
+            InitializeComponent();
         }
+
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-        //    string username = UsernameTextBox.Text;
-        //    string password = PasswordBox.Password;
+            //string username = UsernameTextBox.Text;
+            //string password = PasswordBox.Password;
 
-        //    // 检查用户名是否为空
-        //    if (string.IsNullOrEmpty(username))
-        //    {
-        //        Wpf.Ui.Controls.MessageBox.Show(
-        //            "提示",
-        //            "请输入用户名或手机号",
-        //            MessageBoxButton.OK,
-        //            Wpf.Ui.Controls.MessageBoxImage.Warning);
-        //        return;
-        //    }
+            //// 检查用户名是否为空
+            //if (string.IsNullOrEmpty(username))
+            //{
+            //    //Wpf.Ui.Controls.MessageBox.Show(
+            //    //    "提示",
+            //    //    "请输入用户名或手机号",
+            //    //    MessageBoxButton.OK,
+            //    //    Wpf.Ui.Controls.MessageBoxImage.Warning);
+            //    return;
+            //}
 
-        //    // 检查密码是否为空
-        //    if (string.IsNullOrEmpty(password))
-        //    {
-        //        Wpf.Ui.Controls.MessageBox.Show(
-        //            "提示",
-        //            "请输入密码",
-        //            MessageBoxButton.OK,
-        //            Wpf.Ui.Controls.MessageBoxImage.Warning);
-        //        return;
-        //    }
+            //// 检查密码是否为空
+            //if (string.IsNullOrEmpty(password))
+            //{
+            //    //Wpf.Ui.Controls.MessageBox.Show(
+            //    //    "提示",
+            //    //    "请输入密码",
+            //    //    MessageBoxButton.OK,
+            //    //    Wpf.Ui.Controls.MessageBoxImage.Warning);
+            //    return;
+            //}
 
-        //    // 这里添加实际的登录验证逻辑
-        //    if (username == "admin" && password == "admin")
-        //    {
-        //        // 登录成功，打开主窗口
-        //        MainWindow mainWindow = new MainWindow();
-        //        mainWindow.Show();
-        //        this.Close();
-        //    }
-        //    else
-        //    {
-        //        //Wpf.Ui.Controls.MessageBox.Show(
-        //        //    "登录失败",
-        //        //    "用户名或密码错误，请重试",
-        //        //    MessageBoxButton.OK,
-        //        //    Wpf.Ui.Controls.MessageBoxImage.Error);
-        //    }
+            //// 这里添加实际的登录验证逻辑
+            //if (username == "admin" && password == "admin")
+            //{
+            //    // 登录成功，打开主窗口
+            //    //MainWindow mainWindow = new MainWindow();
+            //    //mainWindow.Show();
+            //    //this.Close();
+            //}
+            //else
+            //{
+            //    //Wpf.Ui.Controls.MessageBox.Show(
+            //    //    "登录失败",
+            //    //    "用户名或密码错误，请重试",
+            //    //    MessageBoxButton.OK,
+            //    //    Wpf.Ui.Controls.MessageBoxImage.Error);
+            //}
         }
 
         private void ForgotPassword_Click(object sender, RoutedEventArgs e)
@@ -112,8 +110,8 @@ namespace YingCaiAiWin.Views
             //Wpf.Ui.Controls.MessageBox.Show(
             //    "提示",
             //    "注册功能正在开发中...",
-            //    //MessageBoxButton.OK,
-            //    //Wpf.Ui.Controls.MessageBoxImage.Information);
+            //    MessageBoxButton.OK,
+            //    Wpf.Ui.Controls.MessageBoxImage.Information);
         }
     }
 }
