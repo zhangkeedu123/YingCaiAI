@@ -23,28 +23,54 @@
 
         <!-- 左侧内置浏览器 -->
         <Grid Grid.Column="0">
-            <Border CornerRadius="8" Margin="10" ClipToBounds="True">
-                <WebBrowser x:Name="EmbeddedBrowser" />
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- 浏览器导航栏 -->
+            <ui:Card Grid.Row="0" Margin="10,10,10,5" Padding="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- 浏览器控制按钮 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,5,0">
+                        <ui:Button Appearance="Secondary" ToolTip="后退" Margin="0,0,2,0" Click="BackButton_Click">
+                            <ui:SymbolIcon Symbol="ArrowLeft24" />
+                        </ui:Button>
+                        <ui:Button Appearance="Secondary" ToolTip="前进" Margin="0,0,2,0" Click="ForwardButton_Click">
+                            <ui:SymbolIcon Symbol="ArrowRight24" />
+                        </ui:Button>
+                        <ui:Button Appearance="Secondary" ToolTip="刷新" Margin="0,0,2,0" Click="RefreshButton_Click">
+                            <ui:SymbolIcon Symbol="ArrowReset24" />
+                        </ui:Button>
+                        <ui:Button Appearance="Secondary" ToolTip="主页" Click="HomeButton_Click">
+                            <ui:SymbolIcon Symbol="Home24" />
+                        </ui:Button>
+                    </StackPanel>
+
+                    <!-- 地址栏 -->
+                    <ui:TextBox Grid.Column="1" x:Name="AddressBar" PlaceholderText="输入网址..." Margin="5,0" 
+                               KeyDown="AddressBar_KeyDown"/>
+
+                    <!-- 导航按钮 -->
+                    <ui:Button Grid.Column="2" Appearance="Primary" ToolTip="转到" Click="GoButton_Click">
+                        <ui:SymbolIcon Symbol="ArrowRight24" />
+                    </ui:Button>
+                </Grid>
+            </ui:Card>
+
+            <!-- 浏览器内容 -->
+            <Border Grid.Row="1" CornerRadius="8" Margin="10,0,10,10" ClipToBounds="True">
+                <WebBrowser x:Name="EmbeddedBrowser" Navigated="EmbeddedBrowser_Navigated"/>
             </Border>
 
-            <!-- 浏览器控制按钮 -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,15,0,0">
-                <ui:Button Appearance="Secondary" ToolTip="后退" Margin="0,0,5,0" Click="BackButton_Click">
-                    <ui:SymbolIcon Symbol="ArrowLeft24" />
-                </ui:Button>
-                <ui:Button Appearance="Secondary" ToolTip="前进" Margin="0,0,5,0" Click="ForwardButton_Click">
-                    <ui:SymbolIcon Symbol="ArrowRight24" />
-                </ui:Button>
-                <ui:Button Appearance="Secondary" ToolTip="刷新" Margin="0,0,5,0" Click="RefreshButton_Click">
-                    <ui:SymbolIcon Symbol="ArrowReset24" />
-                </ui:Button>
-                <ui:Button Appearance="Secondary" ToolTip="主页" Click="HomeButton_Click">
-                    <ui:SymbolIcon Symbol="Home24" />
-                </ui:Button>
-            </StackPanel>
-
             <!-- 全屏和最小化控制按钮 -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,15,0">
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,20,0" Panel.ZIndex="1">
                 <ui:Button Appearance="Secondary" ToolTip="最小化" Margin="0,0,5,0" Click="MinimizeButton_Click">
                     <ui:SymbolIcon Symbol="ArrowMinimize24" />
                 </ui:Button>
@@ -53,7 +79,6 @@
                 </ui:Button>
             </StackPanel>
         </Grid>
-
         <!-- 右侧客服界面 -->
         <Grid Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}">
             <Grid.RowDefinitions>

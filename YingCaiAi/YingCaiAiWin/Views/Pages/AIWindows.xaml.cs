@@ -23,7 +23,6 @@ namespace YingCaiAiWin.Views.Pages
     /// </summary>
     public partial class AIWindows : FluentWindow
     {
-
         private ObservableCollection<string> questions = new ObservableCollection<string>
         {
             "当前客户的开场白?",
@@ -48,6 +47,7 @@ namespace YingCaiAiWin.Views.Pages
 
         private bool isFullscreen = false;
         private bool isQuestionsAlternate = false;
+        private string defaultHomePage = "https://www.bing.com";
 
         public AIWindows()
         {
@@ -69,18 +69,31 @@ namespace YingCaiAiWin.Views.Pages
                 DisableScriptErrors();
 
                 // 设置浏览器初始页面
-                EmbeddedBrowser.Navigate(new Uri("https://www.bing.com"));
+                EmbeddedBrowser.Navigate(new Uri(defaultHomePage));
+                AddressBar.Text = defaultHomePage;
 
                 // 处理浏览器导航完成事件
-                EmbeddedBrowser.Navigated += (s, e) =>
-                {
-                    // 隐藏脚本错误
-                    DisableScriptErrors();
-                };
+                EmbeddedBrowser.Navigated += EmbeddedBrowser_Navigated;
             }
             catch (Exception)
             {
                 // 静默处理异常，不显示错误消息
+            }
+        }
+
+        private void EmbeddedBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            try
+            {
+                // 更新地址栏
+                AddressBar.Text = e.Uri.ToString();
+
+                // 隐藏脚本错误
+                DisableScriptErrors();
+            }
+            catch
+            {
+                // 静默处理异常
             }
         }
 
@@ -109,27 +122,97 @@ namespace YingCaiAiWin.Views.Pages
             }
         }
 
-        #region 浏览器控制按钮事件处理
+        #region 浏览器导航功能
+        private void NavigateToUrl(string url)
+        {
+            try
+            {
+                // 确保URL格式正确
+                if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+                {
+                    url = "https://" + url;
+                }
+
+                // 导航到指定URL
+                EmbeddedBrowser.Navigate(new Uri(url));
+                AddressBar.Text = url;
+            }
+            catch (Exception ex)
+            {
+                // 显示导航错误提示
+                //Wpf.Ui.Controls.Snackbar.Show(
+                //    "导航错误",
+                //    $"无法访问该网址: {ex.Message}",
+                //    Wpf.Ui.Common.SymbolRegular.ErrorCircle24);
+            }
+        }
+
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (EmbeddedBrowser.CanGoBack)
-                EmbeddedBrowser.GoBack();
+            try
+            {
+                if (EmbeddedBrowser.CanGoBack)
+                {
+                    EmbeddedBrowser.GoBack();
+                }
+            }
+            catch
+            {
+                // 静默处理异常
+            }
         }
 
         private void ForwardButton_Click(object sender, RoutedEventArgs e)
         {
-            if (EmbeddedBrowser.CanGoForward)
-                EmbeddedBrowser.GoForward();
+            try
+            {
+                if (EmbeddedBrowser.CanGoForward)
+                {
+                    EmbeddedBrowser.GoForward();
+                }
+            }
+            catch
+            {
+                // 静默处理异常
+            }
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            EmbeddedBrowser.Refresh();
+            try
+            {
+                EmbeddedBrowser.Refresh();
+            }
+            catch
+            {
+                // 静默处理异常
+            }
         }
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            EmbeddedBrowser.Navigate(new Uri("https://www.bing.com"));
+            try
+            {
+                EmbeddedBrowser.Navigate(new Uri(defaultHomePage));
+                AddressBar.Text = defaultHomePage;
+            }
+            catch
+            {
+                // 静默处理异常
+            }
+        }
+
+        private void AddressBar_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                NavigateToUrl(AddressBar.Text);
+            }
+        }
+
+        private void GoButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToUrl(AddressBar.Text);
         }
         #endregion
 
@@ -269,13 +352,15 @@ namespace YingCaiAiWin.Views.Pages
                 //Wpf.Ui.Controls.Snackbar.Show(
                 //    "搜索",
                 //    $"正在搜索：{searchText}",
-                //    SymbolRegular.Search24);
+                //    Wpf.Ui.Common.SymbolRegular.Search24);
 
                 // 可以在这里添加实际的搜索逻辑
                 // 例如：在浏览器中搜索
                 try
                 {
-                    EmbeddedBrowser.Navigate(new Uri($"https://www.bing.com/search?q={Uri.EscapeDataString(searchText)}"));
+                    string searchUrl = $"https://www.bing.com/search?q={Uri.EscapeDataString(searchText)}";
+                    EmbeddedBrowser.Navigate(new Uri(searchUrl));
+                    AddressBar.Text = searchUrl;
                 }
                 catch
                 {
