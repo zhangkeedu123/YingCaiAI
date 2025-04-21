@@ -11,6 +11,7 @@ using YingCaiAiService.Service;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
 using YingCaiAiWin.Views;
+using YingCaiAiWin.Views.Pages;
 namespace YingCaiAiWin
 {
     /// <summary>
@@ -61,6 +62,7 @@ namespace YingCaiAiWin
              _ = services.AddSingleton<ViewModels.SettingsViewModel>();
 
              _ = services.AddSingleton<Views.Login>();//注册登录窗口
+             _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
              // Configuration
              _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
 
@@ -88,7 +90,8 @@ namespace YingCaiAiWin
         private async void OnStartup(object sender, StartupEventArgs e)
         {
            var loginWindow = _host.Services.GetRequiredService<Login>();
-            loginWindow.Show();
+           var loginWindows = _host.Services.GetRequiredService<AIWindows>();
+            loginWindows.Show();
             await _host.StartAsync();
         }
 

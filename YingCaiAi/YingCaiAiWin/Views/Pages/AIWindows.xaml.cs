@@ -1,0 +1,291 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Wpf.Ui.Controls;
+
+namespace YingCaiAiWin.Views.Pages
+{
+    /// <summary>
+    /// AIWindows.xaml 的交互逻辑
+    /// </summary>
+    public partial class AIWindows : FluentWindow
+    {
+
+        private ObservableCollection<string> questions = new ObservableCollection<string>
+        {
+            "当前客户的开场白?",
+            "当前客户是否正在其他平台招聘?",
+            "输入客户预算，为你推荐合适套餐?",
+            "入驻审核失败的原因是什么?",
+            "想知道最近的平台活跃度吗?",
+            "企业相关专业知识?",
+            "还会想好?"
+        };
+
+        private ObservableCollection<string> alternateQuestions = new ObservableCollection<string>
+        {
+            "如何提高招聘效率?",
+            "企业如何设置更有吸引力的职位?",
+            "如何查看应聘者简历?",
+            "如何联系客服人员?",
+            "平台使用有哪些注意事项?",
+            "如何提高职位曝光率?",
+            "如何评估招聘效果?"
+        };
+
+        private bool isFullscreen = false;
+        private bool isQuestionsAlternate = false;
+
+        public AIWindows()
+        {
+            InitializeComponent();
+            InitializeBrowser();
+            LoadQuestions();
+        }
+
+        private void LoadQuestions()
+        {
+            QuestionsList.ItemsSource = questions;
+        }
+
+        private void InitializeBrowser()
+        {
+            try
+            {
+                // 禁用脚本错误
+                DisableScriptErrors();
+
+                // 设置浏览器初始页面
+                EmbeddedBrowser.Navigate(new Uri("https://www.bing.com"));
+
+                // 处理浏览器导航完成事件
+                EmbeddedBrowser.Navigated += (s, e) =>
+                {
+                    // 隐藏脚本错误
+                    DisableScriptErrors();
+                };
+            }
+            catch (Exception)
+            {
+                // 静默处理异常，不显示错误消息
+            }
+        }
+
+        private void DisableScriptErrors()
+        {
+            try
+            {
+                // 获取浏览器COM对象
+                dynamic activeX = EmbeddedBrowser.GetType().InvokeMember("ActiveXInstance",
+                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
+                    null, EmbeddedBrowser, new object[] { });
+
+                // 禁用脚本错误
+                activeX.Silent = true;
+
+                // 禁用IE错误对话框
+                if (EmbeddedBrowser.Document != null)
+                {
+                    //((HTMLDocument)EmbeddedBrowser.Document).parentWindow.onerror =
+                    //    new Func<string, string, int, bool>((message, url, line) => true);
+                }
+            }
+            catch
+            {
+                // 静默处理异常
+            }
+        }
+
+        #region 浏览器控制按钮事件处理
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (EmbeddedBrowser.CanGoBack)
+                EmbeddedBrowser.GoBack();
+        }
+
+        private void ForwardButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (EmbeddedBrowser.CanGoForward)
+                EmbeddedBrowser.GoForward();
+        }
+
+        private void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            EmbeddedBrowser.Refresh();
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            EmbeddedBrowser.Navigate(new Uri("https://www.bing.com"));
+        }
+        #endregion
+
+        #region 全屏和最小化控制
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void FullscreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleFullscreen();
+        }
+
+        private void ToggleFullscreenButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleFullscreen();
+        }
+
+        private void ToggleFullscreen()
+        {
+            if (isFullscreen)
+            {
+                // 退出全屏
+                this.WindowState = WindowState.Normal;
+                //FullscreenIcon.Symbol = Wpf.Ui.Common.SymbolRegular.FullScreenMaximize24;
+            }
+            else
+            {
+                // 进入全屏
+                this.WindowState = WindowState.Maximized;
+                //FullscreenIcon.Symbol = Wpf.Ui.Common.SymbolRegular.FullScreenMinimize24;
+            }
+
+            isFullscreen = !isFullscreen;
+        }
+        #endregion
+
+        #region 自助工具点击事件
+        private void CustomerInfo_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("客户资料", "查看和管理客户的详细信息，包括联系方式、历史记录等。");
+        }
+
+        private void Recruiting_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("正在招聘", "查看当前客户正在招聘的职位信息和申请状态。");
+        }
+
+        private void RecommendedScripts_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("推荐话术", "根据客户需求和历史数据，提供个性化的沟通话术建议。");
+        }
+
+        private void EnterprisePackage_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("企业套餐", "查看和推荐适合客户的企业服务套餐方案。");
+        }
+
+        private void Promotions_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("优惠政策", "了解平台最新的优惠活动和政策信息。");
+        }
+
+        private void PlatformData_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("平台数据", "查看平台运营数据和客户使用统计信息。");
+        }
+
+        private void AfterSales_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("售后服务", "提供售后问题解决方案和服务支持。");
+        }
+
+        private void ChickenSoup_Click(object sender, RoutedEventArgs e)
+        {
+            ShowToolInfo("心灵鸡汤", "提供职场励志和企业管理相关的心灵鸡汤内容。");
+        }
+
+        private void ShowToolInfo(string title, string content)
+        {
+            //Wpf.Ui.Controls.MessageBox.Show(
+            //    title,
+            //    content,
+            //    Wpf.Ui.Controls.MessageBoxButton.OK);
+        }
+        #endregion
+
+        #region 猜你想问相关事件
+        private void Question_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is CardAction card && card.DataContext is string question)
+            {
+                // 处理问题点击事件
+                //Wpf.Ui.Controls.MessageBox.Show(
+                //    "问题详情",
+                //    $"您的问题：{question}\n\n我们正在为您准备答案...",
+                //    Wpf.Ui.Controls.MessageBoxButton.OK);
+            }
+        }
+
+        private void RefreshQuestions_Click(object sender, MouseButtonEventArgs e)
+        {
+            // 切换问题集合
+            isQuestionsAlternate = !isQuestionsAlternate;
+
+            if (isQuestionsAlternate)
+            {
+                QuestionsList.ItemsSource = alternateQuestions;
+            }
+            else
+            {
+                QuestionsList.ItemsSource = questions;
+            }
+
+            // 显示提示
+            //Wpf.Ui.Controls.Snackbar.Show("已更新", "问题列表已刷新", Wpf.Ui.Common.SymbolRegular.CheckmarkCircle24);
+        }
+        #endregion
+
+        #region 搜索框事件
+        private void SearchBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                PerformSearch();
+            }
+        }
+
+        private void PerformSearch()
+        {
+            string searchText = SearchBox.Text?.Trim();
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                // 执行搜索操作
+                //Wpf.Ui.Controls.Snackbar.Show(
+                //    "搜索",
+                //    $"正在搜索：{searchText}",
+                //    SymbolRegular.Search24);
+
+                // 可以在这里添加实际的搜索逻辑
+                // 例如：在浏览器中搜索
+                try
+                {
+                    EmbeddedBrowser.Navigate(new Uri($"https://www.bing.com/search?q={Uri.EscapeDataString(searchText)}"));
+                }
+                catch
+                {
+                    // 静默处理异常
+                }
+
+                // 清空搜索框
+                SearchBox.Text = string.Empty;
+            }
+        }
+        #endregion
+    }
+}
