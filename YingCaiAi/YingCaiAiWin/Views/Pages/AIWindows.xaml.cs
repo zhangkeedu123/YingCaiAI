@@ -61,7 +61,6 @@ namespace YingCaiAiWin.Views.Pages
             InitializeComponent();
             InitializeBrowser();
             LoadQuestions();
-           
         }
         private void webBrowser1_NewWindow(object sender, CancelEventArgs e)
         {
@@ -102,6 +101,7 @@ namespace YingCaiAiWin.Views.Pages
 
                 // 处理浏览器导航完成事件
                 EmbeddedBrowser.Navigated += EmbeddedBrowser_Navigated;
+            
             }
             catch (Exception)
             {
@@ -132,14 +132,21 @@ namespace YingCaiAiWin.Views.Pages
             var webBrowserActiveX = EmbeddedBrowser.GetType().InvokeMember("ActiveXInstance",
                 System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
                 null, EmbeddedBrowser, null) as SHDocVw.WebBrowser;
-
+         
             if (webBrowserActiveX != null)
             {
                 // 订阅NewWindow2事件
-                webBrowserActiveX.NewWindow2 += (ref object ppDisp, ref bool Cancel) =>
+                //webBrowserActiveX.NewWindow2 += (ref object ppDisp, ref bool Cancel) =>
+                //{
+                //    Cancel = true  ; // 取消新窗口
+                //};
+                webBrowserActiveX.NewWindow3 += (ref object ppDisp, ref bool Cancel, uint dwFlags,
+         string bstrUrlContext, string bstrUrl) =>
                 {
                     Cancel = true; // 取消新窗口
+                    EmbeddedBrowser.Navigate(bstrUrl); // 在当前窗口打开
                 };
+
             }
         }
 
