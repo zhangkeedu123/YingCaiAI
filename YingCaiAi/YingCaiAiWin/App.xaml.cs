@@ -56,6 +56,7 @@ namespace YingCaiAiWin
              // Views and ViewModels
              _ = services.AddSingleton<Views.Pages.DashboardPage>();
              _ = services.AddSingleton<ViewModels.DashboardViewModel>();
+             _ = services.AddSingleton<ViewModels.AIWindowsViewModel>();
              _ = services.AddSingleton<Views.Pages.DataPage>();
              _ = services.AddSingleton<ViewModels.DataViewModel>();
              _ = services.AddSingleton<Views.Pages.SettingsPage>();
@@ -90,8 +91,9 @@ namespace YingCaiAiWin
         private async void OnStartup(object sender, StartupEventArgs e)
         {
            var loginWindow = _host.Services.GetRequiredService<Login>();
-           var loginWindows = _host.Services.GetRequiredService<AIWindows>();
-            loginWindows.Show();
+           //var loginWindows = _host.Services.GetRequiredService<AIWindows>();
+            //loginWindows.Show();
+            loginWindow.Show();
             await _host.StartAsync();
         }
 

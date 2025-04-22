@@ -46,15 +46,21 @@ public partial class MainWindowViewModel : ViewModel
         [
             new NavigationViewItem()
             {
-                Content = "Home",
+                Content = "主页",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage),
             },
             new NavigationViewItem()
             {
-                Content = "Data",
+                Content = "用户管理",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.DataPage),
+            },
+            new NavigationViewItem()
+            {
+                Content = "Ai窗口",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                TargetPageType = typeof(Views.Pages.AIWindows),
             },
         ];
 

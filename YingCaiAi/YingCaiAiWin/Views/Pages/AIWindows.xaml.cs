@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -14,14 +15,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
+using YingCaiAiWin.ViewModels;
+using SHDocVw;
 
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
     /// AIWindows.xaml 的交互逻辑
     /// </summary>
-    public partial class AIWindows : FluentWindow
+    public partial class AIWindows : INavigableView<ViewModels.AIWindowsViewModel>
     {
         private ObservableCollection<string> questions = new ObservableCollection<string>
         {
@@ -49,12 +53,36 @@ namespace YingCaiAiWin.Views.Pages
         private bool isQuestionsAlternate = false;
         private string defaultHomePage = "https://www.bing.com";
 
-        public AIWindows()
+        public AIWindowsViewModel ViewModel { get; set; }
+
+        public AIWindows(AIWindowsViewModel viewModel)
         {
+            ViewModel= viewModel;
             InitializeComponent();
             InitializeBrowser();
             LoadQuestions();
+           
         }
+        private void webBrowser1_NewWindow(object sender, CancelEventArgs e)
+        {
+            //string url = ((WebBrowser)sender).StatusText;
+            //EmbeddedBrowser.Navigate(url);
+            e.Cancel = true;
+        }
+        //private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        //{
+        //    //将所有的链接的目标，指向本窗体
+        //    foreach (HtmlElement archor in this.webBrowser1.Document.Links)
+        //    {
+        //        archor.SetAttribute("target", "_self");
+        //    }
+
+        //    //将所有的FORM的提交目标，指向本窗体
+        //    foreach (HtmlElement form in this.webBrowser1.Document.Forms)
+        //    {
+        //        form.SetAttribute("target", "_self");
+        //    }
+        //}
 
         private void LoadQuestions()
         {
@@ -85,6 +113,7 @@ namespace YingCaiAiWin.Views.Pages
         {
             try
             {
+                
                 // 更新地址栏
                 AddressBar.Text = e.Uri.ToString();
 
@@ -94,6 +123,23 @@ namespace YingCaiAiWin.Views.Pages
             catch
             {
                 // 静默处理异常
+            }
+        }
+
+        private void WebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            // 获取WebBrowser的底层ActiveX对象
+            var webBrowserActiveX = EmbeddedBrowser.GetType().InvokeMember("ActiveXInstance",
+                System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                null, EmbeddedBrowser, null) as SHDocVw.WebBrowser;
+
+            if (webBrowserActiveX != null)
+            {
+                // 订阅NewWindow2事件
+                webBrowserActiveX.NewWindow2 += (ref object ppDisp, ref bool Cancel) =>
+                {
+                    Cancel = true; // 取消新窗口
+                };
             }
         }
 
@@ -219,7 +265,7 @@ namespace YingCaiAiWin.Views.Pages
         #region 全屏和最小化控制
         private void MinimizeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            //this.WindowState = WindowState.Minimized;
         }
 
         private void FullscreenButton_Click(object sender, RoutedEventArgs e)
@@ -237,13 +283,14 @@ namespace YingCaiAiWin.Views.Pages
             if (isFullscreen)
             {
                 // 退出全屏
-                this.WindowState = WindowState.Normal;
+                ///this.WindowState = WindowState.Normal;
                 //FullscreenIcon.Symbol = Wpf.Ui.Common.SymbolRegular.FullScreenMaximize24;
             }
             else
             {
                 // 进入全屏
-                this.WindowState = WindowState.Maximized;
+                //this.WindowState = WindowState.Maximized;
+                //this.WindowState = WindowState.Maximized;
                 //FullscreenIcon.Symbol = Wpf.Ui.Common.SymbolRegular.FullScreenMinimize24;
             }
 
