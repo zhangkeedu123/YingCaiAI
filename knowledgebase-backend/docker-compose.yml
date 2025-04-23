@@ -1,16 +1,41 @@
 version: '3.8'
+
 services:
+  milvus:
+    image: milvusdb/milvus:v2.3.3
+    container_name: milvus
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: yingcai
+      POSTGRES_PASSWORD: 123456zk
+      POSTGRES_DB: yingcaiai
+    ports:
+      - "5432:5432"
+
   backend:
     build: .
     container_name: knowledgebase-backend
     ports:
       - "8000:8000"
+    depends_on:
+      - milvus
+      - postgres
     environment:
-      - POSTGRES_HOST=milvus_postgres_1
+      - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_USER=yingcai
       - POSTGRES_PASSWORD=123456zk
-      - POSTGRES_DB=your_dbyingcaiai
-      - MILVUS_HOST=milvus-standalone
+      - POSTGRES_DB=yingcaiai
+      - MILVUS_HOST=milvus
       - MILVUS_PORT=19530
-    depends_on: []
