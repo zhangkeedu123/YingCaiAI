@@ -1,29 +1,16 @@
-version: '3.7'
-
+version: '3.8'
 services:
-  fastapi:
+  backend:
     build: .
+    container_name: knowledgebase-backend
     ports:
       - "8000:8000"
-    depends_on:
-      - postgres
-      - milvus
-
-  postgres:
-    image: postgres:14
-    restart: always
     environment:
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: knowledgebase
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-  milvus:
-    image: milvusdb/milvus:v2.3.0
-    ports:
-      - "19530:19530"
-    environment:
-      TZ: Asia/Shanghai
-
-volumes:
-  postgres-data:
+      - POSTGRES_HOST=127.0.0.1
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=yingcai
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=your_dbyingcaiai
+      - MILVUS_HOST=127.0.0.1
+      - MILVUS_PORT=19530
+    depends_on: []
