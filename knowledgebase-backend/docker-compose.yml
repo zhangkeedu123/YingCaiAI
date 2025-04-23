@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - milvus
+
+  postgres:
+    image: postgres:14
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: knowledgebase
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  milvus:
+    image: milvusdb/milvus:v2.3.0
+    ports:
+      - "19530:19530"
+    environment:
+      TZ: Asia/Shanghai
+
+volumes:
+  postgres-data:
