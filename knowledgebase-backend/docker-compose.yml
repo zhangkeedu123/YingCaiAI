@@ -9,7 +9,7 @@ services:
       - POSTGRES_HOST=milvus_postgres_1
       - POSTGRES_PORT=5432
       - POSTGRES_USER=yingcai
-      - POSTGRES_PASSWORD=123456
+      - POSTGRES_PASSWORD=123456zk
       - POSTGRES_DB=your_dbyingcaiai
       - MILVUS_HOST=milvus-standalone
       - MILVUS_PORT=19530
