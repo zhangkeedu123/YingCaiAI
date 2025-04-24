@@ -63,7 +63,7 @@ namespace YingCaiAiWin
 
              // 配置数据库帮助类
              _ = services.AddScoped<DapperHelper>(provider =>
-                 new DapperHelper("Host=localhost;Database=mydatabase;Username=myuser;Password=mypassword"));
+                 new DapperHelper("Host=localhost;Database=yingcaiai;Username=yingcai;Password=123456zk"));
 
 
          }
