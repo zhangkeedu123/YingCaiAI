@@ -40,7 +40,7 @@ namespace YingCaiAiModel
         /// </summary>
         public bool IsEnabled { get; set; }
 
-        /// <summary>
+    /// <summary>
         /// 排序
         /// </summary>
         public int Sort { get; set; }
@@ -55,9 +55,10 @@ namespace YingCaiAiModel
 
         /// <summary>
         /// 子权限
-        /// </summary>
+    /// </summary>
         public ObservableCollection<Permission> Children { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }
+
 }

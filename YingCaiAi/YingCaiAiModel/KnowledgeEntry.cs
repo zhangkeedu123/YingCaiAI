@@ -6,18 +6,17 @@ using System.Threading.Tasks;
 
 namespace YingCaiAiModel
 {
-
-
     /// <summary>
-    /// 角色表
+    /// 知识库
     /// </summary>
-    public class Role
+    public class KnowledgeEntry
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Question { get; set; } = "";
+        public string Answer { get; set; } = "";
+        public string? Source { get; set; }
+        public string? Category { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<Permission> Permissions { get; set; } = new List<Permission>();
     }
 
 }
