@@ -8,6 +8,7 @@ namespace YingCaiAiModel
 {
     public class RolePermission
     {
+        public int id { get; set; }
         public int RoleId { get; set; }
         public int PermId { get; set; }
     }
