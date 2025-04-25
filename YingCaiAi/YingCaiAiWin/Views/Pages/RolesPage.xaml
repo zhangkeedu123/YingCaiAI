@@ -1,0 +1,219 @@
+﻿<Page x:Class="YingCaiAiWin.Views.Pages.RolesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:hc="https://handyorg.github.io/handycontrol"
+      Title="角色管理"
+      Background="{DynamicResource RegionBrush}">
+
+    <Page.Resources>
+        <!-- 自定义ListBox样式 -->
+        <Style x:Key="RoleCardStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListBoxItemBaseStyle}">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryRegionBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="hc:BorderElement.CornerRadius" Value="8"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource TextIconBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 自定义TreeView样式 -->
+        <Style x:Key="CustomTreeViewItemStyle" TargetType="TreeViewItem" BasedOn="{StaticResource TreeViewItemBaseStyle}">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0,2"/>
+        </Style>
+
+        <!-- 自定义CheckBox样式 -->
+        <Style x:Key="PermissionCheckBoxStyle" TargetType="CheckBox" BasedOn="{StaticResource CheckBoxBaseStyle}">
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 页面标题 -->
+        <TextBlock Text="角色权限管理" Grid.ColumnSpan="2" 
+                 Style="{StaticResource TextBlockLargeBold}" 
+                 Margin="24,20,0,16"
+                 FontSize="22"/>
+
+        <!-- 左侧角色列表面板 -->
+        <Border Grid.Row="1" Grid.Column="0" 
+                Background="{DynamicResource RegionBrush}"
+                CornerRadius="8" Margin="16,0,8,16"
+                Effect="{StaticResource EffectShadow2}">
+            <DockPanel Margin="16">
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="角色列表" 
+                             Style="{StaticResource TextBlockSubTitleBold}"
+                             VerticalAlignment="Center"/>
+
+                    <Button Grid.Column="1" 
+                            Style="{StaticResource ButtonPrimary}"
+                            hc:IconElement.Geometry="{StaticResource AddGeometry}"
+                            hc:BorderElement.CornerRadius="4"
+                            ToolTip="添加新角色"
+                            Width="32" Height="32"
+                            Padding="0"
+                            Click="AddRoleButton_Click"/>
+                </Grid>
+
+                <!-- 搜索框 -->
+                <hc:SearchBar DockPanel.Dock="Top" 
+                              Margin="0,0,0,16"
+                              hc:InfoElement.Placeholder="搜索角色..."
+                              Style="{StaticResource SearchBarPlus}"/>
+
+                <!-- 角色列表 -->
+                <ListBox x:Name="RoleListBox" 
+                         ItemsSource="{Binding Roles}"
+                         SelectedItem="{Binding SelectedRole}"
+                         SelectionChanged="RoleListBox_SelectionChanged"
+                         ItemContainerStyle="{StaticResource RoleCardStyle}"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="{Binding Name}" 
+                                         FontWeight="Bold" 
+                                         FontSize="15"
+                                         Margin="0,0,0,4"/>
+
+                                <TextBlock Grid.Row="1" 
+                                         Text="{Binding Description}" 
+                                         TextWrapping="Wrap"
+                                         Opacity="0.8"
+                                         FontSize="13"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- 右侧权限配置面板 -->
+        <Border Grid.Row="1" Grid.Column="1" 
+                Background="{DynamicResource RegionBrush}"
+                CornerRadius="8" Margin="8,0,16,16"
+                Effect="{StaticResource EffectShadow2}">
+            <DockPanel Margin="20">
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="权限配置" 
+                                 Style="{StaticResource TextBlockSubTitleBold}"/>
+
+                        <TextBlock Text="{Binding SelectedRole.Name, StringFormat='当前角色: {0}'}"
+                                 Margin="0,4,0,0"
+                                 Opacity="0.7"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                        <Button Style="{StaticResource ButtonSuccess}"
+                                Content="保存更改"
+                                hc:IconElement.Geometry="{StaticResource SaveGeometry}"
+                                Padding="12,6" Height="36"/>
+
+                        <Button Style="{StaticResource ButtonDanger}"
+                                Content="重置"
+                                
+                                Padding="12,6" Height="34"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- 权限树说明 -->
+                <Border DockPanel.Dock="Top" 
+                        Background="{DynamicResource DarkDefaultBrush}" 
+                        CornerRadius="4"
+                        Padding="12"
+                        Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="权限说明" 
+                                 FontWeight="Bold"
+                                 Margin="0,0,0,4"/>
+                        <TextBlock Text="选中父节点将自动选中所有子节点，取消选中父节点将取消所有子节点。" 
+                                 TextWrapping="Wrap"
+                                 Opacity="0.8"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 权限树 -->
+                <Border Background="{DynamicResource SecondaryRegionBrush}"
+                        CornerRadius="6">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="8">
+                        <TreeView x:Name="PermissionTreeView" 
+                                  ItemsSource="{Binding RolePermissions}"
+                                  ItemContainerStyle="{StaticResource CustomTreeViewItemStyle}"
+                                  BorderThickness="0"
+                                  Background="Transparent">
+                            <TreeView.Resources>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="IsExpanded" Value="True"/>
+                                </Style>
+                            </TreeView.Resources>
+                            <TreeView.ItemTemplate>
+                                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                    <Grid Margin="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox Grid.Column="0"
+                                                Style="{StaticResource PermissionCheckBoxStyle}"
+                                                IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                Content="{Binding Name}"
+                                                Checked="PermissionCheckBox_Checked"
+                                                Unchecked="PermissionCheckBox_Unchecked"/>
+
+                                        <TextBlock Grid.Column="2" 
+                                                 Text="{Binding Description}" 
+                                                 Margin="8,0,0,0"
+                                                 Opacity="0.7"
+                                                 VerticalAlignment="Center"/>
+                                    </Grid>
+                                </HierarchicalDataTemplate>
+                            </TreeView.ItemTemplate>
+                        </TreeView>
+                    </ScrollViewer>
+                </Border>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Page>

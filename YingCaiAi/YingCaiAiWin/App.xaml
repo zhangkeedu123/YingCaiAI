@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:YingCaiAiWin"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:converters="clr-namespace:YingCaiAiWin.Helpers"
              xml:lang="utf-8"
           DispatcherUnhandledException="OnDispatcherUnhandledException"
    Exit="OnExit"
@@ -12,7 +14,75 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Light" />
                 <ui:ControlsDictionary />
+                <!-- HandyControl资源 -->
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- 用户图标 -->
+            <Geometry x:Key="AddUserIconData">M15,4A4,4 0 0,1 19,8A4,4 0 0,1 15,12A4,4 0 0,1 11,8A4,4 0 0,1 15,4M15,5.9A2.1,2.1 0 0,0 12.9,8A2.1,2.1 0 0,0 15,10.1A2.1,2.1 0 0,0 17.1,8A2.1,2.1 0 0,0 15,5.9M4,7V10H1V12H4V15H6V12H9V10H6V7H4M15,13C17.67,13 23,14.33 23,17V20H7V17C7,14.33 12.33,13 15,13M15,14.9C12,14.9 8.9,16.36 8.9,17V18.1H21.1V17C21.1,16.36 17.97,14.9 15,14.9Z</Geometry>
+            <DrawingImage x:Key="AddUserIcon">
+                <DrawingImage.Drawing>
+                    <GeometryDrawing Brush="{DynamicResource PrimaryBrush}" Geometry="{StaticResource AddUserIconData}"/>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <!-- 导入图标 -->
+            <Geometry x:Key="ImportIconData">M14,12L10,8V11H2V13H10V16M20,18V6C20,4.89 19.1,4 18,4H6A2,2 0 0,0 4,6V9H6V6H18V18H6V15H4V18A2,2 0 0,0 6,20H18A2,2 0 0,0 20,18Z</Geometry>
+            <DrawingImage x:Key="ImportIcon">
+                <DrawingImage.Drawing>
+                    <GeometryDrawing Brush="{DynamicResource PrimaryBrush}" Geometry="{StaticResource ImportIconData}"/>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <!-- 筛选图标 -->
+            <Geometry x:Key="FilterIconData">M14,12V19.88C14.04,20.18 13.94,20.5 13.71,20.71C13.32,21.1 12.69,21.1 12.3,20.71L10.29,18.7C10.06,18.47 9.96,18.16 10,17.87V12H9.97L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3H19C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L14.03,12H14Z</Geometry>
+            <DrawingImage x:Key="FilterIcon">
+                <DrawingImage.Drawing>
+                    <GeometryDrawing Brush="{DynamicResource PrimaryBrush}" Geometry="{StaticResource FilterIconData}"/>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <!-- 设置图标 -->
+            <Geometry x:Key="SettingIconData">M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z</Geometry>
+            <DrawingImage x:Key="SettingIcon">
+                <DrawingImage.Drawing>
+                    <GeometryDrawing Brush="{DynamicResource PrimaryBrush}" Geometry="{StaticResource SettingIconData}"/>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <!-- 编辑图标 -->
+            <Geometry x:Key="EditIconData">M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z</Geometry>
+            <DrawingImage x:Key="EditIcon">
+                <DrawingImage.Drawing>
+                    <GeometryDrawing Brush="{DynamicResource InfoBrush}" Geometry="{StaticResource EditIconData}"/>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+            <!-- 删除图标 -->
+            <Geometry x:Key="DeleteIconData">M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z</Geometry>
+            <DrawingImage x:Key="DeleteIcon">
+                <DrawingImage.Drawing>
+                    <GeometryDrawing Brush="{DynamicResource DangerBrush}" Geometry="{StaticResource DeleteIconData}"/>
+                </DrawingImage.Drawing>
+            </DrawingImage>
+
+
+           
+
+            <!-- 自定义颜色 -->
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#4F9CF9"/>
+            <SolidColorBrush x:Key="DangerBrush" Color="#F56C6C"/>
+            <SolidColorBrush x:Key="SuccessBrush" Color="#67C23A"/>
+            <SolidColorBrush x:Key="WarningBrush" Color="#E6A23C"/>
+            <SolidColorBrush x:Key="InfoBrush" Color="#909399"/>
+
+            <converters:BoolToStatusConverter x:Key="BoolToStatusConverter" />
+            <converters:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+            <converters:BoolToForegroundConverter x:Key="BoolToForegroundConverter" />
+
         </ResourceDictionary>
+      
     </Application.Resources>
+   
 </Application>

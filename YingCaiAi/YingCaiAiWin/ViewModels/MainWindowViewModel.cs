@@ -49,12 +49,19 @@ public partial class MainWindowViewModel : ViewModel
                 Content = "主页",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage),
+               
             },
             new NavigationViewItem()
             {
                 Content = "用户管理",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-                TargetPageType = typeof(Views.Pages.DataPage),
+                
+                 MenuItemsSource = new object[]
+                {
+                        new NavigationViewItem("用户信息", typeof(Views.Pages.UsersPage)),
+                        new NavigationViewItem("角色管理", typeof(Views.Pages.RolesPage)),
+                        new NavigationViewItem("权限管理", typeof(Views.Pages.PermissionsPage)),
+                  },
             },
             new NavigationViewItem()
             {

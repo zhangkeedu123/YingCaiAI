@@ -10,6 +10,15 @@
     <Compile Update="Views\Pages\AIWindows.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Pages\PermissionsPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Pages\RolesPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Pages\UsersPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Login.xaml">
@@ -27,7 +36,16 @@
     <Page Update="Views\Pages\DataPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Pages\PermissionsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Pages\RolesPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Pages\SettingsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Pages\UsersPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
