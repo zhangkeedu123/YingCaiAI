@@ -61,12 +61,16 @@ namespace YingCaiAiWin
              _ = services.AddSingleton<ViewModels.DataViewModel>();
              _ = services.AddSingleton<Views.Pages.SettingsPage>();
              _ = services.AddSingleton<ViewModels.SettingsViewModel>();
+
+             //统一更加继承依赖注入
              _ = services.AddSingleton<Views.Pages.UsersPage>();
              _ = services.AddSingleton<ViewModels.UsersPagesViewModel>();
              _ = services.AddSingleton<Views.Pages.RolesPage>();
              _ = services.AddSingleton<ViewModels.RolePageViewModel>();
              _ = services.AddSingleton<Views.Pages.PermissionsPage>();
              _ = services.AddSingleton<ViewModels.PermissionsPageViewModel>();
+             _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
+             _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
 
              _ = services.AddSingleton<Views.Login>();//注册登录窗口
              _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口

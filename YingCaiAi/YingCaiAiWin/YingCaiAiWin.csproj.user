@@ -10,6 +10,9 @@
     <Compile Update="Views\Pages\AIWindows.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Pages\KnowledgeBase.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Pages\PermissionsPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -34,6 +37,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Pages\DataPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Pages\KnowledgeBase.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Pages\PermissionsPage.xaml">

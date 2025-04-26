@@ -69,6 +69,17 @@ public partial class MainWindowViewModel : ViewModel
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.AIWindows),
             },
+             new NavigationViewItem()
+            {
+               Content = "知识库管理",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+
+                 MenuItemsSource = new object[]
+                {
+                        new NavigationViewItem("知识预览", typeof(Views.Pages.KnowledgeBase)),
+                        new NavigationViewItem("知识入库", typeof(Views.Pages.KnowledgeBase)),
+                  },
+            },
         ];
 
         NavigationFooter =
