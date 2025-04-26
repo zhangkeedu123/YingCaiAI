@@ -69,6 +69,12 @@ public partial class MainWindowViewModel : ViewModel
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
                 TargetPageType = typeof(Views.Pages.AIWindows),
             },
+            new NavigationViewItem()
+            {
+                Content = "Êý×Ö´óÆÁ",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+                TargetPageType = typeof(Views.Pages.DataDashboardPage),
+            },
         ];
 
         NavigationFooter =
