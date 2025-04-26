@@ -72,6 +72,7 @@ namespace YingCaiAiWin.Views.Pages
             
             LoadSampleData();
             SetupDataBinding();
+            UserDialog.Visibility=Visibility.Hidden;
         }
 
         private void LoadSampleData()
