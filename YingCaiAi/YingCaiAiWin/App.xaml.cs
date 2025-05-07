@@ -8,6 +8,7 @@ using Wpf.Ui;
 using YingCaiAiService;
 using YingCaiAiService.IService;
 using YingCaiAiService.Service;
+using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
 using YingCaiAiWin.Views;
@@ -32,56 +33,56 @@ namespace YingCaiAiWin
      .ConfigureServices(
          (context, services) =>
          {
-             _ = services.AddNavigationViewPageProvider();
+         _ = services.AddNavigationViewPageProvider();
 
-             //注册service层服务
-             _ = services.AddApplicationServices();
+         //注册service层服务
+         _ = services.AddApplicationServices();
 
-             // App Host
-             _ = services.AddHostedService<ApplicationHostService>();
+         // App Host
+         _ = services.AddHostedService<ApplicationHostService>();
 
-             // Theme manipulation
-             _ = services.AddSingleton<IThemeService, ThemeService>();
+         // Theme manipulation
+         _ = services.AddSingleton<IThemeService, ThemeService>();
 
-             // TaskBar manipulation
-             _ = services.AddSingleton<ITaskBarService, TaskBarService>();
+         // TaskBar manipulation
+         _ = services.AddSingleton<ITaskBarService, TaskBarService>();
 
-             // Service containing navigation, same as INavigationWindow... but without window
-             _ = services.AddSingleton<INavigationService, NavigationService>();
+         // Service containing navigation, same as INavigationWindow... but without window
+         _ = services.AddSingleton<INavigationService, NavigationService>();
 
-             // Main window with navigation
-             _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();
-             _ = services.AddSingleton<ViewModels.MainWindowViewModel>();
+         // Main window with navigation
+         _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();
+         _ = services.AddSingleton<ViewModels.MainWindowViewModel>();
 
-             // Views and ViewModels
-             _ = services.AddSingleton<Views.Pages.DashboardPage>();
-             _ = services.AddSingleton<ViewModels.DashboardViewModel>();
-             _ = services.AddSingleton<ViewModels.AIWindowsViewModel>();
-             _ = services.AddSingleton<Views.Pages.DataPage>();
-             _ = services.AddSingleton<ViewModels.DataViewModel>();
-             _ = services.AddSingleton<Views.Pages.SettingsPage>();
-             _ = services.AddSingleton<ViewModels.SettingsViewModel>();
+         // Views and ViewModels
+         _ = services.AddSingleton<Views.Pages.DashboardPage>();
+         _ = services.AddSingleton<ViewModels.DashboardViewModel>();
+         _ = services.AddSingleton<ViewModels.AIWindowsViewModel>();
+         _ = services.AddSingleton<Views.Pages.DataPage>();
+         _ = services.AddSingleton<ViewModels.DataViewModel>();
+         _ = services.AddSingleton<Views.Pages.SettingsPage>();
+         _ = services.AddSingleton<ViewModels.SettingsViewModel>();
 
-             //统一更加继承依赖注入
-             _ = services.AddSingleton<Views.Pages.UsersPage>();
-             _ = services.AddSingleton<ViewModels.UsersPagesViewModel>();
-             _ = services.AddSingleton<Views.Pages.RolesPage>();
-             _ = services.AddSingleton<ViewModels.RolePageViewModel>();
-             _ = services.AddSingleton<Views.Pages.PermissionsPage>();
-             _ = services.AddSingleton<ViewModels.PermissionsPageViewModel>();
-             _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
-             _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
+         //统一更加继承依赖注入
+         _ = services.AddSingleton<Views.Pages.UsersPage>();
+         _ = services.AddSingleton<ViewModels.UsersPagesViewModel>();
+         _ = services.AddSingleton<Views.Pages.RolesPage>();
+         _ = services.AddSingleton<ViewModels.RolePageViewModel>();
+         _ = services.AddSingleton<Views.Pages.PermissionsPage>();
+         _ = services.AddSingleton<ViewModels.PermissionsPageViewModel>();
+         _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
+         _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
 
-             _ = services.AddSingleton<Views.Login>();//注册登录窗口
-             _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
-             // Configuration
-             _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
+         _ = services.AddSingleton<Views.Login>();//注册登录窗口
+         _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
+                                                            // Configuration
+         _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
 
              // 配置数据库帮助类
-             _ = services.AddScoped<DapperHelper>(provider =>
-                 new DapperHelper("Host=localhost;Database=yingcaiai;Username=yingcai;Password=123456zk"));
-
-
+             _ = services.AddScoped<DapperHelper>();
+             // new DapperHelper("Host=113.105.116.171;Port=5432;Database=yingcaiai;Username=yingcai;Password=123456zk"));
+             //new DapperHelper("Server=113.105.116.171;Port=5432;Database=yingcaiai;User Id=yingcai;Password=123456zk;"));
+             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
          }
 
      )
@@ -104,6 +105,9 @@ namespace YingCaiAiWin
            //var loginWindows = _host.Services.GetRequiredService<AIWindows>();
             //loginWindows.Show();
             loginWindow.Show();
+            var scheduler = new VectorizationScheduler();
+            scheduler.Start(); // 启动定时任务
+            
             await _host.StartAsync();
         }
 

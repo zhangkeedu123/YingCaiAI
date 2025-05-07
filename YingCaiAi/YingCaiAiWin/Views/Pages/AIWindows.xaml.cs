@@ -19,6 +19,10 @@ using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
 using YingCaiAiWin.ViewModels;
 using SHDocVw;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using System.Windows.Threading;
+using System.Net.Http;
+using YingCaiAiWin.Helpers;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -51,42 +55,75 @@ namespace YingCaiAiWin.Views.Pages
 
         private bool isFullscreen = false;
         private bool isQuestionsAlternate = false;
-        private string defaultHomePage = "https://www.bing.com";
+        private string defaultHomePage = "https://www.baidu.com";
+        private double height = SystemParameters.PrimaryScreenHeight;
+
+        private readonly HttpClientHelper _httpClient;
 
         public AIWindowsViewModel ViewModel { get; set; }
 
         public AIWindows(AIWindowsViewModel viewModel)
         {
-            ViewModel= viewModel;
+
+            ViewModel = viewModel;
+            _httpClient = new HttpClientHelper();
+            DataContext = this;
             InitializeComponent();
             InitializeBrowser();
             LoadQuestions();
-        }
-        private void webBrowser1_NewWindow(object sender, CancelEventArgs e)
-        {
-            //string url = ((WebBrowser)sender).StatusText;
-            //EmbeddedBrowser.Navigate(url);
-            e.Cancel = true;
-        }
-        //private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        //{
-        //    //将所有的链接的目标，指向本窗体
-        //    foreach (HtmlElement archor in this.webBrowser1.Document.Links)
-        //    {
-        //        archor.SetAttribute("target", "_self");
-        //    }
+            this.Loaded += (s, e) =>
+            {
+                var parentWindow = System.Windows.Window.GetWindow(this);
+                if (parentWindow != null)
+                {
+                    parentWindow.StateChanged += Window_StateChanged;
 
-        //    //将所有的FORM的提交目标，指向本窗体
-        //    foreach (HtmlElement form in this.webBrowser1.Document.Forms)
-        //    {
-        //        form.SetAttribute("target", "_self");
-        //    }
-        //}
+                }
+
+            };
+            ChatBox.AddMessage("今天天气如何？", true);
+            ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
+
+        }
+
+        /// <summary>
+        /// 设置窗口大小
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            var parentWindow = System.Windows.Window.GetWindow(this);
+            if (parentWindow != null)
+            {
+                if (parentWindow.WindowState == WindowState.Maximized)
+                {
+                    Gridwin.Height = height - 150;
+                    newsPanel.Height = height - 380;   //全屏固定高度
+                    newScroll.Height = height - 450;
+                    kefuH.Height = height - 200;
+                }
+
+                else
+                {
+                    Gridwin.Height = 700;
+                    newsPanel.Height = 470; // 非全屏固定高度
+                    newScroll.Height = 400;
+                    kefuH.Height = 660;
+                }
+            }
+
+        }
+
 
         private void LoadQuestions()
         {
             QuestionsList.ItemsSource = questions;
         }
+
+
+
+        #region 浏览器功能相关
 
         private void InitializeBrowser()
         {
@@ -101,7 +138,7 @@ namespace YingCaiAiWin.Views.Pages
 
                 // 处理浏览器导航完成事件
                 EmbeddedBrowser.Navigated += EmbeddedBrowser_Navigated;
-            
+
             }
             catch (Exception)
             {
@@ -113,7 +150,7 @@ namespace YingCaiAiWin.Views.Pages
         {
             try
             {
-                
+
                 // 更新地址栏
                 AddressBar.Text = e.Uri.ToString();
 
@@ -132,7 +169,7 @@ namespace YingCaiAiWin.Views.Pages
             var webBrowserActiveX = EmbeddedBrowser.GetType().InvokeMember("ActiveXInstance",
                 System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
                 null, EmbeddedBrowser, null) as SHDocVw.WebBrowser;
-         
+
             if (webBrowserActiveX != null)
             {
                 // 订阅NewWindow2事件
@@ -174,8 +211,6 @@ namespace YingCaiAiWin.Views.Pages
                 // 静默处理异常
             }
         }
-
-        #region 浏览器导航功能
         private void NavigateToUrl(string url)
         {
             try
@@ -269,102 +304,43 @@ namespace YingCaiAiWin.Views.Pages
         }
         #endregion
 
-        #region 全屏和最小化控制
-        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            //this.WindowState = WindowState.Minimized;
-        }
 
-        private void FullscreenButton_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleFullscreen();
-        }
 
-        private void ToggleFullscreenButton_Click(object sender, RoutedEventArgs e)
-        {
-            ToggleFullscreen();
-        }
+        #region ai对话相关
 
-        private void ToggleFullscreen()
+        private async void Tool_Click(object sender, RoutedEventArgs e)
         {
-            if (isFullscreen)
+            if (sender is FrameworkElement fe && fe.DataContext is ToolItem tool)
             {
-                // 退出全屏
-                ///this.WindowState = WindowState.Normal;
-                //FullscreenIcon.Symbol = Wpf.Ui.Common.SymbolRegular.FullScreenMaximize24;
-            }
-            else
-            {
-                // 进入全屏
-                //this.WindowState = WindowState.Maximized;
-                //this.WindowState = WindowState.Maximized;
-                //FullscreenIcon.Symbol = Wpf.Ui.Common.SymbolRegular.FullScreenMinimize24;
+                string text = tool.Title;
+
+                ChatBox.AddLoadingBubble();
+                // 滚动到底部
+                Scroll();
+                // 关闭展开框
+                expander.IsExpanded = false;
+                await Task.Delay(2000);
+
+                ChatBox.ReplaceLoadingBubble(text);
+
+
             }
 
-            isFullscreen = !isFullscreen;
         }
-        #endregion
-
-        #region 自助工具点击事件
-        private void CustomerInfo_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("客户资料", "查看和管理客户的详细信息，包括联系方式、历史记录等。");
-        }
-
-        private void Recruiting_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("正在招聘", "查看当前客户正在招聘的职位信息和申请状态。");
-        }
-
-        private void RecommendedScripts_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("推荐话术", "根据客户需求和历史数据，提供个性化的沟通话术建议。");
-        }
-
-        private void EnterprisePackage_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("企业套餐", "查看和推荐适合客户的企业服务套餐方案。");
-        }
-
-        private void Promotions_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("优惠政策", "了解平台最新的优惠活动和政策信息。");
-        }
-
-        private void PlatformData_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("平台数据", "查看平台运营数据和客户使用统计信息。");
-        }
-
-        private void AfterSales_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("售后服务", "提供售后问题解决方案和服务支持。");
-        }
-
-        private void ChickenSoup_Click(object sender, RoutedEventArgs e)
-        {
-            ShowToolInfo("心灵鸡汤", "提供职场励志和企业管理相关的心灵鸡汤内容。");
-        }
-
-        private void ShowToolInfo(string title, string content)
-        {
-            //Wpf.Ui.Controls.MessageBox.Show(
-            //    title,
-            //    content,
-            //    Wpf.Ui.Controls.MessageBoxButton.OK);
-        }
-        #endregion
-
-        #region 猜你想问相关事件
-        private void Question_Click(object sender, RoutedEventArgs e)
+        private async void Question_Click(object sender, RoutedEventArgs e)
         {
             if (sender is CardAction card && card.DataContext is string question)
             {
-                // 处理问题点击事件
-                //Wpf.Ui.Controls.MessageBox.Show(
-                //    "问题详情",
-                //    $"您的问题：{question}\n\n我们正在为您准备答案...",
-                //    Wpf.Ui.Controls.MessageBoxButton.OK);
+
+                var cards = sender as CardAction;
+                string text = cards?.Tag?.ToString();
+                ChatBox.AddLoadingBubble();
+                // 滚动到底部
+                Scroll();
+                await Task.Delay(2000);
+
+                ChatBox.ReplaceLoadingBubble(text);
+                Scroll(); // 最后再滚动一次，确保展示完整
             }
         }
 
@@ -382,49 +358,83 @@ namespace YingCaiAiWin.Views.Pages
                 QuestionsList.ItemsSource = questions;
             }
 
-            // 显示提示
-            //Wpf.Ui.Controls.Snackbar.Show("已更新", "问题列表已刷新", Wpf.Ui.Common.SymbolRegular.CheckmarkCircle24);
-        }
-        #endregion
 
-        #region 搜索框事件
-        private void SearchBox_KeyDown(object sender, KeyEventArgs e)
+        }
+        /// <summary>
+        /// 搜索框事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void SearchBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                PerformSearch();
+                ChatBox.AddMessage(SearchBox.Text?.Trim(), true);
+                SearchBox.Text = "";
+                ChatBox.AddLoadingBubble();
+                // 滚动到底部
+                Scroll();
+
+                await CallVectorizeApiAsync();
+            }
+        }
+        private async Task CallVectorizeApiAsync()
+        {
+            try
+            {
+                var response = await _httpClient.PostDataAsync("milvus/ask", null);
+                if (response != null)
+                {
+
+                    if (response.Contains("</think>"))
+                    {
+                        int n = response.IndexOf("</think>");
+                        if (n > 0)
+                        {
+
+                            response.Substring(n).Replace("\"","").Replace("}", "");
+                        }
+                    }
+
+                }
+                else
+                {
+                    ChatBox.ReplaceLoadingBubble("检索超时。。。");
+                    Scroll(); // 最后再滚动一次，确保展示完整
+                }
+            }
+            catch (Exception ex)
+            {
+                ChatBox.ReplaceLoadingBubble("检索超时了。。。");
+                Scroll(); // 最后再滚动一次，确保展示完整
             }
         }
 
-        private void PerformSearch()
+
+        /// <summary>
+        /// 滚动到最底部
+        /// </summary>
+        private void Scroll()
         {
-            string searchText = SearchBox.Text?.Trim();
 
-            if (!string.IsNullOrEmpty(searchText))
+            Dispatcher.BeginInvoke(new Action(() =>
             {
-                // 执行搜索操作
-                //Wpf.Ui.Controls.Snackbar.Show(
-                //    "搜索",
-                //    $"正在搜索：{searchText}",
-                //    Wpf.Ui.Common.SymbolRegular.Search24);
+                var scrollViewer = FindParent<ScrollViewer>(newStackPanel);
+                scrollViewer?.ScrollToEnd();
+            }), DispatcherPriority.Background);
+        }
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
-                // 可以在这里添加实际的搜索逻辑
-                // 例如：在浏览器中搜索
-                try
-                {
-                    string searchUrl = $"https://www.bing.com/search?q={Uri.EscapeDataString(searchText)}";
-                    EmbeddedBrowser.Navigate(new Uri(searchUrl));
-                    AddressBar.Text = searchUrl;
-                }
-                catch
-                {
-                    // 静默处理异常
-                }
+            if (parentObject == null) return null;
 
-                // 清空搜索框
-                SearchBox.Text = string.Empty;
-            }
+            if (parentObject is T parent) return parent;
+
+            return FindParent<T>(parentObject);
         }
         #endregion
+
+
     }
 }

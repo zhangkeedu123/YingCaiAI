@@ -6,11 +6,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:YingCaiAiWin.Views.Pages"
+     xmlns:hc="https://handyorg.github.io/handycontrol"
+    
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance local:AIWindows,
                                      IsDesignTimeCreatable=False}"
      d:DesignHeight="650"
-        d:DesignWidth="1000"
+     d:DesignWidth="1000"
     Title="客户服务系统" 
   >
     <!--WindowStartupLocation="CenterScreen"
@@ -18,14 +20,17 @@
     WindowCornerPreference="Round"
     WindowBackdropType="Mica"-->
 
-    <Grid>
+    <Grid x:Name="Gridwin">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <!-- 左侧内置浏览器 -->
-        <Grid Grid.Column="0">
+        <Grid Grid.Column="0" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -73,17 +78,17 @@
             </Border>
 
             <!-- 全屏和最小化控制按钮 -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,20,0" Panel.ZIndex="1">
+            <!--<StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,20,0" Panel.ZIndex="1">
                 <ui:Button Appearance="Secondary" ToolTip="最小化" Margin="0,0,5,0" Click="MinimizeButton_Click">
                     <ui:SymbolIcon Symbol="ArrowMinimize24" />
                 </ui:Button>
                 <ui:Button x:Name="FullscreenButton" Appearance="Secondary" ToolTip="全屏" Click="FullscreenButton_Click">
                     <ui:SymbolIcon x:Name="FullscreenIcon" Symbol="FullScreenMaximize24" />
                 </ui:Button>
-            </StackPanel>
+            </StackPanel>-->
         </Grid>
         <!-- 右侧客服界面 -->
-        <Grid Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}">
+        <Grid x:Name="kefuH" Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}" Height="650"  >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -105,142 +110,110 @@
                         <TextBlock Text="请问有什么可以帮助你?" Foreground="White" FontSize="16" VerticalAlignment="Center" Margin="10,0,0,0" />
                     </StackPanel>
 
-                    <ui:Button Grid.Column="2" Appearance="Transparent" 
-                               VerticalAlignment="Center" HorizontalAlignment="Right"
-                               ToolTip="全屏显示" Click="ToggleFullscreenButton_Click">
-                        <ui:SymbolIcon Symbol="FullScreenMaximize20" Foreground="White" />
-                    </ui:Button>
+
                 </Grid>
             </ui:Card>
 
             <!-- 当前客户信息 -->
-            <ui:Card Grid.Row="1" Background="#F5F5F5" Margin="10,0,10,5" Padding="15">
+            <ui:Card Grid.Row="1" Background="#F5F5F5" Margin="10,0,10,5" Padding="5" Height="40">
                 <TextBlock Text="当前客户：北京英才有限责任公司" 
                            FontSize="14" 
                            FontWeight="SemiBold"
                            VerticalAlignment="Center" />
             </ui:Card>
 
+
             <!-- 主要内容区域 -->
-            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Margin="10,0,10,5">
+            <ui:Card Grid.Row="2" x:Name="newsPanel" Height="470" Margin="10,0,0,5"  >
                 <StackPanel>
-                    <!-- 自助工具区域 -->
-                    <ui:Card Margin="0,0,0,10" Padding="15">
-                        <StackPanel>
-                            <TextBlock Text="自助工具" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,15" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
+                    <Expander  x:Name="expander"  Header="自助工具"  FontWeight="SemiBold" Margin="10,0,10,10" >
 
-
-                                <!-- 第一行工具 -->
-                                <ui:Card Grid.Row="0" Grid.Column="0" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="People24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="客户资料" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <ui:Card Grid.Row="0" Grid.Column="1" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="Key24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="正在招聘" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <ui:Card Grid.Row="0" Grid.Column="2" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="CheckmarkCircle24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="推荐话术" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <ui:Card Grid.Row="0" Grid.Column="3" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="ClipboardTextLtr20" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="企业套餐" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <!-- 第二行工具 -->
-                                <ui:Card Grid.Row="1" Grid.Column="0" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="List24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="优惠政策" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <ui:Card Grid.Row="1" Grid.Column="1" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="Warning24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="平台数据" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <ui:Card Grid.Row="1" Grid.Column="2" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="Document24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="售后服务" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-
-                                <ui:Card Grid.Row="1" Grid.Column="3" Margin="5" Padding="10" Background="#F0F5FF" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <ui:SymbolIcon Symbol="Shield24" Foreground="#4285F4" HorizontalAlignment="Center" />
-                                        <TextBlock Text="心灵鸡汤" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                                    </StackPanel>
-                                </ui:Card>
-                            </Grid>
-                        </StackPanel>
-                    </ui:Card>
-
-                    <!-- 猜你想问区域 -->
-                    <ui:Card Padding="15">
-                        <StackPanel>
-                            <Grid Margin="0,0,0,10">
-                                <TextBlock Text="猜你想问" FontSize="16" FontWeight="SemiBold" />
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Cursor="Hand" MouseDown="RefreshQuestions_Click">
-                                    <ui:SymbolIcon Symbol="ArrowSync24" Foreground="#4285F4" />
-                                    <TextBlock Text="换一批" Foreground="#4285F4" Margin="5,0,0,0" />
-                                </StackPanel>
-                            </Grid>
-
-                            <ItemsControl x:Name="QuestionsList">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <ui:CardAction Padding="12" Margin="0,0,0,10"  Click="Question_Click">
-                                            <Grid>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <ui:SymbolIcon Symbol="QuestionCircle24" Foreground="#4285F4" Margin="0,0,10,0" />
-                                                    <TextBlock Text="{Binding}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                        <Border Height="auto" BorderThickness="1,0,1,1" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}" CornerRadius="0,0,4,4" >
+                            
+                            <ui:Card  Padding="10">
+                                <ItemsControl ItemsSource="{Binding ViewModel.ToolItems}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="4" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <ui:Card Margin="5" Padding="10" Background="#F0F5FF"  MouseLeftButtonUp="Tool_Click"   VerticalAlignment="Center" HorizontalAlignment="Center"   >
+                                                
+                                                <StackPanel HorizontalAlignment="Center">
+                                                    
+                                                    <ui:SymbolIcon Symbol="{Binding Icon}" Foreground="#4285F4" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Title}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
                                                 </StackPanel>
-                                                <ui:SymbolIcon Symbol="ChevronRight24" HorizontalAlignment="Right" Foreground="#AAAAAA" />
-                                            </Grid>
-                                        </ui:CardAction>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                             
+                                            </ui:Card>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ui:Card>
+                            
+
+                        </Border>
+                    </Expander>
+
+
+                    <ScrollViewer x:Name="newScroll" VerticalScrollBarVisibility="Auto" Margin="10,0,10,5" Height="400" >
+                        <StackPanel x:Name="newStackPanel">
+                            <!-- 猜你想问区域 -->
+                            <ui:Card Padding="15"  >
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,10">
+                                        <TextBlock Text="猜你想问" FontSize="16" FontWeight="SemiBold" />
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Cursor="Hand" MouseDown="RefreshQuestions_Click">
+                                            <ui:SymbolIcon Symbol="ArrowSync24" Foreground="#4285F4" />
+                                            <TextBlock Text="换一批" Foreground="#4285F4" Margin="5,0,0,0" />
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <ItemsControl x:Name="QuestionsList">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <ui:CardAction Padding="12" Margin="0,0,0,10" Click="Question_Click" Tag="{Binding}" >
+                                                    <Grid  >
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <ui:SymbolIcon Symbol="QuestionCircle24" Foreground="#4285F4" Margin="0,0,10,0" />
+                                                            <TextBlock Text="{Binding}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                        
+                                                    </Grid>
+                                                </ui:CardAction>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ui:Card>
+                            <ui:Card >
+                                <StackPanel >
+                                    <local:ChatBubbleList x:Name="ChatBox"/>
+
+                                </StackPanel>
+
+                            </ui:Card>
+
                         </StackPanel>
-                    </ui:Card>
+                    </ScrollViewer>
+
+
+
+
                 </StackPanel>
-            </ScrollViewer>
+
+            </ui:Card>
+
 
             <!-- 底部搜索栏 -->
             <ui:Card Grid.Row="3" Background="#4285F4" Margin="10,0,10,10" Padding="10">
-                <ui:TextBox x:Name="SearchBox" PlaceholderText="请输入搜索关键字" 
+                <ui:TextBox x:Name="SearchBox" PlaceholderText="请输入搜索关键字，回车搜索" 
                            Icon="Search24" 
                            VerticalAlignment="Center" 
                            Background="White"
-                           
                            KeyDown="SearchBox_KeyDown" />
             </ui:Card>
         </Grid>

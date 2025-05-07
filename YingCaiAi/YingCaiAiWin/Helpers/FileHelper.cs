@@ -5,6 +5,8 @@ using NPOI.XSSF.UserModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace YingCaiAiWin.Helpers
 {
@@ -42,9 +44,9 @@ namespace YingCaiAiWin.Helpers
 
         public static string ReadWordFile(string filePath)
         {
-            var document = new Spire.Doc.Document();
-            document.LoadFromFile(filePath);
-            return document.GetText();
+            using var wordDoc = WordprocessingDocument.Open(filePath, false);
+            var body = wordDoc.MainDocumentPart.Document.Body;
+            return body.InnerText;
         }
 
 
@@ -108,7 +110,7 @@ namespace YingCaiAiWin.Helpers
         public static List<string> SegmentText(string text, int maxLength = 350)
         {
             var segments = new List<string>();
-
+            text = ReadWordFile(text);
             // 先按段落（两个换行符）
             var paragraphs = Regex.Split(text, @"\r?\n\r?\n");
 

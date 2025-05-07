@@ -7,7 +7,7 @@ using YingCaiAiService.IService;
 
 namespace YingCaiAiService.Service
 {
-    public abstract class BaseService<T> : IBaseService, IDisposable where T : class
+    public abstract class BaseService<T> : IBaseService
     {
         protected readonly DapperHelper _dbHelper;
 
@@ -28,12 +28,7 @@ namespace YingCaiAiService.Service
                 $"SELECT * FROM {typeof(T).Name}s WHERE Id = @Id", new { Id = id });
         }
 
-        // 其他通用方法...
-
-        public void Dispose()
-        {
-            _dbHelper?.Dispose();
-        }
+      
     }
 
     /// <summary>
@@ -83,4 +78,15 @@ namespace YingCaiAiService.Service
 
         // 共享的瞬时服务方法...
     }
+
+
+    public class UserServiceException : Exception
+    {
+        public UserServiceException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
+
+
 }

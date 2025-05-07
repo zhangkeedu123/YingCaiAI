@@ -104,17 +104,8 @@ namespace YingCaiAiService.Service
 
   
 
-        public void Dispose()
-        {
-            _dbHelper?.Dispose();
-        }
+      
     }
 
-    public class UserServiceException : Exception
-    {
-        public UserServiceException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-    }
+    
 }

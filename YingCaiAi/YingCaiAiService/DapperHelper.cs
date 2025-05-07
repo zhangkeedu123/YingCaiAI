@@ -4,30 +4,19 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace YingCaiAiService
 {
-    public class DapperHelper : IDisposable
+    public class DapperHelper 
     {
-        private readonly string _connectionString;
-        private NpgsqlConnection _connection;
+        private readonly string _connectionString= "Host=113.105.116.171;Port=5432;Database=yingcaiai;Username=yingcai;Password=123456zk;Timeout=15;CommandTimeout=30;Keepalive=1;";
+        
 
-        public DapperHelper(string connectionString)
+        public DapperHelper()
         {
-            _connectionString = connectionString;
-            _connection = new NpgsqlConnection(_connectionString);
-        }
-
-        /// <summary>
-        /// 打开数据库连接
-        /// </summary>
-        private async Task OpenConnectionAsync()
-        {
-            if (_connection.State != ConnectionState.Open)
-            {
-                await _connection.OpenAsync();
-            }
+           
         }
 
         #region Dapper 方法
@@ -39,8 +28,9 @@ namespace YingCaiAiService
         {
             try
             {
-                await OpenConnectionAsync();
-                return await _connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+                return await connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
             }
             catch (Exception ex)
             {
@@ -55,12 +45,34 @@ namespace YingCaiAiService
         {
             try
             {
-                await OpenConnectionAsync();
-                return await _connection.QueryAsync<T>(sql, parameters);
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+                return await connection.QueryAsync<T>(sql, parameters);
             }
             catch (Exception ex)
             {
                 throw new Exception($"查询实体列表时出错: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<int> InsertDocumentsAsync(string sql,object docs)
+        {
+            
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var transaction = await connection.BeginTransactionAsync();
+            try
+            {
+                await connection.ExecuteAsync(sql, docs, transaction);
+                await transaction.CommitAsync();
+                return 1;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return 0;
             }
         }
 
@@ -71,8 +83,9 @@ namespace YingCaiAiService
         {
             try
             {
-                await OpenConnectionAsync();
-                return await _connection.ExecuteAsync(sql, parameters);
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+                return await connection.ExecuteAsync(sql, parameters);
             }
             catch (Exception ex)
             {
@@ -87,8 +100,9 @@ namespace YingCaiAiService
         {
             try
             {
-                await OpenConnectionAsync();
-                return await _connection.QueryAsync<T>(
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+                return await connection.QueryAsync<T>(
                     procedureName,
                     parameters,
                     commandType: CommandType.StoredProcedure);
@@ -110,8 +124,9 @@ namespace YingCaiAiService
         {
             try
             {
-                await OpenConnectionAsync();
-                return await _connection.QueryAsync(sql, map, parameters, splitOn: splitOn);
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+                return await connection.QueryAsync(sql, map, parameters, splitOn: splitOn);
             }
             catch (Exception ex)
             {
@@ -122,27 +137,28 @@ namespace YingCaiAiService
         /// <summary>
         /// 分页查询
         /// </summary>
-        public async Task<(IEnumerable<T> Data, int TotalCount)> QueryPagedAsync<T>(
+        public async Task<(List<T> Data, int TotalCount)> QueryPagedAsync<T>(
             string sql,
             object parameters = null,
             int pageNumber = 1,
-            int pageSize = 10)
+            int Offset = 20)
         {
             try
             {
-                await OpenConnectionAsync();
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
 
                 // 添加分页参数
                 var dynamicParameters = new DynamicParameters(parameters);
-                dynamicParameters.Add("PageNumber", pageNumber);
-                dynamicParameters.Add("PageSize", pageSize);
+                dynamicParameters.Add("Limit", 20);
+                dynamicParameters.Add("Offset", (pageNumber - 1) * Offset);
 
                 // 假设SQL中已经包含分页逻辑（如PostgreSQL的LIMIT和OFFSET）
-                using (var multi = await _connection.QueryMultipleAsync(sql, dynamicParameters))
+                using (var multi = await connection.QueryMultipleAsync(sql, dynamicParameters))
                 {
                     var data = await multi.ReadAsync<T>();
                     var totalCount = await multi.ReadSingleAsync<int>();
-                    return (data, totalCount);
+                    return (data.ToList(), totalCount);
                 }
             }
             catch (Exception ex)
@@ -153,75 +169,7 @@ namespace YingCaiAiService
 
         #endregion
 
-        #region 原有方法（保持兼容）
-
-        /// <summary>
-        /// 执行非查询SQL语句（增删改）
-        /// </summary>
-        public async Task<int> ExecuteNonQueryAsync(string sql, params NpgsqlParameter[] parameters)
-        {
-            try
-            {
-                await OpenConnectionAsync();
-                using (var command = new NpgsqlCommand(sql, _connection))
-                {
-                    if (parameters != null && parameters.Length > 0)
-                    {
-                        command.Parameters.AddRange(parameters);
-                    }
-                    return await command.ExecuteNonQueryAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("执行非查询SQL语句时出错", ex);
-            }
-        }
-
-        /// <summary>
-        /// 执行查询并返回DataTable
-        /// </summary>
-        public async Task<DataTable> ExecuteDataTableAsync(string sql, params NpgsqlParameter[] parameters)
-        {
-            try
-            {
-                await OpenConnectionAsync();
-                using (var command = new NpgsqlCommand(sql, _connection))
-                {
-                    if (parameters != null && parameters.Length > 0)
-                    {
-                        command.Parameters.AddRange(parameters);
-                    }
-
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        var dataTable = new DataTable();
-                        dataTable.Load(reader);
-                        return dataTable;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("执行查询并返回DataTable时出错", ex);
-            }
-        }
-
-        // 其他原有方法...
-
-        #endregion
-
-        public void Dispose()
-        {
-            if (_connection != null)
-            {
-                if (_connection.State == ConnectionState.Open)
-                {
-                    _connection.Close();
-                }
-                _connection.Dispose();
-                _connection = null;
-            }
-        }
+      
+     
     }
 }

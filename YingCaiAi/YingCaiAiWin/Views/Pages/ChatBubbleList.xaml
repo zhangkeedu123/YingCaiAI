@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="YingCaiAiWin.Views.Pages.ChatBubbleList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--<ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                  CanContentScroll="True">
+       
+    </ScrollViewer>-->
+  
+        <StackPanel x:Name="MessagePanel"/>
+  
+</UserControl>
+

@@ -3,6 +3,7 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using DocumentFormat.OpenXml.Drawing.Charts;
 using Wpf.Ui.Abstractions.Controls;
 
 namespace YingCaiAiWin.Views.Pages;
@@ -20,5 +21,8 @@ public partial class DashboardPage : INavigableView<ViewModels.DashboardViewMode
         DataContext = this;
 
         InitializeComponent();
+     
     }
+
+ 
 }
