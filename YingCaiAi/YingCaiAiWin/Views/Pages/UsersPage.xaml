@@ -8,7 +8,8 @@
     xmlns:hc="https://handyorg.github.io/handycontrol"
     mc:Ignorable="d"
     Title="用户管理"
-    d:DataContext="{d:DesignInstance local:UsersPage,                     IsDesignTimeCreatable=False}"
+    d:DataContext="{d:DesignInstance local:UsersPage,
+                     IsDesignTimeCreatable=False}"
     d:DesignHeight="650"
         d:DesignWidth="1000"
     Background="{DynamicResource RegionBrush}">
@@ -252,6 +253,7 @@
             x:Name="UserDialog"
             Width="800"
             MinHeight="600"
+            Visibility="Hidden"
             Style="{StaticResource DialogBaseStyle}">
             <Grid>
                 <Grid.RowDefinitions>

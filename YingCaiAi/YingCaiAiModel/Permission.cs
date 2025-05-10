@@ -59,6 +59,9 @@ namespace YingCaiAiModel
         public ObservableCollection<Permission> Children { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public DateTime CreateTime { get; set; }
+        public DateTime UpdateTime { get; set; }
     }
 
 }

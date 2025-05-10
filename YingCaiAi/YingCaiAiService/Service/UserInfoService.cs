@@ -3,7 +3,7 @@ using YingCaiAiModel;
 using YingCaiAiService.IService;
 namespace YingCaiAiService.Service
 {
-    public class UserInfoService : BaseScopedService<UserInfo>, IUserInfoService
+    public class UserInfoService : BaseScopedService<User>, IUserInfoService
     {
         
 
@@ -12,11 +12,11 @@ namespace YingCaiAiService.Service
            
         }
 
-        public async Task<IEnumerable<UserInfo>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             try
             {
-                return await _dbHelper.QueryAsync<UserInfo>("SELECT * FROM users ORDER BY id");
+                return await _dbHelper.QueryAsync<User>("SELECT * FROM users ORDER BY id");
             }
             catch (Exception ex)
             {
@@ -24,12 +24,12 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async Task<UserInfo> GetUserByIdAsync(int id)
+        public async Task<User> GetUserByIdAsync(int id)
         {
             try
             {
                 
-                return await _dbHelper.QueryFirstOrDefaultAsync<UserInfo>(
+                return await _dbHelper.QueryFirstOrDefaultAsync<User>(
                     "SELECT * FROM users WHERE id = @Id", new { Id = id });
             }
             catch (Exception ex)
@@ -38,7 +38,7 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async Task<int> AddUserAsync(UserInfo user)
+        public async Task<int> AddUserAsync(User user)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async Task<bool> UpdateUserAsync(UserInfo user)
+        public async Task<bool> UpdateUserAsync(User user)
         {
             try
             {
@@ -88,11 +88,11 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async Task<IEnumerable<UserInfo>> SearchUsersAsync(string keyword)
+        public async Task<IEnumerable<User>> SearchUsersAsync(string keyword)
         {
             try
             {
-                return await _dbHelper.QueryAsync<UserInfo>(
+                return await _dbHelper.QueryAsync<User>(
                     "SELECT * FROM users WHERE username LIKE @Keyword OR email LIKE @Keyword",
                     new { Keyword = $"%{keyword}%" });
             }

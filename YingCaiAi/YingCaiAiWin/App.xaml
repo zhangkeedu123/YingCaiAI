@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:YingCaiAiWin"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:hc="https://handyorg.github.io/handycontrol"
-             xmlns:converters="clr-namespace:YingCaiAiWin.Helpers"
+             xmlns:converters="clr-namespace:YingCaiAiWin.Converters"
              xml:lang="utf-8"
           DispatcherUnhandledException="OnDispatcherUnhandledException"
    Exit="OnExit"
@@ -81,6 +81,7 @@
             <converters:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
             <converters:BoolToForegroundConverter x:Key="BoolToForegroundConverter" />
 
+           
         </ResourceDictionary>
       
     </Application.Resources>

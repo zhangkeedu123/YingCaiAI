@@ -10,7 +10,9 @@
     Title="权限管理"
     d:DesignHeight="650"
     d:DesignWidth="900"
-    Background="{DynamicResource RegionBrush}">
+    Background="{DynamicResource RegionBrush}"
+    d:DataContext="{d:DesignInstance local:PermissionsPage,
+                 IsDesignTimeCreatable=False}">
     <Page.Resources>
         <!-- 转换器 -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

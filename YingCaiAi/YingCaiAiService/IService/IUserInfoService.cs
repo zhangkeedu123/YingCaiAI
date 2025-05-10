@@ -9,11 +9,11 @@ namespace YingCaiAiService.IService
 {
     public interface IUserInfoService: IScopedService 
     {
-        Task<IEnumerable<UserInfo>> GetAllUsersAsync();
-        Task<UserInfo> GetUserByIdAsync(int id);
-        Task<int> AddUserAsync(UserInfo user);
-        Task<bool> UpdateUserAsync(UserInfo user);
+        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User> GetUserByIdAsync(int id);
+        Task<int> AddUserAsync(User user);
+        Task<bool> UpdateUserAsync(User user);
         Task<bool> DeleteUserAsync(int id);
-        Task<IEnumerable<UserInfo>> SearchUsersAsync(string keyword);
+        Task<IEnumerable<User>> SearchUsersAsync(string keyword);
     }
 }
