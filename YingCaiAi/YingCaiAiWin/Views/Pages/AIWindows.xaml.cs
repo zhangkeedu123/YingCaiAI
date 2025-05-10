@@ -23,6 +23,7 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using System.Windows.Threading;
 using System.Net.Http;
 using YingCaiAiWin.Helpers;
+using System.Text.RegularExpressions;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -81,8 +82,8 @@ namespace YingCaiAiWin.Views.Pages
                 }
 
             };
-            ChatBox.AddMessage("今天天气如何？", true);
-            ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
+            //ChatBox.AddMessage("今天天气如何？", true);
+            //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
 
         }
 
@@ -369,20 +370,25 @@ namespace YingCaiAiWin.Views.Pages
         {
             if (e.Key == Key.Enter)
             {
-                ChatBox.AddMessage(SearchBox.Text?.Trim(), true);
-                SearchBox.Text = "";
-                ChatBox.AddLoadingBubble();
-                // 滚动到底部
-                Scroll();
+                string text = SearchBox.Text?.Trim();
+                if (!string.IsNullOrWhiteSpace(text))
+                {
+                    ChatBox.AddMessage(text, true);
+                    SearchBox.Text = "";
+                    ChatBox.AddLoadingBubble();
+                    // 滚动到底部
+                    Scroll();
 
-                await CallVectorizeApiAsync();
+                    await CallVectorizeApiAsync(text);
+                }
+              
             }
         }
-        private async Task CallVectorizeApiAsync()
+        private async Task CallVectorizeApiAsync(string text)
         {
             try
             {
-                var response = await _httpClient.PostDataAsync("milvus/ask", null);
+                var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k=10 });
                 if (response != null)
                 {
 
@@ -392,7 +398,10 @@ namespace YingCaiAiWin.Views.Pages
                         if (n > 0)
                         {
 
-                            response.Substring(n).Replace("\"","").Replace("}", "");
+                           text= Regex.Replace(response.Substring(n + 12), @"[\n""}]", ""); ;
+
+                            ChatBox.ReplaceLoadingBubble(text);
+                            Scroll(); // 最后再滚动一次，确保展示完整
                         }
                     }
 

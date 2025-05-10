@@ -21,9 +21,9 @@ public partial class DashboardViewModel : ViewModel
     [ObservableProperty]
     private List<DataColor> _colors = [];
 
-     private readonly IUserInfoService _userService;
+     private readonly IUsersService _userService;
 
-    public DashboardViewModel(INavigationService navigationService, IUserInfoService _userInfoService)
+    public DashboardViewModel(INavigationService navigationService, IUsersService _userInfoService)
     {
         if (!_isInitialized)
         {
@@ -34,8 +34,6 @@ public partial class DashboardViewModel : ViewModel
     }
     private void InitializeViewModel()
     {
-        var dd = _userService.DeleteUserAsync(1);
-
         CardItems = new()
     {
         new CardItem

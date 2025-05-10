@@ -31,10 +31,10 @@
     </ui:FluentWindow.InputBindings>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+        <!--<Grid.RowDefinitions>
             <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>-->
 
         <ui:NavigationView
             x:Name="RootNavigation"
@@ -59,7 +59,7 @@
                     FontWeight="DemiBold" />
             </ui:NavigationView.Header>
         </ui:NavigationView>
-
+        <ContentPresenter x:Name="RootContentDialog"  Grid.Row="0"  />
         <ui:TitleBar
             Title="{Binding ViewModel.ApplicationTitle, Mode=OneWay}"
             Grid.Row="0"
@@ -75,5 +75,7 @@
                 <ContextMenu ItemsSource="{Binding ViewModel.TrayMenuItems, Mode=OneWay}" />
             </tray:NotifyIcon.Menu>
         </tray:NotifyIcon>
+        
+        
     </Grid>
 </ui:FluentWindow>

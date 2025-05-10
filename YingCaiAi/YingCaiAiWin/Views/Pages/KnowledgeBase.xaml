@@ -38,11 +38,12 @@
 
                 <hc:SearchBar
                     Grid.Column="0" 
-                    hc:InfoElement.Placeholder="请输入知识内容"
+                    hc:InfoElement.Placeholder="请输入关键字"
                     Style="{StaticResource SearchBarExtend}"
                     Margin="0,0,12,0"
                     Width="250"
                     Height="40"
+                     Text="{Binding ViewModel.Documents.Filename }"
                     />
 
                 <hc:ComboBox

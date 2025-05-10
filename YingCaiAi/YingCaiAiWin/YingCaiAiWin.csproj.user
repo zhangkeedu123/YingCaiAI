@@ -25,6 +25,9 @@
     <Compile Update="Views\Pages\UsersPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\UserControl\EditUserControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\Pages\ChatBubbleList.xaml">
@@ -58,6 +61,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Pages\UsersPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\UserControl\EditUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

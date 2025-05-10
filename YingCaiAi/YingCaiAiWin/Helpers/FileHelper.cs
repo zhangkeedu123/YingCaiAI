@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using System.Security.Cryptography;
 
 namespace YingCaiAiWin.Helpers
 {
@@ -145,8 +146,20 @@ namespace YingCaiAiWin.Helpers
             return segments;
         }
 
-      
 
+        public  string ToMD5(string input)
+        {
+            using MD5 md5 = MD5.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new();
+            foreach (byte b in hashBytes)
+            {
+                sb.Append(b.ToString("x2")); // 转为16进制字符串
+            }
+            return sb.ToString();
+        }
     }
 
 }

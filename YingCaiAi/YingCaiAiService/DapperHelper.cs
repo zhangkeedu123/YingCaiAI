@@ -139,7 +139,7 @@ namespace YingCaiAiService
         /// </summary>
         public async Task<(List<T> Data, int TotalCount)> QueryPagedAsync<T>(
             string sql,
-            object parameters = null,
+            DynamicParameters parameters = null,
             int pageNumber = 1,
             int Offset = 20)
         {
@@ -149,12 +149,11 @@ namespace YingCaiAiService
                 await connection.OpenAsync();
 
                 // 添加分页参数
-                var dynamicParameters = new DynamicParameters(parameters);
-                dynamicParameters.Add("Limit", 20);
-                dynamicParameters.Add("Offset", (pageNumber - 1) * Offset);
+                parameters.Add("Limit", 20);
+                parameters.Add("Offset", (pageNumber - 1) * Offset);
 
                 // 假设SQL中已经包含分页逻辑（如PostgreSQL的LIMIT和OFFSET）
-                using (var multi = await connection.QueryMultipleAsync(sql, dynamicParameters))
+                using (var multi = await connection.QueryMultipleAsync(sql, parameters))
                 {
                     var data = await multi.ReadAsync<T>();
                     var totalCount = await multi.ReadSingleAsync<int>();

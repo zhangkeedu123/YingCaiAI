@@ -33,7 +33,8 @@ namespace YingCaiAiWin.ViewModels
 
         private readonly IDocumentsService _service;
 
-        private readonly Documents documents=new Documents();
+        [ObservableProperty]
+        private  Documents _documents=new Documents();
         public KnowledgeBaseViewModel(INavigationService navigationService, IDocumentsService service)
         {
             if (!_isInitialized)
@@ -111,7 +112,7 @@ namespace YingCaiAiWin.ViewModels
 
             Task.Run(() =>
             {
-                var data = _service.GetAllPageAsync(_currentPage, documents);
+                var data = _service.GetAllPageAsync(_currentPage, _documents);
                 Docs = data.Data as List<Documents>;
                 PageCount =Convert.ToInt32( Math.Ceiling( Convert.ToInt32(data.Message)/20f));
                
