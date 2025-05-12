@@ -59,8 +59,7 @@ public partial class MainWindowViewModel : ViewModel
                  MenuItemsSource = new object[]
                 {
                         new NavigationViewItem("用户信息", typeof(Views.Pages.UsersPage)),
-                        new NavigationViewItem("角色管理", typeof(Views.Pages.RolesPage)),
-                        new NavigationViewItem("权限管理", typeof(Views.Pages.PermissionsPage)),
+                        new NavigationViewItem("角色管理", typeof(Views.Pages.RolesPage))
                   },
             },
             new NavigationViewItem()

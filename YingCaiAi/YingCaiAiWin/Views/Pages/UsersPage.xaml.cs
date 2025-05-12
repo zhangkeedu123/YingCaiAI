@@ -39,7 +39,6 @@ namespace YingCaiAiWin.Views.Pages
             InitializeComponent();
             DataContext = this;
 
-            UserDialog.Visibility = Visibility.Hidden;
             this.Loaded += (s, e) =>
             {
                 var parentWindow = System.Windows.Window.GetWindow(this);
@@ -61,25 +60,17 @@ namespace YingCaiAiWin.Views.Pages
                 if (parentWindow.WindowState == WindowState.Maximized)
                 {
 
-                    DocsDataGrid.Height = height - 280; ;  //全屏固定高度
+                    DocsDataGrid.Height = height - 230; ;  //全屏固定高度
                 }
 
                 else
                 {
-                    DocsDataGrid.Height = 570; // 非全屏固定高度
+                    DocsDataGrid.Height = 620; // 非全屏固定高度
                 }
             }
 
         }
 
-        private void openUserDialog(object sender, RoutedEventArgs e)
-        {
-            UserDialog.Visibility = Visibility.Visible;
-        }
 
-        private void closeUserDialog(object sender, RoutedEventArgs e)
-        {
-            UserDialog.Visibility = Visibility.Hidden;
-        }
     }
 }

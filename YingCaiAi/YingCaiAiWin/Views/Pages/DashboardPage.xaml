@@ -83,12 +83,12 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ui:CardAction
-          Margin="4"
-          Padding="0"
-          VerticalAlignment="Stretch"
-          Command="{Binding DataContext.CardClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-          CommandParameter="{Binding CommandParam}"
-          IsChevronVisible="False">
+                              Margin="4"
+                              Padding="0"
+                              VerticalAlignment="Stretch"
+                              Command="{Binding DataContext.CardClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              CommandParameter="{Binding CommandParam}"
+                              IsChevronVisible="False">         
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />

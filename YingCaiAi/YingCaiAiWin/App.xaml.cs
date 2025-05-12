@@ -68,8 +68,6 @@ namespace YingCaiAiWin
          _ = services.AddSingleton<ViewModels.UsersPageViewModel>();
          _ = services.AddSingleton<Views.Pages.RolesPage>();
          _ = services.AddSingleton<ViewModels.RolePageViewModel>();
-         _ = services.AddSingleton<Views.Pages.PermissionsPage>();
-         _ = services.AddSingleton<ViewModels.PermissionsPageViewModel>();
          _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
          _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
 

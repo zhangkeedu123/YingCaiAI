@@ -1,23 +1,10 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
-using HandyControl.Tools.Extension;
-using Microsoft.Extensions.DependencyInjection;
-using NPOI.OpenXml4Net.OPC.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
-using YingCaiAiService.Service;
-using YingCaiAiWin.Views.Pages;
-using static ICSharpCode.SharpZipLib.Zip.ExtendedUnixData;
 
 namespace YingCaiAiWin.ViewModels
 {
@@ -33,6 +20,9 @@ namespace YingCaiAiWin.ViewModels
 
         [ObservableProperty]
         private int _pageCount = 1;
+
+        [ObservableProperty]
+        private int _intId = 0;
 
         public IUsersService _usersService { get; set; }
 
@@ -86,7 +76,7 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private void OnSerach(string parameter)
         {
-
+            _currentPage = 1;
             LoadSampleData();
         }
 
@@ -136,10 +126,17 @@ namespace YingCaiAiWin.ViewModels
 
 
         [RelayCommand]
-        public async Task OnShowUserDialog(string parameter)
+        public async Task OnShowUserDialog(int parameter)
         {
-
-            UserEdit = await _usersService.GetUserByIdAsync(Convert.ToInt32(parameter))??new Users();
+            if (parameter != 0)
+            {
+                UserEdit = await _usersService.GetUserByIdAsync(parameter) ?? new Users();
+            }
+            else
+            {
+                UserEdit = new Users();
+            }
+            
             UserEdit.PasswordHash = "";
             UserEdit.IsActiveInt = UserEdit.IsActive ? 0 : 1;
             UserEdit.Role = (UserEdit.Role - 1)??0;
@@ -170,7 +167,7 @@ namespace YingCaiAiWin.ViewModels
                     {
                         
                         editVM.Role = editVM.Role + 1;
-                        editVM.RoleName = editVM.Role == 1 ? "管理员" : editVM.Role == 1 ? "员工" : "演示";
+                        editVM.RoleName = editVM.Role == 1 ? "管理员" : editVM.Role == 2 ? "员工" : "演示";
                         editVM.IsActive = editVM.IsActiveInt == 0;
                        
                         editVM.PasswordHash =new  Helpers.FileHelper().ToMD5(UserEdit.PasswordHash);
@@ -188,6 +185,7 @@ namespace YingCaiAiWin.ViewModels
                         if (flag)
                         {
                             Growl.Success("操作成功");
+                            LoadSampleData();
                         }
                         else
                         {

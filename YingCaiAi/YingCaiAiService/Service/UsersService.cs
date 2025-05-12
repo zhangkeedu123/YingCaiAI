@@ -20,7 +20,7 @@ namespace YingCaiAiService.Service
             {
                 string sql = "WHERE 1=1 ";
                 var parameters = new DynamicParameters();
-                if (user.Role != null)
+                if (user.Role != null&&user.Role!=0)
                 {
 
                     sql += " and  role = @Role ";
@@ -31,7 +31,7 @@ namespace YingCaiAiService.Service
                     sql += $" and  username like @UserName ";
                     parameters.Add("UserName", $"%{user.UserName}%"  );
                 }
-                var data = _dbHelper.QueryPagedAsync<Users>($"SELECT id, username, password_hash,created_at,role,role_name,is_active FROM users\r\n   {sql}    ORDER BY id\r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM users {sql}", parameters, pageIndex, 20).Result;
+                var data = _dbHelper.QueryPagedAsync<Users>($"SELECT id, username, password_hash,created_at,role,role_name,is_active FROM users\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM users {sql}", parameters, pageIndex, 20).Result;
 
                 return BaseDataModel.Instance.OK(data.TotalCount.ToString(), data.Data);
             }

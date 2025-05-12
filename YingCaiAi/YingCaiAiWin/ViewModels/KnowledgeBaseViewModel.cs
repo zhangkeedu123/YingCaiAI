@@ -118,12 +118,14 @@ namespace YingCaiAiWin.ViewModels
                
             });
 
+
         }
         [RelayCommand]
         private void OnSerach(string parameter)
         {
-
+            
             LoadSampleData();
+
         }
 
 

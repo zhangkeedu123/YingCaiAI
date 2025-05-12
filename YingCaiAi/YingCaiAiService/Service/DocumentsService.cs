@@ -63,21 +63,25 @@ namespace YingCaiAiService.Service
             {
                 string sql = "WHERE 1=1 ";
                 var parameters = new DynamicParameters();
-                if (documents.Status != null)
+                if (documents.Status != null&&documents.Status!=0)
                 {
-                   
-                    sql += " and  status = @Status ";
-                    parameters.Add("Status", documents.Status ?? 0);
+                    if (documents.Status == 2)
+                    {
+                        sql += " and  status =0 ";
+                    }
+                    else
+                    {
+                        sql += " and  status !=0 ";
+                    }
                 }
-                 if ( !string.IsNullOrWhiteSpace(documents.Content))
+                 if ( !string.IsNullOrWhiteSpace(documents.Filename))
                 {
-                    sql +=$" and  content LIKE @Content ";
-                    parameters.Add("Content",$"%documents.Content%"  );
+                    sql +=$" and ( filename LIKE @Filename or content LIKE @Content   )";
+                    parameters.Add("Filename", $"%{documents.Filename}%");
+                    parameters.Add("Content", $"%{documents.Filename}%");
                 }
-               
-                
-               
-                var data = _dbHelper.QueryPagedAsync<Documents>($"SELECT id, filename, content,created_at,status_name,status FROM Documents\r\n   {sql}    ORDER BY id\r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM Documents {sql}", parameters, pageIndex,20).Result;
+
+                var data = _dbHelper.QueryPagedAsync<Documents>($"SELECT id, filename, content,created_at,status_name,status FROM Documents\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM Documents {sql}", parameters, pageIndex,20).Result;
               
                 return BaseDataModel.Instance.OK(data.TotalCount.ToString(), data.Data);
             }
