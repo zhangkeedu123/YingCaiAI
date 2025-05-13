@@ -70,8 +70,10 @@ namespace YingCaiAiWin
          _ = services.AddSingleton<ViewModels.RolePageViewModel>();
          _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
          _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
+         _ = services.AddSingleton<Views.Pages.BrowserCrawlerPage>();
 
-         _ = services.AddSingleton<Views.Login>();//注册登录窗口
+
+             _ = services.AddSingleton<Views.Login>();//注册登录窗口
          _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
                                                             // Configuration
          _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));

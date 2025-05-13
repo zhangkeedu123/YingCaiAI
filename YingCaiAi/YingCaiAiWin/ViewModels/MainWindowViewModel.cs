@@ -79,6 +79,17 @@ public partial class MainWindowViewModel : ViewModel
                         new NavigationViewItem("知识入库", typeof(Views.Pages.KnowledgeBase)),
                   },
             },
+              new NavigationViewItem()
+            {
+               Content = "客户管理",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+
+                 MenuItemsSource = new object[]
+                {
+                        new NavigationViewItem("客户信息", typeof(Views.Pages.KnowledgeBase)),
+                        new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)),
+                  },
+            },
         ];
 
         NavigationFooter =
