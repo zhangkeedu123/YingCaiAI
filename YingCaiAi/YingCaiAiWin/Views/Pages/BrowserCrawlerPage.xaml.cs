@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Security.Policy;
-using System.Text;
+﻿
+using HtmlAgilityPack;
+using Microsoft.Playwright;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Wpf.Ui.Abstractions.Controls;
-using YingCaiAiWin.ViewModels;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
-
+using YingCaiAiModel;
+using YingCaiAiService.IService;
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
@@ -28,11 +15,13 @@ namespace YingCaiAiWin.Views.Pages
     public partial class BrowserCrawlerPage : Page
     {
         private bool _isInitialized = false;
-      
-      
-        public BrowserCrawlerPage()
+        private bool _isphone = false;
+
+        private readonly ICustomerService _customerService;
+        public BrowserCrawlerPage(ICustomerService customerService)
         {
             DataContext = this;
+            _customerService = customerService;
             if (!_isInitialized)
             {
                 InitializeComponent();
@@ -52,7 +41,8 @@ namespace YingCaiAiWin.Views.Pages
 
         private void LoadUrl()
         {
-            var url = UrlTextBox.Text.Trim();
+            var url = UrlTextBox.SelectedIndex == 0 ? "https://www.zhaopin.com/" : "https://www.zhipin.com/";
+
             if (!string.IsNullOrWhiteSpace(url))
             {
                 MyBrowser.Source = new Uri(url);
@@ -66,8 +56,9 @@ namespace YingCaiAiWin.Views.Pages
             if (!string.IsNullOrWhiteSpace(keyword))
             {
                 var encoded = Uri.EscapeDataString(keyword);
-                var searchUrl = $"{UrlTextBox.Text.Trim()}?kw={encoded}";
-                MyBrowser.Source = new Uri(searchUrl);
+                var url = UrlTextBox.SelectedIndex == 0 ? $"https://www.zhaopin.com/sou/?kw={encoded}" : $"https://www.zhipin.com/web/geek/jobs?query={encoded}&city=100010000";
+
+                MyBrowser.Source = new Uri(url);
                 AppendLog($"✅ 状态：搜索关键词 {keyword}");
             }
         }
@@ -83,53 +74,227 @@ namespace YingCaiAiWin.Views.Pages
             string html = await MyBrowser.ExecuteScriptAsync("document.documentElement.outerHTML");
             string cleanHtml = JsonSerializer.Deserialize<string>(html);
 
+            LoadHtmls(cleanHtml);
 
-
-            File.WriteAllText("zhaopin_page.html", cleanHtml);
-            AppendLog("✅ HTML 提取成功，已保存到 zhaopin_page.html");
         }
 
-     
+
 
         private void Go_Click(object sender, RoutedEventArgs e)
         {
-            //加载页面
-            LoadUrl();
-            SearchByKeyword();
 
+            if (_isphone)
+            {
+                AppendLog("⏳ 正在提取号码，请稍后在操作");
+                return;
+            }
+            else
+            {
+                AppendLog("⏳ 开始执行。。。");
+                return;
+            }
+
+            //加载页面
+            //LoadUrl();
+            // SearchByKeyword();
+            // GetPhone();
             //ExtractHtml();
-            ClickNextPageAsync();
+            //ClickNextPageAsync();
         }
+
+        private async void LoadHtmls(string htmlContent)
+        {
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            var root = htmlDoc.DocumentNode;
+
+            var jobBoxList = root.SelectNodes("//div[contains(concat(' ', normalize-space(@class), ' '), ' joblist-box__item ')]");
+            AppendLog("⏳ 已提取 HTML，正在处理数据...");
+            var customerList = new List<Customer>();
+            if (jobBoxList?.Count > 0)
+            {
+                foreach (var item in jobBoxList)
+                {
+
+                    // 职位名称
+                    var jobTitle = item.SelectSingleNode(".//a[contains(@class, 'jobinfo__name')]")?.InnerText.Trim();
+
+                    // 公司名称
+                    var company = item.SelectSingleNode(".//a[contains(@class, 'companyinfo__name')]")?.InnerText.Trim();
+
+                    // 联系人
+                    var contact = item.SelectSingleNode(".//div[contains(@class, 'companyinfo__staff-name')]")?.InnerText.Trim();
+
+                    // 薪资
+                    var salary = item.SelectSingleNode(".//p[contains(@class, 'jobinfo__salary')]")?.InnerText.Trim();
+
+                    // 工作地点
+                    var location = item.SelectSingleNode(".//div[contains(@class, 'jobinfo__other-info-item')]/span")?.InnerText.Trim();
+
+                    // 公司性质，规模
+                    var otherInfoItems = item.SelectNodes(".//div[contains(@class, 'companyinfo__tag')]/div");
+                    string CoProperty = otherInfoItems?.ElementAtOrDefault(0)?.InnerText.Trim();
+                    string CoSize = otherInfoItems?.ElementAtOrDefault(1)?.InnerText.Trim();
+
+                    var customer = new Customer()
+                    {
+                        Area = location,
+                        Contacts = contact,
+                        CoProperty = CoProperty,
+                        CoSize = CoSize,
+                        JobTitle = jobTitle,
+                        Name = company,
+                        Salary = salary,
+                        Status = 0,
+                        StatusName = "未联系",
+                        CreatedAt = DateTime.Now
+                    };
+                    customerList.Add(customer);
+                }
+                var flag = await _customerService.AddListAsync(customerList);
+                if (flag.Status)
+                {
+                    AppendLog("✅ HTML 提取成功，已入库20条数据");
+                }
+                else
+                {
+                    AppendLog("✅ 入库失败，请联系管理员");
+                }
+            }
+            else
+            {
+                AppendLog("✅ 没有找到数据。。。");
+            }
+
+        }
+
+        private async Task<string> GetPhone(string name)
+        {
+            AppendLog("⏳ 正在滚动页面...");
+
+            var playwright = await Playwright.CreateAsync();
+            var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+
+            // 创建一个临时上下文（无缓存、无 Cookie）
+            var context = await browser.NewContextAsync(new()
+            {
+                ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
+                //UserAgent = GetRandomUserAgent(),  // 🧠 可选：随机 UA
+            });
+            var page = await context.NewPageAsync();
+            //var page = await browser.NewPageAsync();
+            await page.GotoAsync("https://chat.baidu.com/search");
+            AppendLog("⏳ 正在提取 HTML...");
+            await Task.Delay(10000);
+
+            await page.FillAsync("#chat-input-box", $"{name} 的电话");
+            await Task.Delay(2000);
+            await page.ClickAsync(".send-icon");
+            // ✅ 等待搜索结果出现（你可以根据实际 class 名调整）
+            await Task.Delay(30000);
+            // await page.WaitForSelectorAsync(".cs-answer-hover-menu"); // 示例类名
+
+            // 获取当前页面完整 HTML
+            string content = await page.ContentAsync(); // 或 await page.InnerHTMLAsync("body")
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(content);
+            var root = htmlDoc.DocumentNode;
+            string div = await page.InnerTextAsync("div.cosd-markdown.cos-space-mt-lg");
+            string cleanedText = Regex.Replace(div, @"(\s\d+)(?=[。.\s]|$)", "");
+            string cleanedText1 = Regex.Replace(cleanedText, @"\s*(\r?\n)+\s*", "\n").Replace("\n。", "。");
+
+            await browser.CloseAsync();
+            return cleanedText1;
+           
+
+        }
+
+        /// <summary>
+        /// 开始获取号码
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private  void Phone_Click(object sender, RoutedEventArgs e)
+        {
+            LoadPhone();
+        }
+
+        private async void LoadPhone()
+        {
+            _isphone = true;
+            var result = await _customerService.GetAllAsync();//获取手机号为空的，且未联系的数据
+            if (result.Status)
+            {
+                var data = result.Data as List<Customer>;
+                if (data != null && data.Count > 0)
+                {
+                    foreach (var customer in data)
+                    {
+                        AppendLog($"⏳ 正在获取{customer.Name}的电话");
+                        string text = await GetPhone(customer.Name);
+
+                        if (!string.IsNullOrWhiteSpace(text))
+                        {
+                            MatchCollection phoneMatches = Regex.Matches(text, @"(\d{3,4}-\d{7,8})|(1[3-9]\d{9})");
+                            var phone = string.Join(",", phoneMatches.Select(m => m.Value).Distinct());
+                            customer.Phone = phone;
+                            customer.Remark = text;
+                            var db = await _customerService.UpdateAsync(customer);
+                            AppendLog($"✅ 成功获取{customer.Name}的电话");
+                            await Task.Delay(2000);
+
+                        }
+                    }
+
+                    AppendLog($"✅ 获取电话结束。");
+                }
+                else
+                {
+                    AppendLog("✅ 没有要获取号码的数据");
+                }
+            }
+            _isphone = false;
+        }
+
+        /// <summary>
+        /// 点击下一页
+        /// </summary>
         private async void ClickNextPageAsync()
         {
-         
-                await MyBrowser.ExecuteScriptAsync("window.scrollTo(0, document.body.scrollHeight);");
-                await Task.Delay(5000);  // 等待页面渲染
-                AppendLog("⏳ 尝试点击“下一页”...");
 
-                // 检查“下一页”是否存在
-                var exists =await MyBrowser.ExecuteScriptAsync(
-                    "document.querySelector('.soupager a.soupager__btn[href*=\"/p\"]') !== null");
+            await MyBrowser.ExecuteScriptAsync("window.scrollTo(0, document.body.scrollHeight);");
+            await Task.Delay(5000);  // 等待页面渲染
+            AppendLog("⏳ 尝试点击“下一页”...");
 
-                if (exists != "true")
-                {
-                    AppendLog("⚠️ 未找到下一页按钮，可能已是最后一页。");
-                    
-                }
+            // 检查“下一页”是否存在
+            var exists = await MyBrowser.ExecuteScriptAsync(
+                "document.querySelector('.soupager a.soupager__btn[href*=\"/p\"]') !== null");
 
-                // 点击“下一页”
-                await MyBrowser.ExecuteScriptAsync(
-                   "document.querySelector('.soupager a.soupager__btn[href*=\"/p\"]')?.click();");
+            if (exists != "true")
+            {
+                AppendLog("⚠️ 未找到下一页按钮，可能已是最后一页。");
 
-                AppendLog("✅ 已点击“下一页”按钮，等待加载...");
+            }
 
-                    // 等待加载页面内容（页面跳转需要些时间）
-                await Task.Delay(6000);  // 可改为更智能的监听
+            // 点击“下一页”
+            await MyBrowser.ExecuteScriptAsync(
+               "document.querySelector('.soupager a.soupager__btn[href*=\"/p\"]')?.click();");
 
-                // 返回 true 表示成功点击
-                
+            AppendLog("✅ 已点击“下一页”按钮，等待加载...");
+
+            // 等待加载页面内容（页面跳转需要些时间）
+            await Task.Delay(6000);  // 可改为更智能的监听
+
+            // 返回 true 表示成功点击
+
         }
 
+
+        /// <summary>
+        /// 添加日志
+        /// </summary>
+        /// <param name="message"></param>
         private void AppendLog(string message)
         {
             var timestamp = DateTime.Now.ToString("HH:mm:ss");
@@ -138,5 +303,19 @@ namespace YingCaiAiWin.Views.Pages
             StatusTextBlock.Document.Blocks.Add(paragraph);
             StatusTextBlock.ScrollToEnd();
         }
+
+        string GetRandomUserAgent()
+        {
+            var agents = new[]
+            {
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (Linux; Android 12; Pixel 6) AppleWebKit/537.36 Chrome/121.0.0.0 Mobile Safari/537.36"
+             };
+            var rand = new Random();
+            return agents[rand.Next(agents.Length)];
+        }
+
+
     }
 }

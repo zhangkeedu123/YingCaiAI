@@ -8,7 +8,7 @@ namespace YingCaiAiModel
 {
     public  class Customer
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Name { get; set; }
         public string Area { get; set; }
 
@@ -39,16 +39,29 @@ namespace YingCaiAiModel
         /// </summary>
         public string JobTitle { get; set; }
 
+        /// <summary>
+        /// 薪资
+        /// </summary>
         public string Salary { get; set; }
 
+        /// <summary>
+        /// 介绍
+        /// </summary>
+
         public string Intro { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
 
         public string Remark { get; set; }
 
         /// <summary>
-        /// 
+        /// 是否标记 0未联系 ，1已联系，2 联系不上，
         /// </summary>
 
-        public bool Is_active { get; set; }
+        public int? Status { get; set; }
+        public string StatusName { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
