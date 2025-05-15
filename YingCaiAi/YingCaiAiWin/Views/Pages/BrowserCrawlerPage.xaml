@@ -22,7 +22,7 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <wv2:WebView2 x:Name="MyBrowser"  Grid.Column="0" Margin="20"  Source="https://chat.baidu.com/search"  />
+        <wv2:WebView2 x:Name="MyBrowser"  Grid.Column="0" Margin="20"  Source="https://www.baidu.com/"  />
         <!--<wv2:WebView2 x:Name="MyBrowser1"  Grid.Column="0" Margin="20"  Source="https://chat.baidu.com/search" Visibility="Collapsed"  />-->
         <!-- 控制面板 -->
         <Grid Margin="20"  Grid.Column="1">
@@ -47,7 +47,7 @@
             <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="选择地址:" />
             <ComboBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4" x:Name="UrlTextBox">
                 <ComboBoxItem Content="智联：https://www.zhaopin.com/"  IsSelected="True"  />
-                <ComboBoxItem Content="BOSS: https://www.zhipin.com/" />
+                <ComboBoxItem Content="猎聘: https://www.liepin.com/" />
             </ComboBox>
 
             <TextBlock Grid.Row="1" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="关键词:" />

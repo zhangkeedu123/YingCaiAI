@@ -65,14 +65,9 @@ namespace YingCaiAiService.Service
                 var parameters = new DynamicParameters();
                 if (documents.Status != null&&documents.Status!=0)
                 {
-                    if (documents.Status == 2)
-                    {
-                        sql += " and  status =0 ";
-                    }
-                    else
-                    {
-                        sql += " and  status !=0 ";
-                    }
+                   
+                   sql += " and  status =@Status ";
+                    parameters.Add("Status", documents.Status);
                 }
                  if ( !string.IsNullOrWhiteSpace(documents.Filename))
                 {
@@ -105,7 +100,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update Documents set status=1, status_name='已审核' where id=@Id", new { Id=id });
+                var data = await _dbHelper.ExecuteAsync("update Documents set status=2, status_name='已审核' where id=@Id", new { Id=id });
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)

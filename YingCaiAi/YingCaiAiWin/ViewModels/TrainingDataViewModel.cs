@@ -1,22 +1,27 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 using Wpf.Ui;
-using Wpf.Ui.Controls;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
 using YingCaiAiWin.Helpers;
 
 namespace YingCaiAiWin.ViewModels
 {
-
-    public partial class KnowledgeBaseViewModel : ViewModel
+    public partial class TrainingDataViewModel : ViewModel
     {
         private bool _isInitialized = false;
 
         [ObservableProperty]
-        private List<Documents> _docs = [];
+        private List<TrainingData> _docs = [];
+
         [ObservableProperty]
         private int _currentPage = 1;
 
@@ -31,11 +36,11 @@ namespace YingCaiAiWin.ViewModels
 
         private readonly FileHelper _fileHelper;
 
-        private readonly IDocumentsService _service;
+        private readonly ITrainingDataService _service;
 
         [ObservableProperty]
-        private  Documents _documents=new Documents();
-        public KnowledgeBaseViewModel(INavigationService navigationService, IDocumentsService service)
+        private TrainingData _trainingDataSearch = new TrainingData();
+        public TrainingDataViewModel(INavigationService navigationService, ITrainingDataService service)
         {
             if (!_isInitialized)
             {
@@ -50,14 +55,13 @@ namespace YingCaiAiWin.ViewModels
         {
             LoadSampleData();
             _isInitialized = true;
-         
 
         }
 
 
 
         [RelayCommand]
-        public void OnOpenFile()
+        public async void OnOpenFile()
         {
             OpenedFilePathVisibility = Visibility.Collapsed;
 
@@ -74,28 +78,29 @@ namespace YingCaiAiWin.ViewModels
 
             if (File.Exists(openFileDialog.FileName))
             {
-                var data = _fileHelper.FileReadAll(openFileDialog.FileName,1);
-                var docs = new List<Documents>();
+                var data = _fileHelper.FileReadAll(openFileDialog.FileName, 2);
+                var docs = new List<TrainingData>();
                 foreach (var document in data)
                 {
                     if (!string.IsNullOrWhiteSpace(document.Question))
                     {
-                        var doc = new Documents()
+                        var doc = new TrainingData()
                         {
-                            Content = document.Answer,
-                            Filename =document.Question,
+                            Question = document.Question,
+                            Answer = document.Answer,
                             CreatedAt = DateTime.Now,
-                            Status = 1,
+                            ForLora = false,
+                            Status =1,
                             StatusName = "未审核"
                         };
                         docs.Add(doc);
                     }
 
                 }
-                Task.Run(() =>
-                {
-                    _service.AddListAsync(docs);
-                });
+              
+                  await  _service.AddListAsync(docs);
+            
+                await LoadSampleData();
                 Growl.Success("上传成功！");
 
             }
@@ -105,26 +110,23 @@ namespace YingCaiAiWin.ViewModels
         }
 
 
-        private  void LoadSampleData()
+        private async Task LoadSampleData()
         {
 
-            Docs.Clear();
+            
+            var data = await _service.GetAllPageAsync(_currentPage, _trainingDataSearch);
+            Docs = data.Data as List<TrainingData>??new List<TrainingData>();
+            PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
 
-            Task.Run(() =>
-            {
-                var data = _service.GetAllPageAsync(_currentPage, _documents);
-                Docs = data.Data as List<Documents> ?? new List<Documents>(); ;
-                PageCount =Convert.ToInt32( Math.Ceiling( Convert.ToInt32(data.Message)/20f));
-               
-            });
+
 
 
         }
         [RelayCommand]
-        private void OnSerach(string parameter)
+        private async Task OnSerach(string parameter)
         {
-            
-            LoadSampleData();
+
+            await LoadSampleData();
 
         }
 
@@ -133,13 +135,14 @@ namespace YingCaiAiWin.ViewModels
         private void OnApproveStatus(int parameter)
         {
 
-           
+
             Growl.Ask("请先确认资料准确无误，再点击确定按钮入库!", isConfirmed =>
             {
                 if (isConfirmed)
                 {
                     Growl.Clear();
-                    Task.Run(() => {
+                    Task.Run(() =>
+                    {
                         var flag = _service.UpdateAsync(parameter).Result;
                         LoadSampleData();
                         if (flag.Status)
@@ -167,27 +170,28 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private void OnDelete(int parameter)
         {
-            
-            Growl.Ask("是否确定删除",  isConfirmed =>
+
+            Growl.Ask("是否确定删除", isConfirmed =>
             {
                 if (isConfirmed)
                 {
                     Growl.Clear();
-                    Task.Run(() => {
+                    Task.Run(() =>
+                    {
                         var flag = _service.DeleteAsync(parameter);
                         LoadSampleData();
                         if (flag.Status)
                         {
-                             Growl.Success("删除成功！");
+                            Growl.Success("删除成功！");
                         }
-                           
+
                         else
                         {
                             Growl.Error("删除失败！");
                             Thread.Sleep(2500);
                             Growl.Clear();
                         }
-                     
+
                     });
                 }
                 else
@@ -197,11 +201,11 @@ namespace YingCaiAiWin.ViewModels
                 }
                 return true;
             });
-       
+
 
         }
 
-     
+
 
         /// <summary>
         ///     页码改变命令
@@ -217,6 +221,5 @@ namespace YingCaiAiWin.ViewModels
             LoadSampleData();
         }
 
-       
     }
 }

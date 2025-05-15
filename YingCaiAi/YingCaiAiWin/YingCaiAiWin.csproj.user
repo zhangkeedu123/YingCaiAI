@@ -16,10 +16,16 @@
     <Compile Update="Views\Pages\AIWindows.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Pages\Customers.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Pages\KnowledgeBase.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Pages\RolesPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Pages\TrainingDataPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Pages\UsersPage.xaml.cs">
@@ -28,7 +34,13 @@
     <Compile Update="Views\UserControl\AddRole.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\UserControl\CustomerStatus.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\UserControl\EditUserControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\UserControl\ShowPhone.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -48,6 +60,9 @@
     <Page Update="Views\Pages\AIWindows.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Pages\Customers.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Pages\DashboardPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -63,13 +78,22 @@
     <Page Update="Views\Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Pages\TrainingDataPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Pages\UsersPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\UserControl\AddRole.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\UserControl\CustomerStatus.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\UserControl\EditUserControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\UserControl\ShowPhone.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

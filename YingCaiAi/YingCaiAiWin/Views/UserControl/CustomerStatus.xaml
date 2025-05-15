@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="YingCaiAiWin.Views.Pages.CustomerStatus"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Height="150" Width="400"
+              ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+ ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+ Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+             >
+    <Grid  Width="380">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 用户名 -->
+        <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="选择状态:" />
+        <ComboBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4"
+         SelectedIndex="{Binding Status}">
+            <ComboBoxItem Content=""  Visibility="Collapsed"  />
+            <ComboBoxItem Content="已联系"  />
+            <ComboBoxItem Content="联系不上"/>
+        </ComboBox>
+
+
+    </Grid>
+
+
+
+</UserControl>

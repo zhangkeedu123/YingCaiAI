@@ -86,8 +86,18 @@ public partial class MainWindowViewModel : ViewModel
 
                  MenuItemsSource = new object[]
                 {
-                        new NavigationViewItem("客户信息", typeof(Views.Pages.KnowledgeBase)),
+                        new NavigationViewItem("客户信息", typeof(Views.Pages.Customers)),
                         new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)),
+                  },
+            },
+               new NavigationViewItem()
+            {
+               Content = "话术管理",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+
+                 MenuItemsSource = new object[]
+                {
+                        new NavigationViewItem("话术预览", typeof(Views.Pages.TrainingDataPage))
                   },
             },
         ];

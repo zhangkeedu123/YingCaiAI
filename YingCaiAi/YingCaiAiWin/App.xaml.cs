@@ -1,18 +1,13 @@
-﻿using System.IO;
-using System.Runtime.InteropServices.JavaScript;
-using System.Windows.Threading;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using System.IO;
+using System.Windows.Threading;
 using Wpf.Ui;
 using YingCaiAiService;
-using YingCaiAiService.IService;
-using YingCaiAiService.Service;
 using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
 using YingCaiAiWin.Views;
-using YingCaiAiWin.Views.Pages;
 namespace YingCaiAiWin
 {
     /// <summary>
@@ -71,7 +66,10 @@ namespace YingCaiAiWin
          _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
          _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
          _ = services.AddSingleton<Views.Pages.BrowserCrawlerPage>();
-
+             _ = services.AddSingleton<Views.Pages.Customers>();
+             _ = services.AddSingleton<ViewModels.CustomersViewModel>();
+             _ = services.AddSingleton<Views.Pages.TrainingDataPage>();
+             _ = services.AddSingleton<ViewModels.TrainingDataViewModel>();
 
              _ = services.AddSingleton<Views.Login>();//注册登录窗口
          _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口

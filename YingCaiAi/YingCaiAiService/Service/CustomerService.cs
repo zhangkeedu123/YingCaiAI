@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,18 +53,22 @@ namespace YingCaiAiService.Service
                 {
                     if (cus.Status == 1)
                     {
-                        sql += " and  is_active =1 ";
+                        sql += " and  status =0 ";
+                    }
+                    else if(cus.Status==2)
+                    {
+                        sql += " and  status =1 ";
                     }
                     else
                     {
-                        sql += " and  is_active =2 ";
+                        sql += " and  status =2 ";
                     }
                 }
                 if (!string.IsNullOrWhiteSpace(cus.Name))
                 {
                     sql += $" and ( name LIKE @Name or job_title LIKE @JobTitle   )";
-                    parameters.Add("name", $"%{cus.Name}%");
-                    parameters.Add("job_title", $"%{cus.JobTitle}%");
+                    parameters.Add("Name", $"%{cus.Name}%");
+                    parameters.Add("JobTitle", $"%{cus.Name}%");
                 }
 
                 var data = _dbHelper.QueryPagedAsync<Customer>($"SELECT *  FROM customer\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM customer {sql}", parameters, pageIndex, 20).Result;
