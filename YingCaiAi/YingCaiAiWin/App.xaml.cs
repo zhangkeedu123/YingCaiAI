@@ -47,33 +47,19 @@ namespace YingCaiAiWin
 
          // Main window with navigation
          _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();
-         _ = services.AddSingleton<ViewModels.MainWindowViewModel>();
+         //_ = services.AddSingleton<ViewModels.MainWindowViewModel>();
+        _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
+             //_ = services.AddSingleton<Views.Login>();//注册登录窗口
+             //_ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
 
-         // Views and ViewModels
-         _ = services.AddSingleton<Views.Pages.DashboardPage>();
-         _ = services.AddSingleton<ViewModels.DashboardViewModel>();
-         _ = services.AddSingleton<ViewModels.AIWindowsViewModel>();
-         _ = services.AddSingleton<Views.Pages.DataPage>();
-         _ = services.AddSingleton<ViewModels.DataViewModel>();
-         _ = services.AddSingleton<Views.Pages.SettingsPage>();
-         _ = services.AddSingleton<ViewModels.SettingsViewModel>();
-          _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
-             //统一继承依赖注入
-             _ = services.AddSingleton<Views.Pages.UsersPage>();
-         _ = services.AddSingleton<ViewModels.UsersPageViewModel>();
-         _ = services.AddSingleton<Views.Pages.RolesPage>();
-         _ = services.AddSingleton<ViewModels.RolePageViewModel>();
-         _ = services.AddSingleton<Views.Pages.KnowledgeBase>();
-         _ = services.AddSingleton<ViewModels.KnowledgeBaseViewModel>();
-         _ = services.AddSingleton<Views.Pages.BrowserCrawlerPage>();
-             _ = services.AddSingleton<Views.Pages.Customers>();
-             _ = services.AddSingleton<ViewModels.CustomersViewModel>();
-             _ = services.AddSingleton<Views.Pages.TrainingDataPage>();
-             _ = services.AddSingleton<ViewModels.TrainingDataViewModel>();
+             // All other pages and view models
+             _ = services.AddTransientFromNamespace("YingCaiAiWin.Views", GalleryAssembly.Asssembly);
+             _ = services.AddTransientFromNamespace(
+                 "YingCaiAiWin.ViewModels",
+                 GalleryAssembly.Asssembly
+             );
 
-             _ = services.AddSingleton<Views.Login>();//注册登录窗口
-         _ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
-                                                            // Configuration
+         
          _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
 
              // 配置数据库帮助类
@@ -99,14 +85,23 @@ namespace YingCaiAiWin
         /// </summary>
         private async void OnStartup(object sender, StartupEventArgs e)
         {
-           var loginWindow = _host.Services.GetRequiredService<Login>();
-           //var loginWindows = _host.Services.GetRequiredService<AIWindows>();
-            //loginWindows.Show();
-            loginWindow.Show();
-            var scheduler = new VectorizationScheduler();
-            scheduler.Start(); // 启动定时任务
-            
-            await _host.StartAsync();
+            try
+            {
+                var loginWindow = _host.Services.GetRequiredService<Login>();
+                //var loginWindows = _host.Services.GetRequiredService<AIWindows>();
+                //loginWindows.Show();
+                loginWindow.Show();
+                var scheduler = new VectorizationScheduler();
+                scheduler.Start(); // 启动定时任务
+
+                await _host.StartAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+          
         }
 
         /// <summary>

@@ -98,5 +98,80 @@ namespace YingCaiAiService.Service
                 throw new UserServiceException("获取失败", ex);
             }
         }
+
+
+        public async Task<BaseDataModel> GetBigDataSum()
+        {
+            try
+            {
+                var data = await _dbHelper.QueryAsync<BigDataSum>(@"WITH dates AS (
+                                                        SELECT generate_series(
+                                                            CURRENT_DATE - INTERVAL '6 days',
+                                                            CURRENT_DATE,
+                                                            INTERVAL '1 day'
+                                                        )::date AS stat_date
+                                                    ),
+                                                    customer_cumulative AS (
+                                                        SELECT
+                                                            d.stat_date,
+                                                            COUNT(c.id) AS customer_total
+                                                        FROM dates d
+                                                        LEFT JOIN public.customer c
+                                                          ON c.created_at::date <= d.stat_date
+                                                        GROUP BY d.stat_date
+                                                    ),
+                                                    document_cumulative AS (
+                                                        SELECT
+                                                            d.stat_date,
+                                                            COUNT(doc.id) AS document_total
+                                                        FROM dates d
+                                                        LEFT JOIN public.documents doc
+                                                          ON doc.created_at::date <= d.stat_date
+                                                        GROUP BY d.stat_date
+                                                    ),
+                                                    traindata_cumulative AS (
+                                                        SELECT
+                                                            d.stat_date,
+                                                            COUNT(td.id) AS train_total
+                                                        FROM dates d
+                                                        LEFT JOIN public.training_data td
+                                                          ON td.created_at::date <= d.stat_date
+                                                        GROUP BY d.stat_date
+                                                    )
+                                                    SELECT 
+                                                        c.stat_date,
+                                                        c.customer_total,
+                                                        d.document_total,
+	                                                    e.train_total
+                                                    FROM customer_cumulative c
+                                                    JOIN document_cumulative d ON c.stat_date = d.stat_date
+                                                    JOIN traindata_cumulative e ON c.stat_date = e.stat_date
+                                                    ORDER BY c.stat_date ;", new {  });
+                return BaseDataModel.Instance.OK("",data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
+
+        public async Task<BaseDataModel> GetBigDataToDo()
+        {
+            try
+            {
+                var data = await _dbHelper.QueryAsync<BigDataSum>(@"SELECT
+                              (SELECT COUNT(id) FROM customer WHERE status = 1) AS customer_total,
+                              (SELECT COUNT(id) FROM documents WHERE status = 1) AS document_total,
+                              (SELECT COUNT(id) FROM training_data WHERE status = 1) AS train_total,
+                              (SELECT COUNT(id) FROM documents WHERE status = 2) AS documents_to_total,
+                              (SELECT COUNT(id) FROM training_data WHERE status = 2) AS train_to_total;", new { });
+                return BaseDataModel.Instance.OK("", data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
     }
 }

@@ -12,13 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
     /// TrainingDataPage.xaml 的交互逻辑
     /// </summary>
-    public partial class TrainingDataPage : Page
+    public partial class TrainingDataPage : INavigableView<ViewModels.TrainingDataViewModel>
     {
         public ViewModels.TrainingDataViewModel ViewModel { get; }
         private double height = SystemParameters.PrimaryScreenHeight;
@@ -34,7 +35,7 @@ namespace YingCaiAiWin.Views.Pages
                 var parentWindow = System.Windows.Window.GetWindow(this);
                 if (parentWindow != null)
                 {
-                    parentWindow.StateChanged += Window_StateChanged;
+                    parentWindow.StateChanged += Window_StateChangedTD;
 
                 }
             };
@@ -42,7 +43,7 @@ namespace YingCaiAiWin.Views.Pages
             // 在窗口的构造函数中添加
 
         }
-        private void Window_StateChanged(object sender, EventArgs e)
+        private void Window_StateChangedTD(object sender, EventArgs e)
         {
             var parentWindow = System.Windows.Window.GetWindow(this);
             if (parentWindow != null)

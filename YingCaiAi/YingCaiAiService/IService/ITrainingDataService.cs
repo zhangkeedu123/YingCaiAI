@@ -14,6 +14,13 @@ namespace YingCaiAiService.IService
         Task<BaseDataModel> AddListAsync(List<TrainingData> td);
         Task<BaseDataModel> UpdateAsync(int id);
         BaseDataModel DeleteAsync(int id);
-      
-    }
+
+
+        //大屏相关
+
+
+        Task<BaseDataModel> GetBigDataSum();
+
+        Task<BaseDataModel> GetBigDataToDo();
+     }
 }

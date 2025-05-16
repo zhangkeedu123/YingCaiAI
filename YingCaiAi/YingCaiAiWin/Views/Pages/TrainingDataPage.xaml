@@ -108,7 +108,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" Visibility="Hidden" />
 
-                        <DataGridTextColumn Header="问题" Binding="{Binding Question}" MinWidth="120" >
+                        <DataGridTextColumn Header="问题" Binding="{Binding Question}" Width="*" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center" />
@@ -125,14 +125,14 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="审核状态"  Binding="{Binding StatusName}" Width="120"  >
+                        <DataGridTextColumn Header="审核状态"  Binding="{Binding StatusName}" Width="80"  >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center" />
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="上传时间" Binding="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}"  MinWidth="120" >
+                        <DataGridTextColumn Header="上传时间" Binding="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}"  Width="120" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center" />

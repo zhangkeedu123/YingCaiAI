@@ -40,7 +40,7 @@ public partial class MainWindowViewModel : ViewModel
 
     private void InitializeViewModel()
     {
-        ApplicationTitle = "WPF UI - MVVM Demo";
+        ApplicationTitle = "英才AI工作台";
 
         NavigationItems =
         [
@@ -98,6 +98,15 @@ public partial class MainWindowViewModel : ViewModel
                  MenuItemsSource = new object[]
                 {
                         new NavigationViewItem("话术预览", typeof(Views.Pages.TrainingDataPage))
+                  },
+            },    new NavigationViewItem()
+            {
+               Content = "数据看板",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+
+                 MenuItemsSource = new object[]
+                {
+                        new NavigationViewItem("数据大屏", typeof(Views.Pages.DataDashboardPage))
                   },
             },
         ];

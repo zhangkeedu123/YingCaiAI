@@ -37,7 +37,7 @@ namespace YingCaiAiWin.Views.Pages
                 var parentWindow = System.Windows.Window.GetWindow(this);
                 if (parentWindow != null)
                 {
-                    parentWindow.StateChanged += Window_StateChanged;
+                    parentWindow.StateChanged += Window_StateChangedCUS;
 
                 }
             };
@@ -45,7 +45,7 @@ namespace YingCaiAiWin.Views.Pages
             // 在窗口的构造函数中添加
         }
 
-        private void Window_StateChanged(object sender, EventArgs e)
+        private void Window_StateChangedCUS(object sender, EventArgs e)
         {
             var parentWindow = System.Windows.Window.GetWindow(this);
             if (parentWindow != null)

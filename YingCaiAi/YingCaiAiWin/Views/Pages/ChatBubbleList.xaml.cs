@@ -40,6 +40,7 @@ namespace YingCaiAiWin.Views.Pages
                 TextWrapping = TextWrapping.Wrap,
                 FontSize = 14,
                 Foreground = Brushes.Black,
+                AcceptsReturn = true,
                 Cursor = Cursors.IBeam
             };
 

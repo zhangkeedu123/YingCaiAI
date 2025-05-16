@@ -1,29 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using System.Text.RegularExpressions;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
-using YingCaiAiWin.ViewModels;
-using SHDocVw;
-using DocumentFormat.OpenXml.Drawing.Charts;
-using System.Windows.Threading;
-using System.Net.Http;
 using YingCaiAiWin.Helpers;
-using System.Text.RegularExpressions;
+using YingCaiAiWin.ViewModels;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -65,23 +50,26 @@ namespace YingCaiAiWin.Views.Pages
 
         public AIWindows(AIWindowsViewModel viewModel)
         {
-
-            ViewModel = viewModel;
-            _httpClient = new HttpClientHelper();
-            DataContext = this;
-            InitializeComponent();
-            InitializeBrowser();
-            LoadQuestions();
-            this.Loaded += (s, e) =>
-            {
-                var parentWindow = System.Windows.Window.GetWindow(this);
-                if (parentWindow != null)
+            
+                ViewModel = viewModel;
+                _httpClient = new HttpClientHelper();
+                DataContext = this;
+                InitializeComponent();
+                InitializeBrowser();
+                LoadQuestions();
+                this.Loaded += (s, e) =>
                 {
-                    parentWindow.StateChanged += Window_StateChanged;
+                   
+                        var parentWindow = System.Windows.Window.GetWindow(this);
+                        if (parentWindow != null)
+                        {
+                            parentWindow.StateChanged += Window_StateChangedAI;
 
-                }
-
-            };
+                        }
+                };
+               
+            
+         
             //ChatBox.AddMessage("今天天气如何？", true);
             //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
 
@@ -92,8 +80,10 @@ namespace YingCaiAiWin.Views.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Window_StateChanged(object sender, EventArgs e)
+        private void Window_StateChangedAI(object sender, EventArgs e)
         {
+            if (!this.IsVisible)
+                return;
             var parentWindow = System.Windows.Window.GetWindow(this);
             if (parentWindow != null)
             {
@@ -399,7 +389,7 @@ namespace YingCaiAiWin.Views.Pages
                         {
 
                            text= Regex.Replace(response.Substring(n + 12), @"[\n""}]", ""); ;
-
+                            text= text.Replace("\\n", "\n");
                             ChatBox.ReplaceLoadingBubble(text);
                             Scroll(); // 最后再滚动一次，确保展示完整
                         }

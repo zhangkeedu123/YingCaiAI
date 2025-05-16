@@ -20,7 +20,7 @@
     WindowCornerPreference="Round"
     WindowBackdropType="Mica"-->
 
-    <Grid x:Name="Gridwin">
+    <Grid x:Name="Gridwin" Height="700">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="400" />
@@ -30,7 +30,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <!-- 左侧内置浏览器 -->
-        <Grid Grid.Column="0" >
+        <Grid Grid.Column="0" MinHeight="700">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -88,7 +88,7 @@
             </StackPanel>-->
         </Grid>
         <!-- 右侧客服界面 -->
-        <Grid x:Name="kefuH" Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}" Height="650"  >
+        <Grid x:Name="kefuH" Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}" MinHeight="700"  >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

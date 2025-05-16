@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Wpf.Ui.Abstractions;
 using YingCaiAiService.IService;
 using YingCaiAiService.Service;
+using YingCaiAiWin.ViewModels;
 
 namespace YingCaiAiWin.Services
 {
@@ -22,10 +23,45 @@ namespace YingCaiAiWin.Services
 
             return services;
         }
+        public static IServiceCollection AddTransientFromNamespace(
+                this IServiceCollection services,
+                string namespaceName,
+                params Assembly[] assemblies
+)
+        {
+            foreach (Assembly assembly in assemblies)
+            {
+                IEnumerable<Type> types = assembly
+                    .GetTypes()
+                    .Where(x =>
+                        !x.IsAbstract &&
+                        !x.IsGenericType &&
+                        !x.IsNestedPrivate &&
+                        !x.IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), inherit: false) &&
+                        x.Namespace != null 
+                        && x.Namespace!.StartsWith(namespaceName, StringComparison.InvariantCultureIgnoreCase)
+                    );
+
+                foreach (Type? type in types)
+                {
+                    if (services.All(x => x.ServiceType != type))
+                    {
+                        if (type == typeof(ViewModel))
+                        {
+                            continue;
+                        }
+
+                        _ = services.AddTransient(type);
+                    }
+                }
+            }
+
+            return services;
+        }
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            
+
             var assembly = new[]
             {
                 Assembly.GetExecutingAssembly(), // 主程序集
@@ -45,7 +81,7 @@ namespace YingCaiAiWin.Services
 
         private static void RegisterServices<TServiceInterface>(
             IServiceCollection services,
-            Assembly [] assembly,
+            Assembly[] assembly,
             ServiceLifetime lifetime)
         {
             var serviceTypes = assembly.SelectMany(a => a.GetTypes())

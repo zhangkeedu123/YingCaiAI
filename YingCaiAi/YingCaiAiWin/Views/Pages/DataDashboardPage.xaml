@@ -1,0 +1,359 @@
+﻿<Page
+    x:Class="YingCaiAiWin.Views.Pages.DataDashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:YingCaiAiWin.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="数据大屏"
+   d:DesignHeight="650"
+  d:DesignWidth="1000"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <LinearGradientBrush x:Key="BlueGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#1A73E8" Offset="0"/>
+            <GradientStop Color="#6C92F4" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="PinkGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FF4B8B" Offset="0"/>
+            <GradientStop Color="#FF85A2" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="TealGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#00C9A7" Offset="0"/>
+            <GradientStop Color="#4ECDC4" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="CardStyle" TargetType="hc:Card">
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.15" Color="#1A73E8"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ChartCardStyle" TargetType="hc:Card" BasedOn="{StaticResource CardStyle}">
+            <Setter Property="MinHeight" Value="300"/>
+        </Style>
+
+        <Style x:Key="ProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Foreground" Value="{StaticResource BlueGradient}"/>
+            <Setter Property="Background" Value="#F0F0F0"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid Background="#F8FAFF" x:Name="gridBox" MinHeight="700">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题栏 -->
+        <hc:Card Grid.Row="0" Margin="10" Background="{StaticResource BlueGradient}">
+            <Grid>
+                <StackPanel Margin="20,15" HorizontalAlignment="Left">
+                    <TextBlock Text="英才AI数据大屏" FontSize="24" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="实时数据监控与分析" FontSize="14" Foreground="#E0FFFFFF" Margin="0,5,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="20,0">
+                    <TextBlock Text="最后更新: " Foreground="#E0FFFFFF"/>
+                    <TextBlock Text="{Binding ViewModel.LastUpdateTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" Foreground="#E0FFFFFF"/>
+                    <Button Content="刷新" Style="{StaticResource ButtonInfo}" Margin="15,0,0,0" Padding="10,5"/>
+                </StackPanel>
+            </Grid>
+        </hc:Card>
+
+        <!-- 数据卡片区域 -->
+        <UniformGrid Grid.Row="1" Rows="1" Columns="4" Margin="0,5" >
+            <!-- 总余额卡片 -->
+            <hc:Card Style="{StaticResource CardStyle}"  HorizontalAlignment="Center" MinWidth="150" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"  />
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+
+                    <Grid  Grid.Row="0">
+                        <TextBlock Text="总客户量" Foreground="#666" FontSize="16" Margin="15,15,0,0"/>
+                        <hc:NotifyIcon   Width="20" Height="20" HorizontalAlignment="Right" Margin="0,15,15,0"/>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Margin="15,10">
+                        <TextBlock Text="{Binding ViewModel.TotalBalance}" Foreground="#333" FontSize="28" FontWeight="Bold"/>
+                        <!--<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <hc:ImageBlock Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding ViewModel.TotalBalanceRate}" Foreground="#00C9A7" FontSize="14"/>
+                        </StackPanel>-->
+                    </StackPanel>
+
+                    <lvc:CartesianChart Grid.Row="2" Height="60" DisableAnimations="True" Margin="0,10,0,0">
+                        <lvc:CartesianChart.Series>
+                            <lvc:LineSeries Values="{Binding ViewModel.TotalBalanceData}" 
+                                           PointGeometry="{x:Null}"
+                                           LineSmoothness="1"
+                                           StrokeThickness="2"
+                                           Stroke="{StaticResource BlueGradient}"
+                                           Fill="Transparent"/>
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis ShowLabels="False" IsEnabled="False"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis ShowLabels="False" IsEnabled="False"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </hc:Card>
+
+            <!-- 总支出卡片 -->
+            <hc:Card Style="{StaticResource CardStyle}"  HorizontalAlignment="Center" MinWidth="150">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <TextBlock Text="总话术量" Foreground="#666" FontSize="16" Margin="15,15,0,0"/>
+                        <hc:ImageBlock Width="20" Height="20" HorizontalAlignment="Right" Margin="0,15,15,0"/>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Margin="15,10">
+                        <TextBlock Text="{Binding ViewModel.TotalExpense}" Foreground="#333" FontSize="28" FontWeight="Bold"/>
+                        <!--<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <hc:ImageBlock Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding ViewModel.TotalExpenseRate}" Foreground="{StaticResource PinkGradient}" FontSize="14"/>
+                        </StackPanel>-->
+                    </StackPanel>
+
+                    <lvc:CartesianChart Grid.Row="2" Height="60" DisableAnimations="True" Margin="0,10,0,0">
+                        <lvc:CartesianChart.Series>
+                            <lvc:LineSeries Values="{Binding ViewModel.TotalExpenseData}" 
+                                           PointGeometry="{x:Null}"
+                                           LineSmoothness="1"
+                                           StrokeThickness="2"
+                                           Stroke="{StaticResource PinkGradient}"
+                                           Fill="Transparent"/>
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis ShowLabels="False" IsEnabled="False"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis ShowLabels="False" IsEnabled="False"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </hc:Card>
+
+            <!-- 总储蓄卡片 -->
+            <hc:Card Style="{StaticResource CardStyle}"  HorizontalAlignment="Center" MinWidth="150">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid>
+                        <TextBlock Text="总知识量" Foreground="#666" FontSize="16" Margin="15,15,0,0"/>
+                        <hc:ImageBlock Width="20" Height="20" HorizontalAlignment="Right" Margin="0,15,15,0"/>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Margin="15,10">
+                        <TextBlock Text="{Binding ViewModel.TotalSavings}" Foreground="#333" FontSize="28" FontWeight="Bold"/>
+                        <!--<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                            <hc:ImageBlock   Width="16" Height="16" Margin="0,0,5,0"/>
+                            <TextBlock Text="{Binding ViewModel.TotalSavingsRate}" Foreground="{StaticResource TealGradient}" FontSize="14"/>
+                        </StackPanel>-->
+                    </StackPanel>
+
+                    <lvc:CartesianChart Grid.Row="2" Height="60" DisableAnimations="True" Margin="0,10,0,0">
+                        <lvc:CartesianChart.Series>
+                            <lvc:LineSeries Values="{Binding ViewModel.TotalSavingsData}" 
+                                           PointGeometry="{x:Null}"
+                                           LineSmoothness="1"
+                                           StrokeThickness="2"
+                                           Stroke="{StaticResource TealGradient}"
+                                           Fill="Transparent"/>
+                        </lvc:CartesianChart.Series>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis ShowLabels="False" IsEnabled="False"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis ShowLabels="False" IsEnabled="False"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </hc:Card>
+
+            <!-- 我的卡片 -->
+            <hc:Card Style="{StaticResource CardStyle}" MinWidth="300">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="昨日工作情况" Foreground="#666" FontSize="16" Margin="15,15,0,0"/>
+
+                    <Border Grid.Row="1" Margin="15,15,15,15" Padding="15" Background="{StaticResource BlueGradient}" CornerRadius="10" Height="120" VerticalAlignment="Center">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,15,0,0" Grid.Row="0" Grid.Column="0">
+                                <TextBlock Text="合同量" Foreground="#E0FFFFFF" FontSize="12"/>
+                                <TextBlock Text="{Binding ViewModel.CardBalance}" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,5,0,0"/>
+                            </StackPanel>
+                            <StackPanel Margin="0,15,0,0" Grid.Row="0" Grid.Column="1">
+                                <TextBlock Text="销售额" Foreground="#E0FFFFFF" FontSize="12"/>
+                                <TextBlock Text="23444" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,5,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,15,0,0"  Grid.Row="0" Grid.Column="2">
+                                <TextBlock Text="对接客户量" Foreground="#E0FFFFFF" FontSize="12"/>
+                                <TextBlock Text="10" Foreground="White" FontSize="22" FontWeight="Bold" Margin="0,5,0,0"/>
+                            </StackPanel>
+
+                        </Grid>
+                    </Border>
+                </Grid>
+            </hc:Card>
+        </UniformGrid>
+
+        <!-- 图表区域 -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 支出图表 -->
+            <hc:Card Grid.Column="0" Style="{StaticResource ChartCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="15,15,15,0">
+                        <TextBlock Text="AI对话情况" FontSize="16" FontWeight="Bold" Foreground="#333"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <!--<RadioButton Content="上个月" Style="{StaticResource RadioGroupItemDefault}" IsChecked="True" Margin="0,0,10,0"/>
+                            <RadioButton Content="当前月" Style="{StaticResource RadioGroupItemDefault}"/>-->
+                            <ComboBox Width="100" Margin="10,0,0,0" SelectedIndex="0">
+                                <ComboBoxItem Content="最近一周"/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+
+                    <lvc:CartesianChart Grid.Row="1" Margin="15" Series="{Binding ViewModel.OutlaySeriesCollection}">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis Title="日期" Labels="{Binding ViewModel.OutlayLabels}" Foreground="#666"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis Title="数量" LabelFormatter="{Binding ViewModel.YFormatter}" Foreground="#666"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </hc:Card>
+
+            <!-- 右侧区域 -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 分析数据 -->
+                <hc:Card Grid.Row="0" Style="{StaticResource ChartCardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Margin="65,15,15,0">
+                            <TextBlock Text="待处理数据" FontSize="16" FontWeight="Bold" Foreground="IndianRed"/>
+                            <!--<ComboBox Width="120" HorizontalAlignment="Right" SelectedIndex="0">
+                                <ComboBoxItem Content="上个月"/>
+                            </ComboBox>-->
+                        </Grid>
+
+                        <Grid Grid.Row="1" Margin="15" MaxWidth="300">
+                            <ItemsControl ItemsSource="{Binding ViewModel.LatestTransactions}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,10">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Description}" FontWeight="SemiBold" Foreground="#333"/>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Amount}" 
+                                          Foreground="{Binding AmountColor}" 
+                                          HorizontalAlignment="Right" 
+                                          VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel>
+                                            <StackPanel.Resources>
+                                                <Style TargetType="Grid">
+                                                    <Setter Property="Margin" Value="0,5"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                                            <Setter Property="Background" Value="#F5F5F5"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                        </StackPanel>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </Grid >
+                    
+                    </Grid>
+                </hc:Card>
+
+            </Grid>
+        </Grid>
+
+        <!-- 底部区域 -->
+        <hc:Card Grid.Row="3" Margin="10" Background="{StaticResource BlueGradient}">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="15,10">
+                    <TextBlock Text="© 2023 英才AI科技" Foreground="#E0FFFFFF"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="15,10">
+                    <TextBlock Text="版本: 1.0.0" Foreground="#E0FFFFFF"/>
+                </StackPanel>
+            </Grid>
+        </hc:Card>
+    </Grid>
+</Page>

@@ -54,7 +54,7 @@
                     Margin="0,0,20,0"
                     SelectedIndex="{Binding ViewModel.CustomerSer.Status}"
                     >
-                    <ComboBoxItem Content="全部" />
+                    <ComboBoxItem Content="全部" IsSelected="True" />
                     <ComboBoxItem Content="未联系" />
                     <ComboBoxItem Content="已联系" />
                     <ComboBoxItem Content="联系不上" />

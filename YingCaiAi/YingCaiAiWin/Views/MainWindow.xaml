@@ -70,7 +70,7 @@
             FocusOnLeftClick="True"
             Icon="pack://application:,,,/Assets/applicationIcon-256.png"
             MenuOnRightClick="True"
-            TooltipText="WPF UI - MVVM Demo">
+            TooltipText="AI">
             <tray:NotifyIcon.Menu>
                 <ContextMenu ItemsSource="{Binding ViewModel.TrayMenuItems, Mode=OneWay}" />
             </tray:NotifyIcon.Menu>
