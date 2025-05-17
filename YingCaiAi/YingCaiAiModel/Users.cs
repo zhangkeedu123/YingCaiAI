@@ -26,6 +26,8 @@ namespace YingCaiAiModel
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; }= DateTime.Now;
 
+        public string? PerIds { get; set; }
+
         [NotMapped]
         public int? IsActiveInt { get; set; }
     }

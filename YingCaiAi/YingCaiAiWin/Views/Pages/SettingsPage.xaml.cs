@@ -3,7 +3,11 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using System.Windows.Navigation;
+using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
+using YingCaiAiWin.Helpers;
+using YingCaiAiWin.Models;
 
 namespace YingCaiAiWin.Views.Pages;
 
@@ -13,12 +17,32 @@ namespace YingCaiAiWin.Views.Pages;
 public partial class SettingsPage : INavigableView<ViewModels.SettingsViewModel>
 {
     public ViewModels.SettingsViewModel ViewModel { get; }
-
-    public SettingsPage(ViewModels.SettingsViewModel viewModel)
+    private INavigationWindow? _navigationWindow;
+    public SettingsPage(ViewModels.SettingsViewModel viewModel, INavigationWindow navigationWindow)
     {
         ViewModel = viewModel;
         DataContext = this;
+        _navigationWindow = navigationWindow;
 
         InitializeComponent();
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void SignOut_Click(object sender, RoutedEventArgs e)
+    {
+        UserStorageHelper.ClearUser();
+        AppUser.Instance.Clear();
+        if (Application.Current.Windows.OfType<MainWindow>().Any())
+        {
+            Application.Current.Windows.OfType<Login>().FirstOrDefault()?.Show();
+            _navigationWindow.CloseWindow();
+           
+           
+           
+        }
     }
 }

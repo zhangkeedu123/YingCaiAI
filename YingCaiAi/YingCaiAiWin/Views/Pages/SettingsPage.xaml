@@ -20,12 +20,13 @@
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
     </Page.Resources>
 
+
     <StackPanel Margin="42">
         <TextBlock
             FontSize="20"
             FontWeight="Medium"
-            Text="Personalization" />
-        <TextBlock Margin="0,12,0,0" Text="Theme" />
+            Text="个人设置" />
+        <TextBlock Margin="0,12,0,0" Text="主题" />
         <RadioButton
             Margin="0,12,0,0"
             Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
@@ -45,7 +46,43 @@
             Margin="0,24,0,0"
             FontSize="20"
             FontWeight="Medium"
-            Text="About YingCaiAiWin" />
-        <TextBlock Margin="0,12,0,0" Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
+            Text="修改密码"  />
+        <Grid Margin="0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <!-- 密码框占满剩余 -->
+                <ColumnDefinition Width="Auto" />
+                <!-- 按钮自适应宽度 -->
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ui:PasswordBox Height="40" Margin="0,0,8,0"
+                    PlaceholderText="Password..."
+                    x:Name="PasswordBoxControl"
+                    Icon="Password24"
+                    Grid.Column="0" Grid.Row="0" />
+
+            <Button Content="确定" 
+            Width="80"
+            Height="35"
+            Grid.Column="1"
+                    Grid.Row="0"
+            Background="SkyBlue"
+            HorizontalAlignment="Right" />
+
+            <Button Content="退出登录" Grid.Row="1" Margin="0,20"
+                    Width="80"
+                    Height="35"
+                    Grid.Column="0"
+                    Background="#4285f4"
+                    HorizontalAlignment="Center" Click="SignOut_Click" />
+
+        </Grid>
+
     </StackPanel>
 </Page>

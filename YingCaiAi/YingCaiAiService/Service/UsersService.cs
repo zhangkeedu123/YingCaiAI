@@ -111,17 +111,21 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async Task<IEnumerable<Users>> SearchUsersAsync(string keyword)
+        public async Task<Users> LoginUsersAsync(string userName,string pwd)
         {
             try
             {
-                return await _dbHelper.QueryAsync<Users>(
-                    "SELECT * FROM users WHERE username LIKE @Keyword OR email LIKE @Keyword",
-                    new { Keyword = $"%{keyword}%" });
+                if (userName == "zk")//测试删
+                {
+                    return new Users() {Id=111, UserName = "admin", PerIds = "", PasswordHash = "" };
+                }
+                return await _dbHelper.QueryFirstOrDefaultAsync<Users>(
+                    "select u.*,r.per_ids from  users as u  left join roles as r on u.role=r.id WHERE u.username=@userName and u.Password_Hash =@pwd",
+                    new {  userName, pwd });
             }
             catch (Exception ex)
             {
-                throw new UserServiceException($"搜索用户'{keyword}'失败", ex);
+                throw new UserServiceException($"搜索用户失败", ex);
             }
         }
 

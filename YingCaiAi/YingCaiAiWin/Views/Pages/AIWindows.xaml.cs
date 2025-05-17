@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
@@ -7,7 +8,11 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
+using YingCaiAiModel;
+using YingCaiAiService.IService;
+using YingCaiAiService.Service;
 using YingCaiAiWin.Helpers;
+using YingCaiAiWin.Models;
 using YingCaiAiWin.ViewModels;
 
 namespace YingCaiAiWin.Views.Pages
@@ -48,28 +53,31 @@ namespace YingCaiAiWin.Views.Pages
 
         public AIWindowsViewModel ViewModel { get; set; }
 
-        public AIWindows(AIWindowsViewModel viewModel)
-        {
-            
-                ViewModel = viewModel;
-                _httpClient = new HttpClientHelper();
-                DataContext = this;
-                InitializeComponent();
-                InitializeBrowser();
-                LoadQuestions();
-                this.Loaded += (s, e) =>
-                {
-                   
-                        var parentWindow = System.Windows.Window.GetWindow(this);
-                        if (parentWindow != null)
-                        {
-                            parentWindow.StateChanged += Window_StateChangedAI;
+        private readonly IAiRecordService _aiRecordService;
 
-                        }
-                };
-               
-            
-         
+        public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService)
+        {
+
+            ViewModel = viewModel;
+            _aiRecordService = aiRecordService;
+            _httpClient = new HttpClientHelper();
+            DataContext = this;
+            InitializeComponent();
+            InitializeBrowser();
+            LoadQuestions();
+            this.Loaded += (s, e) =>
+            {
+
+                var parentWindow = System.Windows.Window.GetWindow(this);
+                if (parentWindow != null)
+                {
+                    parentWindow.StateChanged += Window_StateChangedAI;
+
+                }
+            };
+
+
+
             //ChatBox.AddMessage("今天天气如何？", true);
             //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
 
@@ -371,27 +379,47 @@ namespace YingCaiAiWin.Views.Pages
 
                     await CallVectorizeApiAsync(text);
                 }
-              
+
             }
         }
         private async Task CallVectorizeApiAsync(string text)
         {
             try
             {
-                var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k=10 });
+                Stopwatch stopwatch = new Stopwatch();
+                // 开始计时
+                stopwatch.Start();
+                var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k = 10 });
                 if (response != null)
                 {
-
+                    // 停止计时
+                    stopwatch.Stop();
                     if (response.Contains("</think>"))
                     {
                         int n = response.IndexOf("</think>");
                         if (n > 0)
                         {
 
-                           text= Regex.Replace(response.Substring(n + 12), @"[\n""}]", ""); ;
-                            text= text.Replace("\\n", "\n");
-                            ChatBox.ReplaceLoadingBubble(text);
+                            var retext = Regex.Replace(response.Substring(n + 12), @"[\n""}]", ""); ;
+                            retext = retext.Replace("\\n", "\n");
+                            ChatBox.ReplaceLoadingBubble(retext);
                             Scroll(); // 最后再滚动一次，确保展示完整
+
+                            Task.Run( () =>
+                            {
+                                // 获取执行时间
+                                TimeSpan elapsedTime = stopwatch.Elapsed;
+                                var ai = new AiRecord()
+                                {
+                                    Question = text,
+                                    Answer = retext,
+                                    CreatedAt = DateTime.Now,
+                                    CreatedUser = AppUser.Instance.Username,
+                                    Times = (int)elapsedTime.TotalSeconds,
+                                };
+                                _aiRecordService.AddAsync(ai);
+
+                            });
                         }
                     }
 

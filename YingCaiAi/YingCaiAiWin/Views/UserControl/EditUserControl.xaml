@@ -33,7 +33,7 @@
         <ui:PasswordBox Grid.Row="1" Grid.Column="1" Height="40" Margin="0,4"
                     PlaceholderText="Password..."
                     x:Name="PasswordBoxControl"
-                    Icon="Password24" />
+                    Icon="Password24" PasswordChanged="PasswordBoxControl_PasswordChanged" />
 
         <!-- 角色 -->
         <TextBlock Grid.Row="2" Grid.Column="0" FontFamily="Comic Sans MS"  FontWeight="Black"   VerticalAlignment="Center" Text="角色:" />

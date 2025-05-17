@@ -87,6 +87,7 @@ namespace YingCaiAiWin
         {
             try
             {
+                UserStorageHelper.LoadUser(); // 启动自动恢复用户状态
                 var loginWindow = _host.Services.GetRequiredService<Login>();
                 //var loginWindows = _host.Services.GetRequiredService<AIWindows>();
                 //loginWindows.Show();
@@ -95,6 +96,7 @@ namespace YingCaiAiWin
                 scheduler.Start(); // 启动定时任务
 
                 await _host.StartAsync();
+               
             }
             catch (Exception ex)
             {

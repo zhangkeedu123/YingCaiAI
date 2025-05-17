@@ -1,17 +1,26 @@
-﻿using HandyControl.Controls;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using HandyControl.Controls;
 using HandyControl.Data;
+using System.ComponentModel;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
+using YingCaiAiWin.Views.Pages;
 
 namespace YingCaiAiWin.ViewModels
 {
-    public partial class UsersPageViewModel: ViewModel
+    public partial class UsersPageViewModel: ViewModel, INotifyPropertyChanged
+        {
+         private string _password;
+    public string Password
     {
+        get => _password;
+        set { _password = value; OnPropertyChanged(); }
+    }
 
-        private bool _isInitialized = false;
+    private  bool _isInitialized = false;
 
         [ObservableProperty]
         private List<Users> _usersList = [];
@@ -53,7 +62,6 @@ namespace YingCaiAiWin.ViewModels
                 // 初始化数据逻辑
                 LoadSampleData();
                 _isInitialized = true;
-            
         }
 
 
@@ -72,6 +80,8 @@ namespace YingCaiAiWin.ViewModels
             });
 
         }
+
+     
 
         [RelayCommand]
         private void OnSerach(string parameter)
@@ -158,11 +168,8 @@ namespace YingCaiAiWin.ViewModels
                 var editVM = UserEdit;
                 if (editVM != null) {
                     var flag = false;
-                    var userControl = new Views.Pages.EditUserControl();
-                    userControl.PasswordChanged += (pwd) =>
-                    {
-                        UserEdit.PasswordHash = pwd;
-                    };
+                     
+                    editVM.PasswordHash = EditUserControl.Password;
                     await Task.Run(() =>
                     {
                         
@@ -170,7 +177,7 @@ namespace YingCaiAiWin.ViewModels
                         editVM.RoleName = editVM.Role == 1 ? "管理员" : editVM.Role == 2 ? "员工" : "演示";
                         editVM.IsActive = editVM.IsActiveInt == 0;
                        
-                        editVM.PasswordHash =new  Helpers.FileHelper().ToMD5(UserEdit.PasswordHash);
+                        editVM.PasswordHash =new  Helpers.FileHelper().ToMD5(editVM.PasswordHash);
                         if (editVM.Id > 0)
                         {
 

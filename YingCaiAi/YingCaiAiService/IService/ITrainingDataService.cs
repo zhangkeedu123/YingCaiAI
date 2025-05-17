@@ -22,5 +22,6 @@ namespace YingCaiAiService.IService
         Task<BaseDataModel> GetBigDataSum();
 
         Task<BaseDataModel> GetBigDataToDo();
+        Task<BaseDataModel> GetAiSumAsync();
      }
 }

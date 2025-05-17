@@ -273,7 +273,7 @@
 
                     <lvc:CartesianChart Grid.Row="1" Margin="15" Series="{Binding ViewModel.OutlaySeriesCollection}">
                         <lvc:CartesianChart.AxisX>
-                            <lvc:Axis Title="日期" Labels="{Binding ViewModel.OutlayLabels}" Foreground="#666"/>
+                            <lvc:Axis Title="日期" Labels="{Binding ViewModel.OutlayLabels }" Foreground="#666"/>
                         </lvc:CartesianChart.AxisX>
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis Title="数量" LabelFormatter="{Binding ViewModel.YFormatter}" Foreground="#666"/>

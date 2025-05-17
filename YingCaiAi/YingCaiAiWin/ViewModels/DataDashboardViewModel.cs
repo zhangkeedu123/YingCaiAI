@@ -88,35 +88,24 @@ namespace YingCaiAiWin.ViewModels
         private async void InitializeChartData()
         {
            
+             var data = await _trainingDataService.GetAiSumAsync();
+            var dataList = data.Data as List<BigDataSum> ?? new List<BigDataSum>();
             // 支出趋势图表数据
             OutlaySeriesCollection = new SeriesCollection
             {
-                new LineSeries
+                
+                new ColumnSeries
                 {
-                    Title = "上月支出",
-                    Values = new ChartValues<double> { 2000, 2500, 3000, 3500, 2800, 2200, 2700, 3200, 3800, 4200, 3700, 3000, 2500, 2800, 3200, 3600, 4000, 4200, 3800, 3500, 3200, 2800, 2500, 2200, 2000, 1800, 2200, 2500, 2800, 3000 },
+                    Title = "AI记录",
+                    Values = new ChartValues<double>(dataList.Select(s => s.TrainTotal)),
                     PointGeometry = null,
-                    LineSmoothness = 1,
-                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6C92F4")),
-                    Fill = new SolidColorBrush(Color.FromArgb(50, 26, 115, 232))
-                },
-                new LineSeries
-                {
-                    Title = "当月支出",
-                    Values = new ChartValues<double> { 1800, 2200, 2600, 3000, 3400, 3800, 4200, 4600, 4200, 3800, 3400, 3000, 2600, 2200, 1800, 2200, 2600, 3000, 3400, 3800, 4200, 4600, 4200, 3800, 3400, 3000, 2600, 2200, 1800, 2000 },
-                    PointGeometry = null,
-                    LineSmoothness = 1,
-                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF85A2")),
-                    Fill = new SolidColorBrush(Color.FromArgb(50, 255, 75, 139))
+                    Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#87CEEB")),
+                    Fill = new SolidColorBrush(Color.FromArgb(125, 135, 206, 235))
                 }
             };
 
             // X轴标签
-            OutlayLabels = new string[30];
-            for (int i = 0; i < 30; i++)
-            {
-                OutlayLabels[i] = (i + 1).ToString();
-            }
+            OutlayLabels = dataList.Select(s=> DateTime.Parse(s.StatDate).Day.ToString() ).ToArray();
         }
 
      
@@ -166,7 +155,7 @@ namespace YingCaiAiWin.ViewModels
 
      
 
-        public Func<double, string> YFormatter { get; set; } = value => value.ToString("C0");
+        public Func<double, string> YFormatter { get; set; } = value => value.ToString("0");
 
  
     }

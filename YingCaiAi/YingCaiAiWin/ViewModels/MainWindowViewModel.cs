@@ -106,7 +106,8 @@ public partial class MainWindowViewModel : ViewModel
 
                  MenuItemsSource = new object[]
                 {
-                        new NavigationViewItem("数据大屏", typeof(Views.Pages.DataDashboardPage))
+                        new NavigationViewItem("数据大屏", typeof(Views.Pages.DataDashboardPage)),
+                         new NavigationViewItem("AI使用记录", typeof(Views.Pages.AiRecordPage))
                   },
             },
         ];

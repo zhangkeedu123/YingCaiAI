@@ -8,7 +8,7 @@ namespace YingCaiAiWin.Views.Pages
     public partial class EditUserControl : UserControl
     {
 
-        public event Action<string>? PasswordChanged; // 或者 Action<Users>，更灵活
+        public static string  Password=""; // 或者 Action<Users>，更灵活
 
         private readonly TaskCompletionSource<(bool confirmed, string username, string role)> _tcs =
             new TaskCompletionSource<(bool, string, string)>();
@@ -19,8 +19,7 @@ namespace YingCaiAiWin.Views.Pages
         }
         private void OnSaveButtonClicked(object sender, RoutedEventArgs e)
         {
-            var realPassword = PasswordBoxControl.Password;
-            PasswordChanged?.Invoke(realPassword);
+            
         }
         public Task<(bool confirmed, string username, string role)> ShowAsync() => _tcs.Task;
 
@@ -32,6 +31,11 @@ namespace YingCaiAiWin.Views.Pages
         private void OnConfirmClicked(object sender, RoutedEventArgs e)
         {
             
+        }
+
+        private void PasswordBoxControl_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            Password = PasswordBoxControl.Password;
         }
     }
 }

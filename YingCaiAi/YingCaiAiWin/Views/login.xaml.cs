@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,73 +16,82 @@ using System.Windows.Shapes;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Controls;
+using YingCaiAiService.IService;
+using YingCaiAiService.Service;
+using YingCaiAiWin.Helpers;
+using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
+using static ICSharpCode.SharpZipLib.Zip.ExtendedUnixData;
+using TextBox = Wpf.Ui.Controls.TextBox;
 
 namespace YingCaiAiWin.Views
 {
     public partial class Login : FluentWindow  // 修改基类为WPF UI的Window
     {
         private INavigationWindow? _navigationWindow;
-        public Login(INavigationWindow navigationWindow)
+        private IUsersService _usersService;
+        public Login(INavigationWindow navigationWindow,IUsersService usersService)
         {
             _navigationWindow = navigationWindow;
+            _usersService = usersService;
             InitializeComponent();
+
+            this.Loaded += (s, e) =>
+            {
+                load();
+            };
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+        private void load()
         {
-           
-            if (Application.Current.Windows.OfType<MainWindow>().Any())
+            
+            if (!string.IsNullOrWhiteSpace(AppUser.Instance.Username))
             {
-
-                _navigationWindow!.ShowWindow();
-
-                _ = _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
-                // 关闭登录窗口
-                Application.Current.Windows.OfType<Login>().FirstOrDefault()?.Close();
+                UsernameTextBox.Text = AppUser.Instance.Username;
+                PasswordBox.Password = AppUser.Instance.Token;
             }
+        }
 
-            //string username = UsernameTextBox.Text;
-            //string password = PasswordBox.Password;
 
-            //// 检查用户名是否为空
-            //if (string.IsNullOrEmpty(username))
-            //{
-            //    //Wpf.Ui.Controls.MessageBox.Show(
-            //    //    "提示",
-            //    //    "请输入用户名或手机号",
-            //    //    MessageBoxButton.OK,
-            //    //    Wpf.Ui.Controls.MessageBoxImage.Warning);
-            //    return;
-            //}
+        private async void Login_Click(object sender, RoutedEventArgs e)
+        {
+            ErrorInfoBar.IsOpen = false ;
 
-            //// 检查密码是否为空
-            //if (string.IsNullOrEmpty(password))
-            //{
-            //    //Wpf.Ui.Controls.MessageBox.Show(
-            //    //    "提示",
-            //    //    "请输入密码",
-            //    //    MessageBoxButton.OK,
-            //    //    Wpf.Ui.Controls.MessageBoxImage.Warning);
-            //    return;
-            //}
+            string username = UsernameTextBox.Text;
+            string password = PasswordBox.Password;
+            e.Handled = !_validRegex.IsMatch(username)|| !_validRegex.IsMatch(password);
+            if (e.Handled)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                ErrorInfoBar.Message = "只能输入数字和英文!";
+                ErrorInfoBar.IsOpen = true;
+                return;
+            }
+            var flag = await _usersService.LoginUsersAsync(username, new FileHelper().ToMD5(password));
+            if (flag != null && flag.Id > 0)
+            {
+                AppUser.Instance.Username = flag.UserName;
+                AppUser.Instance.Token = password;
+                AppUser.Instance.Role =flag.PerIds;
 
-            //// 这里添加实际的登录验证逻辑
-            //if (username == "admin" && password == "admin")
-            //{
-            //    // 登录成功，打开主窗口
-            //    //MainWindow mainWindow = new MainWindow();
-            //    //mainWindow.Show();
-            //    //this.Close();
-            //}
-            //else
-            //{
-            //    //Wpf.Ui.Controls.MessageBox.Show(
-            //    //    "登录失败",
-            //    //    "用户名或密码错误，请重试",
-            //    //    MessageBoxButton.OK,
-            //    //    Wpf.Ui.Controls.MessageBoxImage.Error);
-            //}
+                UserStorageHelper.SaveUser(AppUser.Instance); // 保存持久化
+
+                if (Application.Current.Windows.OfType<MainWindow>().Any())
+                {
+
+                    _navigationWindow!.ShowWindow();
+
+                    _ = _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
+                    // 关闭登录窗口
+                    Application.Current.Windows.OfType<Login>().FirstOrDefault()?.Close();
+                }
+            }
+            else
+            {
+                ErrorInfoBar.Message = "用户名或密码错误！";
+                ErrorInfoBar.IsOpen = true;
+            }
+           
         }
 
         private void ForgotPassword_Click(object sender, RoutedEventArgs e)
@@ -93,40 +103,25 @@ namespace YingCaiAiWin.Views
             //    Wpf.Ui.Controls.MessageBoxImage.Information);
         }
 
-        private void WeChatLogin_Click(object sender, RoutedEventArgs e)
+        private static readonly Regex _validRegex = new Regex("^[a-zA-Z0-9]+$");
+
+        // 阻止键盘输入非法字符（包括中文符号、汉字）
+        private void UsernameTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            //Wpf.Ui.Controls.MessageBox.Show(
-            //    "提示",
-            //    "微信登录功能正在开发中...",
-            //    MessageBoxButton.OK,
-            //    Wpf.Ui.Controls.MessageBoxImage.Information);
+            e.Handled = !_validRegex.IsMatch(e.Text);
+            if (e.Handled)
+            {
+                System.Media.SystemSounds.Beep.Play();
+                ErrorInfoBar.Message = "只能输入数字和英文！";
+                ErrorInfoBar.IsOpen = true;
+            }
+                
+        }
+        private void OnCloseClick(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+            _navigationWindow.CloseWindow();
         }
 
-        private void QQLogin_Click(object sender, RoutedEventArgs e)
-        {
-            //Wpf.Ui.Controls.MessageBox.Show(
-            //    "提示",
-            //    "QQ登录功能正在开发中...",
-            //    MessageBoxButton.OK,
-            //    Wpf.Ui.Controls.MessageBoxImage.Information);
-        }
-
-        private void PhoneLogin_Click(object sender, RoutedEventArgs e)
-        {
-            //Wpf.Ui.Controls.MessageBox.Show(
-            //    "提示",
-            //    "手机验证码登录功能正在开发中...",
-            //    MessageBoxButton.OK,
-            //    Wpf.Ui.Controls.MessageBoxImage.Information);
-        }
-
-        private void Register_Click(object sender, RoutedEventArgs e)
-        {
-            //Wpf.Ui.Controls.MessageBox.Show(
-            //    "提示",
-            //    "注册功能正在开发中...",
-            //    MessageBoxButton.OK,
-            //    Wpf.Ui.Controls.MessageBoxImage.Information);
-        }
     }
 }

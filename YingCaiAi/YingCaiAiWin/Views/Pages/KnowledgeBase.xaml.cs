@@ -38,7 +38,7 @@ namespace YingCaiAiWin.Views.Pages
             {
                 var parentWindow = System.Windows.Window.GetWindow(this);
                 if (parentWindow != null)
-                {
+                {Window_StateChangedKB(s, e);
                     parentWindow.StateChanged += Window_StateChangedKB;
                   
                 }

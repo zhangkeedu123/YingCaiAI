@@ -173,5 +173,28 @@ namespace YingCaiAiService.Service
                 throw new UserServiceException("获取失败", ex);
             }
         }
+
+        public async Task<BaseDataModel> GetAiSumAsync()
+        {
+            try
+            {
+                var data = await _dbHelper.QueryAsync<BigDataSum>(@"SELECT
+                                                              stat_date,
+                                                              COUNT(*) AS train_total
+                                                            FROM (
+                                                                SELECT created_at::date  AS stat_date
+                                                                FROM public.ai_record
+                                                                WHERE created_at >= NOW() - INTERVAL '7 days'
+                                                            ) AS sub
+                                                            GROUP BY stat_date
+                                                            ORDER BY stat_date 
+                                                            LIMIT 7;", new { });
+                return BaseDataModel.Instance.OK("", data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
     }
 }
