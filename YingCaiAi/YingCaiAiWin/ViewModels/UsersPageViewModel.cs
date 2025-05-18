@@ -1,12 +1,16 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using EnumsNET;
 using HandyControl.Controls;
 using HandyControl.Data;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Net.Sockets;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
+using YingCaiAiService.Service;
 using YingCaiAiWin.Views.Pages;
 
 namespace YingCaiAiWin.ViewModels
@@ -44,12 +48,16 @@ namespace YingCaiAiWin.ViewModels
         private readonly IContentDialogService _contentDialogService;
         [ObservableProperty]
         private string _dialogResultText = string.Empty;
-        public  UsersPageViewModel(INavigationService navigationService,  IUsersService usersService, IContentDialogService contentDialogService) {
+
+
+        private readonly IRolesService _rolesService;
+        public  UsersPageViewModel(INavigationService navigationService,  IUsersService usersService,IRolesService rolesService, IContentDialogService contentDialogService) {
 
             if (!_isInitialized)
             {
                 _contentDialogService= contentDialogService;
                   _usersService = usersService;
+                _rolesService= rolesService;
                 InitializeViewModel();
 
             }
@@ -138,6 +146,8 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         public async Task OnShowUserDialog(int parameter)
         {
+            
+
             if (parameter != 0)
             {
                 UserEdit = await _usersService.GetUserByIdAsync(parameter) ?? new Users();
@@ -146,65 +156,10 @@ namespace YingCaiAiWin.ViewModels
             {
                 UserEdit = new Users();
             }
-            
-            UserEdit.PasswordHash = "";
-            UserEdit.IsActiveInt = UserEdit.IsActive ? 0 : 1;
-            UserEdit.Role = (UserEdit.Role - 1)??0;
-            var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
-            {
-                Title = "编辑用户信息",
-                Content = new Views.Pages.EditUserControl
-                {
-                   
-                    DataContext = UserEdit
-                },
-                PrimaryButtonText = "保存",
-                //SecondaryButtonText = "取消",
-                CloseButtonText = "关闭",
-            });
-
-            if (dialog == ContentDialogResult.Primary)
-            {
-                var editVM = UserEdit;
-                if (editVM != null) {
-                    var flag = false;
-                     
-                    editVM.PasswordHash = EditUserControl.Password;
-                    await Task.Run(() =>
-                    {
-                        
-                        editVM.Role = editVM.Role + 1;
-                        editVM.RoleName = editVM.Role == 1 ? "管理员" : editVM.Role == 2 ? "员工" : "演示";
-                        editVM.IsActive = editVM.IsActiveInt == 0;
-                       
-                        editVM.PasswordHash =new  Helpers.FileHelper().ToMD5(editVM.PasswordHash);
-                        if (editVM.Id > 0)
-                        {
-
-                            flag = _usersService.UpdateUserAsync(editVM).Status;
-                        }
-                        else
-                        {
-                            editVM.CreatedAt = DateTime.Now;
-                            flag = _usersService.AddUserAsync(editVM).Status;
-                        }
-
-                        if (flag)
-                        {
-                            Growl.Success("操作成功");
-                            LoadSampleData();
-                        }
-                        else
-                        {
-                            Growl.Error("操作失败！");
-                        }
-                        
-                    });
-
-                    await Task.Delay(2000);
-                    Growl.Clear();
-                }
-            }
+            var termsOfUseContentDialog = new EditUserControl(_contentDialogService.GetDialogHost(),UserEdit, _rolesService,_usersService);
+            var result= await termsOfUseContentDialog.ShowAsync();
+            LoadSampleData();
+            return;
         }
 
         /// <summary>

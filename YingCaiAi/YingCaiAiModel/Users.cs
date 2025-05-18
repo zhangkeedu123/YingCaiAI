@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,8 @@ namespace YingCaiAiModel
 
         [NotMapped]
         public int? IsActiveInt { get; set; }
+
+        public List<Role> Roles { get; set; }
     }
 
 }

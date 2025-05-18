@@ -1,4 +1,4 @@
-// This Source Code Form is subject to the terms of the MIT License.
+﻿// This Source Code Form is subject to the terms of the MIT License.
 // If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
@@ -6,6 +6,8 @@
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Controls;
 using Wpf.Ui;
+using Microsoft.Extensions.DependencyInjection;
+using YingCaiAiWin.Services;
 namespace YingCaiAiWin.Views;
 
 /// <summary>
@@ -15,7 +17,7 @@ public partial class MainWindow : INavigationWindow
 {
     public ViewModels.MainWindowViewModel ViewModel { get; }
 
-    public MainWindow(ViewModels.MainWindowViewModel viewModel, INavigationService navigationService, IContentDialogService contentDialogService)
+    public MainWindow(ViewModels.MainWindowViewModel viewModel, INavigationService navigationService, IContentDialogService contentDialogService ,IServiceProvider serviceProvider)
     {
         ViewModel = viewModel;
         DataContext = this;
@@ -26,6 +28,9 @@ public partial class MainWindow : INavigationWindow
 
         navigationService.SetNavigationControl(RootNavigation);
         contentDialogService.SetDialogHost(RootContentDialog);
+
+        // ✅ 设置“只缓存 AIWindows 页”的服务
+        SetPageService(new PartialCachedPageProvider(serviceProvider));
     }
 
     public INavigationView GetNavigation() => RootNavigation;

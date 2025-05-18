@@ -1,12 +1,25 @@
-﻿<UserControl x:Class="YingCaiAiWin.Views.Pages.EditUserControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-               xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-             Height="300" Width="500"
-              ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
- ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
- Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-             >
+﻿
+<ui:ContentDialog
+   x:Class="YingCaiAiWin.Views.Pages.EditUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+     xmlns:local="clr-namespace:YingCaiAiWin.Views.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Terms of use"
+    d:DesignHeight="1000"
+    d:DesignWidth="750"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    CloseButtonText="Close"
+    DialogMaxWidth="750"
+    mc:Ignorable="d">
+
+    <ui:ContentDialog.Resources>
+        <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:EditUserControl}" />
+    </ui:ContentDialog.Resources>
+
     <Grid Margin="10" Width="400">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,7 +28,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -25,34 +38,34 @@
 
         <!-- 用户名 -->
         <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="用户名:" />
-        <TextBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4" 
-             Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4" x:Name="UserName"   />
 
         <!-- 密码 -->
         <TextBlock Grid.Row="1" Grid.Column="0" FontFamily="Comic Sans MS"  FontWeight="Black"   VerticalAlignment="Center" Text="密码:" />
         <ui:PasswordBox Grid.Row="1" Grid.Column="1" Height="40" Margin="0,4"
-                    PlaceholderText="Password..."
-                    x:Name="PasswordBoxControl"
-                    Icon="Password24" PasswordChanged="PasswordBoxControl_PasswordChanged" />
+                   PlaceholderText="Password..."
+                   x:Name="PasswordBoxControl"
+                   Icon="Password24" PasswordChanged="PasswordBoxControl_PasswordChanged" />
 
         <!-- 角色 -->
         <TextBlock Grid.Row="2" Grid.Column="0" FontFamily="Comic Sans MS"  FontWeight="Black"   VerticalAlignment="Center" Text="角色:" />
         <ComboBox Grid.Row="2" Grid.Column="1" Height="40" Margin="0,4"
-              SelectedIndex="{Binding Role}">
-            <ComboBoxItem Content="管理员"  />
-            <ComboBoxItem Content="员工"/>
-            <ComboBoxItem Content="演示" />
+               x:Name="RoleCB" DisplayMemberPath="Name"   >
+
+            <!--<ComboBoxItem Content="员工"/>
+           <ComboBoxItem Content="演示" />-->
         </ComboBox>
 
         <!-- 是否启用 -->
         <TextBlock Grid.Row="3" Grid.Column="0" FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="是否启用:" />
         <ComboBox Grid.Row="3" Grid.Column="1" Height="40" Margin="0,4"
-              SelectedIndex="{Binding  IsActiveInt}">
-            <ComboBoxItem Content="启用"  />
+             x:Name="IsActiveCB" >
+            <ComboBoxItem Content="启用" IsSelected="True" />
             <ComboBoxItem Content="禁用" />
         </ComboBox>
+        <ui:InfoBar Title="错误"   Grid.Row="4" Grid.Column="1" Height="80" x:Name="ErrorInfoBar"  Message="只能输入数字和英文！" IsOpen="False"  Severity="Error"  />
     </Grid>
 
 
+</ui:ContentDialog>
 
-</UserControl>

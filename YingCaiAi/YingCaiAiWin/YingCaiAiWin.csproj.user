@@ -40,13 +40,16 @@
     <Compile Update="Views\UserControl\AddRole.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\UserControl\AddRoleDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\UserControl\CustomerStatus.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\UserControl\EditUserControl.xaml.cs">
+    <Compile Update="Views\UserControl\ShowPhone.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\UserControl\ShowPhone.xaml.cs">
+    <Compile Update="Views\UserControl\EditUserControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -99,13 +102,16 @@
     <Page Update="Views\UserControl\AddRole.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\UserControl\AddRoleDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\UserControl\CustomerStatus.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\UserControl\EditUserControl.xaml">
+    <Page Update="Views\UserControl\ShowPhone.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\UserControl\ShowPhone.xaml">
+    <Page Update="Views\UserControl\EditUserControl.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

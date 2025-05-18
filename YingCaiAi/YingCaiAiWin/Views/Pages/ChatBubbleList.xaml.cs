@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
+using Wpf.Ui.Controls;
+using YingCaiAiWin.ViewModels;
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
@@ -31,7 +23,7 @@ namespace YingCaiAiWin.Views.Pages
         {
         
 
-            var textBox = new TextBox
+            var textBox = new System.Windows.Controls.TextBox
             {
                 Text = text,
                 Background = Brushes.Transparent,
@@ -44,6 +36,11 @@ namespace YingCaiAiWin.Views.Pages
                 Cursor = Cursors.IBeam
             };
 
+
+
+          
+
+            // 创建消息边框
             var border = new Border
             {
                 Background = isUser
@@ -53,10 +50,26 @@ namespace YingCaiAiWin.Views.Pages
                 CornerRadius = new CornerRadius(8),
                 Padding = new Thickness(3),
                 Margin = new Thickness(3),
-                MaxWidth = 250,
+                MaxWidth = 300,
                 HorizontalAlignment = isUser ? HorizontalAlignment.Right : HorizontalAlignment.Left,
                 Child = textBox
             };
+
+
+
+            //var border = new Border
+            //{
+            //    Background = isUser
+            //        ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f4f5f5"))
+            //        : new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f2f5ff")),
+            //    BorderThickness = new Thickness(1),
+            //    CornerRadius = new CornerRadius(8),
+            //    Padding = new Thickness(3),
+            //    Margin = new Thickness(3),
+            //    MaxWidth = 250,
+            //    HorizontalAlignment = isUser ? HorizontalAlignment.Right : HorizontalAlignment.Left,
+            //    Child = textBox
+            //};
 
             MessagePanel.Children.Add(border);
             
@@ -69,7 +82,7 @@ namespace YingCaiAiWin.Views.Pages
         /// <returns></returns>
         public void AddLoadingBubble()
         {
-            var loadingText = new TextBlock
+            var loadingText = new System.Windows.Controls.TextBlock
             {
                 Text = "正在思考",
                 Foreground = Brushes.Gray,
@@ -77,7 +90,7 @@ namespace YingCaiAiWin.Views.Pages
                 Margin = new Thickness(0, 0, 5, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            var textBlock = new TextBlock
+            var textBlock = new System.Windows.Controls.TextBlock
             {
                 FontSize = 16,
                 FontWeight = FontWeights.Normal,
@@ -100,7 +113,7 @@ namespace YingCaiAiWin.Views.Pages
             animation.KeyFrames.Add(new DiscreteStringKeyFrame("", KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.5))));
 
             Storyboard.SetTarget(animation, textBlock);
-            Storyboard.SetTargetProperty(animation, new PropertyPath(TextBlock.TextProperty));
+            Storyboard.SetTargetProperty(animation, new PropertyPath(System.Windows.Controls.TextBlock.TextProperty));
 
             var storyboard = new Storyboard();
             storyboard.Children.Add(animation);
@@ -146,7 +159,7 @@ namespace YingCaiAiWin.Views.Pages
         {
             if (_loadingBubble != null)
             {
-                var textBox = new TextBox
+                var textBox = new System.Windows.Controls.TextBox
                 {
                     Text = answerText,
                     Background = Brushes.Transparent,
@@ -158,7 +171,51 @@ namespace YingCaiAiWin.Views.Pages
                     Cursor = Cursors.IBeam
                 };
 
-                _loadingBubble.Child = textBox;
+                // 创建悬浮按钮 (ui:SymbolIcon 模拟为 Button + TextBlock 或使用实际控件库)
+                var iconButton = new System.Windows.Controls.Button
+                {
+                    Width = 32,
+                    Height = 32,
+                    Padding = new Thickness(0),
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    Cursor = Cursors.Hand,
+                    ToolTip = "弹出",
+                    VerticalAlignment = VerticalAlignment.Bottom,
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                     Margin= new Thickness(0, 60,0, 0), // 靠右下角
+                    Content = new Wpf.Ui.Controls.SymbolIcon
+                    {
+                        Symbol = SymbolGlyph.Parse("ArrowMaximize24"),
+                        FontSize = 22
+                    }
+                };
+
+                iconButton.Click += (s, e) =>
+                {
+                    //获取父级窗口
+                    var vm = ((FrameworkElement)this).DataContext as AIWindows;
+                    vm.ViewModel.ShowPopupCommand("8");
+                };
+                //var parentWindow = Window.GetWindow(this);
+                //Binding binding = new Binding("ShowPopupCommand")
+                //{
+                //    Source = parentWindow?.DataContext,
+                //    Mode = BindingMode.OneWay
+                //};
+                //iconButton.SetBinding(System.Windows.Controls.Button.CommandProperty, binding);
+                //iconButton.CommandParameter = "8";
+                // 创建容器 Grid
+                var overlayGrid = new Grid
+                {
+                    Margin = new Thickness(0),
+                   
+                };
+                
+                overlayGrid.Children.Add(textBox);
+                overlayGrid.Children.Add(iconButton);
+
+                _loadingBubble.Child = overlayGrid;
                 _loadingBubble = null; // 清理引用，防止误用
             }
         }

@@ -7,6 +7,8 @@ using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
+using YingCaiAiService.Service;
+using YingCaiAiWin.Views.Pages;
 
 namespace YingCaiAiWin.ViewModels
 {
@@ -61,9 +63,9 @@ namespace YingCaiAiWin.ViewModels
 
             Roles.Clear();
             RolePermissions.Clear();
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                Roles = _rolesService.GetRoleAsync().Data as List<Role> ?? new List<Role>();
+                Roles = (await _rolesService.GetRoleAsync()).Data as List<Role> ?? new List<Role>();
                 //SelectedRole = Roles.FirstOrDefault();
 
                 var data = _rolesService.GetPermAsync(0).Data as List<Permission> ?? new List<Permission>();
@@ -83,40 +85,11 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private  async Task OnAddRole()
         {
-            var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
-            {
-                Title = "新增角色",
-                Content = new Views.Pages.AddRole
-                {
 
-                    DataContext = AddRole
-                },
-                PrimaryButtonText = "保存",
-                //SecondaryButtonText = "取消",
-                CloseButtonText = "关闭",
-            });
-
-            if (dialog == ContentDialogResult.Primary)
-            {
-
-                await Task.Run(() =>
-                {
-                    var flag = _rolesService.AddRoleAsync(AddRole).Status;
-                    if (flag)
-                    {
-                        Growl.Success("操作成功");
-                        LoadSampleData();
-                    }
-                    else
-                    {
-                        Growl.Error("操作失败！");
-                    }
-                });
-
-                await Task.Delay(2000);
-                Growl.Clear();
-            }
-
+            var termsOfUseContentDialog = new AddRoleDialog(_contentDialogService.GetDialogHost(),_rolesService);
+            var result = await termsOfUseContentDialog.ShowAsync();
+            LoadSampleData();
+            return;
         }
 
         /// <summary>

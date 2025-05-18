@@ -31,11 +31,11 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public BaseDataModel GetRoleAsync()
+        public async Task< BaseDataModel> GetRoleAsync()
         {
             try
             {
-                var data =  _dbHelper.QueryAsync<Role>("SELECT * FROM roles order by id ", new {  }).Result;
+                var data =await _dbHelper.QueryAsync<Role>("SELECT * FROM roles order by id ", new {  });
                 return BaseDataModel.Instance.OK("", data);
             }
             catch (Exception ex)

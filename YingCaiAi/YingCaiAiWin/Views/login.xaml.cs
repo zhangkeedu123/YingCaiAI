@@ -48,7 +48,7 @@ namespace YingCaiAiWin.Views
             if (!string.IsNullOrWhiteSpace(AppUser.Instance.Username))
             {
                 UsernameTextBox.Text = AppUser.Instance.Username;
-                PasswordBox.Password = AppUser.Instance.Token;
+                UserPassword.Password = AppUser.Instance.Token;
             }
         }
 
@@ -58,7 +58,7 @@ namespace YingCaiAiWin.Views
             ErrorInfoBar.IsOpen = false ;
 
             string username = UsernameTextBox.Text;
-            string password = PasswordBox.Password;
+            string password = UserPassword.Password;
             e.Handled = !_validRegex.IsMatch(username)|| !_validRegex.IsMatch(password);
             if (e.Handled)
             {

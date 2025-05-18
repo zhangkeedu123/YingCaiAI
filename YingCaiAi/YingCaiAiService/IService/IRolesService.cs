@@ -10,7 +10,7 @@ namespace YingCaiAiService.IService
     public interface   IRolesService: IScopedService
     {
         BaseDataModel GetPermAsync(int parentId);
-         BaseDataModel GetRoleAsync();
+        Task<BaseDataModel> GetRoleAsync();
         BaseDataModel AddRoleAsync(Role role);
         BaseDataModel UpdateRoleAsync(Role role);
         BaseDataModel DeleteRoleAsync(int id);

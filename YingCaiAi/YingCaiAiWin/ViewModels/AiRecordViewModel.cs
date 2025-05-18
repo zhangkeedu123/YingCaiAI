@@ -65,7 +65,7 @@ namespace YingCaiAiWin.ViewModels
 
         }
         [RelayCommand]
-        private async void OnSerach(string parameter)
+        private async Task OnSerach(string parameter)
         {
 
             await LoadSampleData();

@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.Web.WebView2.Core;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -55,32 +56,37 @@ namespace YingCaiAiWin.Views.Pages
 
         private readonly IAiRecordService _aiRecordService;
 
+     
+
         public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService)
         {
-
-            ViewModel = viewModel;
-            _aiRecordService = aiRecordService;
-            _httpClient = new HttpClientHelper();
-            DataContext = this;
-            InitializeComponent();
-            InitializeBrowser();
-            LoadQuestions();
-            this.Loaded += (s, e) =>
-            {
-
-                var parentWindow = System.Windows.Window.GetWindow(this);
-                if (parentWindow != null)
+         
+                ViewModel = viewModel;
+                _aiRecordService = aiRecordService;
+                _httpClient = new HttpClientHelper();
+                DataContext = this;
+                InitializeComponent();
+                InitializeBrowser();
+                LoadQuestions();
+                this.Loaded += (s, e) =>
                 {
-                    parentWindow.StateChanged += Window_StateChangedAI;
 
-                }
-            };
+                    var parentWindow = System.Windows.Window.GetWindow(this);
+                    if (parentWindow != null)
+                    {
+                        if (parentWindow.WindowState != WindowState.Minimized)
+                        {
+                            parentWindow.WindowState = WindowState.Maximized;
+                        }
+                        parentWindow.StateChanged += Window_StateChangedAI;
 
+                    }
+                };
 
-
-            //ChatBox.AddMessage("今天天气如何？", true);
-            //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
-
+                //ChatBox.AddMessage("今天天气如何？", true);
+                //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
+            
+          
         }
 
         /// <summary>
@@ -95,21 +101,26 @@ namespace YingCaiAiWin.Views.Pages
             var parentWindow = System.Windows.Window.GetWindow(this);
             if (parentWindow != null)
             {
-                if (parentWindow.WindowState == WindowState.Maximized)
+                if(parentWindow.WindowState != WindowState.Minimized)
                 {
-                    Gridwin.Height = height - 150;
-                    newsPanel.Height = height - 380;   //全屏固定高度
-                    newScroll.Height = height - 450;
-                    kefuH.Height = height - 200;
+                    parentWindow.WindowState = WindowState.Maximized;
                 }
+                
+                //if (parentWindow.WindowState == WindowState.Maximized)
+                //{
+                //    Gridwin.Height = height - 130;
+                //    newsPanel.Height = height - 380;   //全屏固定高度
+                //    newScroll.Height = height - 450;
+                //    kefuH.Height = height - 200;
+                //}
 
-                else
-                {
-                    Gridwin.Height = 700;
-                    newsPanel.Height = 470; // 非全屏固定高度
-                    newScroll.Height = 400;
-                    kefuH.Height = 660;
-                }
+                //else
+                //{
+                //    Gridwin.Height = 700;
+                //    newsPanel.Height = 470; // 非全屏固定高度
+                //    newScroll.Height = 400;
+                //    kefuH.Height = 660;
+                //}
             }
 
         }
@@ -124,113 +135,65 @@ namespace YingCaiAiWin.Views.Pages
 
         #region 浏览器功能相关
 
-        private void InitializeBrowser()
+        private async void InitializeBrowser()
         {
+
             try
             {
-                // 禁用脚本错误
-                DisableScriptErrors();
+                await EmbeddedBrowser.EnsureCoreWebView2Async();
 
-                // 设置浏览器初始页面
-                EmbeddedBrowser.Navigate(new Uri(defaultHomePage));
+                EmbeddedBrowser.CoreWebView2.Settings.AreDefaultScriptDialogsEnabled = false;
+                EmbeddedBrowser.CoreWebView2.Settings.IsStatusBarEnabled = false;
+                EmbeddedBrowser.CoreWebView2.Settings.AreDevToolsEnabled = true;
+
+                EmbeddedBrowser.Source = new Uri(defaultHomePage);
                 AddressBar.Text = defaultHomePage;
 
-                // 处理浏览器导航完成事件
-                EmbeddedBrowser.Navigated += EmbeddedBrowser_Navigated;
+                EmbeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
 
-            }
-            catch (Exception)
-            {
-                // 静默处理异常，不显示错误消息
-            }
-        }
-
-        private void EmbeddedBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-            try
-            {
-
-                // 更新地址栏
-                AddressBar.Text = e.Uri.ToString();
-
-                // 隐藏脚本错误
-                DisableScriptErrors();
-            }
-            catch
-            {
-                // 静默处理异常
-            }
-        }
-
-        private void WebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
-        {
-            // 获取WebBrowser的底层ActiveX对象
-            var webBrowserActiveX = EmbeddedBrowser.GetType().InvokeMember("ActiveXInstance",
-                System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
-                null, EmbeddedBrowser, null) as SHDocVw.WebBrowser;
-
-            if (webBrowserActiveX != null)
-            {
-                // 订阅NewWindow2事件
-                //webBrowserActiveX.NewWindow2 += (ref object ppDisp, ref bool Cancel) =>
-                //{
-                //    Cancel = true  ; // 取消新窗口
-                //};
-                webBrowserActiveX.NewWindow3 += (ref object ppDisp, ref bool Cancel, uint dwFlags,
-         string bstrUrlContext, string bstrUrl) =>
+                // 拦截新窗口（弹窗）
+                EmbeddedBrowser.CoreWebView2.NewWindowRequested += (s, e) =>
                 {
-                    Cancel = true; // 取消新窗口
-                    EmbeddedBrowser.Navigate(bstrUrl); // 在当前窗口打开
+                    e.Handled = true;
+                    EmbeddedBrowser.CoreWebView2.Navigate(e.Uri);
                 };
-
             }
-        }
+            catch (Exception ex)
+            {
+                // 可以写日志
+            }
 
-        private void DisableScriptErrors()
+        
+        }
+        private void EmbeddedBrowser_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
         {
             try
             {
-                // 获取浏览器COM对象
-                dynamic activeX = EmbeddedBrowser.GetType().InvokeMember("ActiveXInstance",
-                    BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-                    null, EmbeddedBrowser, new object[] { });
-
-                // 禁用脚本错误
-                activeX.Silent = true;
-
-                // 禁用IE错误对话框
-                if (EmbeddedBrowser.Document != null)
+                if (EmbeddedBrowser != null && EmbeddedBrowser.Source != null)
                 {
-                    //((HTMLDocument)EmbeddedBrowser.Document).parentWindow.onerror =
-                    //    new Func<string, string, int, bool>((message, url, line) => true);
+                    AddressBar.Text = EmbeddedBrowser.Source.ToString();
                 }
             }
             catch
             {
-                // 静默处理异常
+                // 忽略异常
             }
         }
         private void NavigateToUrl(string url)
         {
             try
             {
-                // 确保URL格式正确
                 if (!url.StartsWith("http://") && !url.StartsWith("https://"))
                 {
                     url = "https://" + url;
                 }
 
-                // 导航到指定URL
-                EmbeddedBrowser.Navigate(new Uri(url));
+                EmbeddedBrowser.Source = new Uri(url);
                 AddressBar.Text = url;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // 显示导航错误提示
-                //Wpf.Ui.Controls.Snackbar.Show(
-                //    "导航错误",
-                //    $"无法访问该网址: {ex.Message}",
-                //    Wpf.Ui.Common.SymbolRegular.ErrorCircle24);
+                // 可弹提示
             }
         }
 
@@ -268,7 +231,7 @@ namespace YingCaiAiWin.Views.Pages
         {
             try
             {
-                EmbeddedBrowser.Refresh();
+                EmbeddedBrowser.Reload();
             }
             catch
             {
@@ -280,7 +243,7 @@ namespace YingCaiAiWin.Views.Pages
         {
             try
             {
-                EmbeddedBrowser.Navigate(new Uri(defaultHomePage));
+                EmbeddedBrowser.Source = new Uri(defaultHomePage);
                 AddressBar.Text = defaultHomePage;
             }
             catch

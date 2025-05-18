@@ -7,11 +7,11 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:YingCaiAiWin.Views.Pages"
      xmlns:hc="https://handyorg.github.io/handycontrol"
-    
+      xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance local:AIWindows,
                                      IsDesignTimeCreatable=False}"
-     d:DesignHeight="650"
+     d:DesignHeight="800"
      d:DesignWidth="1000"
     Title="客户服务系统" 
   >
@@ -20,7 +20,7 @@
     WindowCornerPreference="Round"
     WindowBackdropType="Mica"-->
 
-    <Grid x:Name="Gridwin" Height="700">
+    <Grid x:Name="Gridwin" Height="800">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="400" />
@@ -30,65 +30,143 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <!-- 左侧内置浏览器 -->
-        <Grid Grid.Column="0" MinHeight="700">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <ui:Card Grid.Column="0" >
+            <TabControl x:Name="MainTabControl" FontSize="14">
+                <!-- 浏览器页 -->
+                <TabItem Header="浏览器">
+                    <Grid MinHeight="725">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="65"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-            <!-- 浏览器导航栏 -->
-            <ui:Card Grid.Row="0" Margin="10,10,10,5" Padding="8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                        <!-- 浏览器导航栏 -->
+                        <ui:Card Grid.Row="0" Height="65"  >
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
 
-                    <!-- 浏览器控制按钮 -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,5,0">
-                        <ui:Button Appearance="Secondary" ToolTip="后退" Margin="0,0,2,0" Click="BackButton_Click">
-                            <ui:SymbolIcon Symbol="ArrowLeft24" />
-                        </ui:Button>
-                        <ui:Button Appearance="Secondary" ToolTip="前进" Margin="0,0,2,0" Click="ForwardButton_Click">
-                            <ui:SymbolIcon Symbol="ArrowRight24" />
-                        </ui:Button>
-                        <ui:Button Appearance="Secondary" ToolTip="刷新" Margin="0,0,2,0" Click="RefreshButton_Click">
-                            <ui:SymbolIcon Symbol="ArrowReset24" />
-                        </ui:Button>
-                        <ui:Button Appearance="Secondary" ToolTip="主页" Click="HomeButton_Click">
-                            <ui:SymbolIcon Symbol="Home24" />
-                        </ui:Button>
-                    </StackPanel>
+                                <!-- 控制按钮 -->
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="0,0,5,0">
+                                    <ui:Button Appearance="Secondary" ToolTip="后退" Margin="0,0,2,0" Click="BackButton_Click">
+                                        <ui:SymbolIcon Symbol="ArrowLeft24" />
+                                    </ui:Button>
+                                    <ui:Button Appearance="Secondary" ToolTip="前进" Margin="0,0,2,0" Click="ForwardButton_Click">
+                                        <ui:SymbolIcon Symbol="ArrowRight24" />
+                                    </ui:Button>
+                                    <ui:Button Appearance="Secondary" ToolTip="刷新" Margin="0,0,2,0" Click="RefreshButton_Click">
+                                        <ui:SymbolIcon Symbol="ArrowReset24" />
+                                    </ui:Button>
+                                    <ui:Button Appearance="Secondary" ToolTip="主页" Click="HomeButton_Click">
+                                        <ui:SymbolIcon Symbol="Home24" />
+                                    </ui:Button>
+                                </StackPanel>
 
-                    <!-- 地址栏 -->
-                    <ui:TextBox Grid.Column="1" x:Name="AddressBar" PlaceholderText="输入网址..." Margin="5,0" 
-                               KeyDown="AddressBar_KeyDown"/>
+                                <!-- 地址栏 -->
+                                <ui:TextBox Grid.Column="1" x:Name="AddressBar" PlaceholderText="输入网址..." Margin="5,0" KeyDown="AddressBar_KeyDown"/>
 
-                    <!-- 导航按钮 -->
-                    <ui:Button Grid.Column="2" Appearance="Primary" ToolTip="转到" Click="GoButton_Click">
-                        <ui:SymbolIcon Symbol="ArrowRight24" />
-                    </ui:Button>
-                </Grid>
-            </ui:Card>
+                                <!-- 跳转 -->
+                                <ui:Button Grid.Column="2" Appearance="Primary" ToolTip="转到" Click="GoButton_Click">
+                                    <ui:SymbolIcon Symbol="ArrowRight24" />
+                                </ui:Button>
+                            </Grid>
+                        </ui:Card>
 
-            <!-- 浏览器内容 -->
-            <Border Grid.Row="1" CornerRadius="8" Margin="10,0,10,10" ClipToBounds="True">
-                <WebBrowser x:Name="EmbeddedBrowser" Navigated="EmbeddedBrowser_Navigated" LoadCompleted="WebBrowser_LoadCompleted" />
-            </Border>
+                        <!-- 浏览器 -->
+                        <Border Grid.Row="1"  ClipToBounds="True">
+                            <wv2:WebView2 x:Name="EmbeddedBrowser"
+                                  NavigationCompleted="EmbeddedBrowser_NavigationCompleted"
+                                  Source="https://www.baidu.com/"
+                                   />
+                        </Border>
+                    </Grid>
+                </TabItem>
 
-            <!-- 全屏和最小化控制按钮 -->
-            <!--<StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,20,0" Panel.ZIndex="1">
-                <ui:Button Appearance="Secondary" ToolTip="最小化" Margin="0,0,5,0" Click="MinimizeButton_Click">
-                    <ui:SymbolIcon Symbol="ArrowMinimize24" />
-                </ui:Button>
-                <ui:Button x:Name="FullscreenButton" Appearance="Secondary" ToolTip="全屏" Click="FullscreenButton_Click">
-                    <ui:SymbolIcon x:Name="FullscreenIcon" Symbol="FullScreenMaximize24" />
-                </ui:Button>
-            </StackPanel>-->
-        </Grid>
+                <!-- 自定义卡片内容页 -->
+                <TabItem Header="卡片内容" >
+                    <Grid Height="725">
+                        <ScrollViewer  VerticalScrollBarVisibility="Hidden" Height="725" >
+
+                            <ItemsControl ItemsSource="{Binding  ViewModel.CardItems}" >
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <!--<UniformGrid Rows="1" Columns="3" />-->
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+
+                                        <ui:CardAction
+                      Margin="10"
+                      Padding="0"
+                      VerticalAlignment="Stretch"
+                     Background="{Binding IconPath}"
+                     MaxHeight="210"
+                     Width="305"
+                      IsChevronVisible="False">
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="30" />
+                                                </Grid.ColumnDefinitions>
+                                                <!-- 关闭按钮 -->
+
+                                                <StackPanel Grid.Column="0" Margin="10"  VerticalAlignment="Center" MaxHeight="200">
+                                                    <TextBlock
+                             FontWeight="SemiBold"
+                             FontSize="16"
+                             Text="{Binding Title}"
+                             TextTrimming="CharacterEllipsis"
+                             TextWrapping="NoWrap"
+                             ToolTip="{Binding Title}" />
+                                                    <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="170" >
+                                                        <TextBox
+                             Text="{Binding Description}"
+                             TextWrapping="Wrap"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             IsReadOnly="True"
+                             IsReadOnlyCaretVisible="False"
+                             VerticalScrollBarVisibility="Auto"
+                             FontSize="14"
+                             Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                                    </ScrollViewer>
+                                                </StackPanel>
+                                                <Button Content="✕" Grid.Column="2"
+                            
+                              Height="35"
+                              FontSize="35"
+                              FontWeight="Bold"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Right"
+                              BorderBrush="{x:Null}"
+                              Background="Transparent"                              
+                              ToolTip="关闭卡片"
+                              Cursor="Hand"
+                             Command="{Binding ViewModel.CloseCardCommand,  RelativeSource={RelativeSource AncestorType=local:AIWindows}}"
+                             CommandParameter="{Binding CommandParam}"
+    
+                              />
+                                            </Grid>
+                                        </ui:CardAction>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </ScrollViewer>
+                    </Grid>
+                   
+                </TabItem>
+            </TabControl>
+        </ui:Card>
         <!-- 右侧客服界面 -->
-        <Grid x:Name="kefuH" Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}" MinHeight="700"  >
+        <Grid x:Name="kefuH" Grid.Column="1" Background="{ui:ThemeResource ApplicationBackgroundBrush}" MinHeight="800"  >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -124,13 +202,13 @@
 
 
             <!-- 主要内容区域 -->
-            <ui:Card Grid.Row="2" x:Name="newsPanel" Height="470" Margin="10,0,0,5"  >
+            <ui:Card Grid.Row="2" x:Name="newsPanel" Height="590" Margin="10,0,0,5"  >
                 <StackPanel>
 
                     <Expander  x:Name="expander"  Header="自助工具"  FontWeight="SemiBold" Margin="10,0,10,10" >
 
                         <Border Height="auto" BorderThickness="1,0,1,1" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}" CornerRadius="0,0,4,4" >
-                            
+
                             <ui:Card  Padding="10">
                                 <ItemsControl ItemsSource="{Binding ViewModel.ToolItems}">
                                     <ItemsControl.ItemsPanel>
@@ -141,25 +219,25 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <ui:Card Margin="5" Padding="10" Background="#F0F5FF"  MouseLeftButtonUp="Tool_Click"   VerticalAlignment="Center" HorizontalAlignment="Center"   >
-                                                
+
                                                 <StackPanel HorizontalAlignment="Center">
-                                                    
+
                                                     <ui:SymbolIcon Symbol="{Binding Icon}" Foreground="#4285F4" HorizontalAlignment="Center" />
                                                     <TextBlock Text="{Binding Title}" FontSize="12" HorizontalAlignment="Center" Margin="0,5,0,0" />
                                                 </StackPanel>
-                                             
+
                                             </ui:Card>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </ui:Card>
-                            
+
 
                         </Border>
                     </Expander>
 
 
-                    <ScrollViewer x:Name="newScroll" VerticalScrollBarVisibility="Auto" Margin="10,0,10,5" Height="400" >
+                    <ScrollViewer x:Name="newScroll" VerticalScrollBarVisibility="Auto" Margin="10,0,10,5" Height="530" >
                         <StackPanel x:Name="newStackPanel">
                             <!-- 猜你想问区域 -->
                             <ui:Card Padding="15"  >
@@ -181,7 +259,7 @@
                                                             <ui:SymbolIcon Symbol="QuestionCircle24" Foreground="#4285F4" Margin="0,0,10,0" />
                                                             <TextBlock Text="{Binding}" VerticalAlignment="Center" TextWrapping="Wrap" />
                                                         </StackPanel>
-                                                        
+
                                                     </Grid>
                                                 </ui:CardAction>
                                             </DataTemplate>

@@ -53,7 +53,7 @@
                     hc:InfoElement.Placeholder="选择用户"
                     Width="170"
                     Margin="0,0,20,0"
-                    SelectedIndex="{Binding ViewModel.AiRecords.CreatedUser}"
+                    SelectedValue="{Binding ViewModel.AiRecords.CreatedUser}"
                     >
                     <ComboBoxItem Content="全部" IsSelected="True" />
                     <ComboBoxItem Content="未审核" />

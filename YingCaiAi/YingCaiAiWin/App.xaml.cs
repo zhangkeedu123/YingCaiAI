@@ -8,6 +8,7 @@ using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
 using YingCaiAiWin.Views;
+using YingCaiAiWin.Views.Pages;
 namespace YingCaiAiWin
 {
     /// <summary>
@@ -51,7 +52,7 @@ namespace YingCaiAiWin
         _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
              //_ = services.AddSingleton<Views.Login>();//注册登录窗口
              //_ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
-
+             _ = services.AddSingleton<AIWindows>();
              // All other pages and view models
              _ = services.AddTransientFromNamespace("YingCaiAiWin.Views", GalleryAssembly.Asssembly);
              _ = services.AddTransientFromNamespace(
