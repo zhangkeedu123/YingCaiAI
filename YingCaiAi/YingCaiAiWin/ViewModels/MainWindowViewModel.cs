@@ -41,7 +41,7 @@ public partial class MainWindowViewModel : ViewModel
     private void InitializeViewModel()
     {
         ApplicationTitle = "英才AI工作台";
-
+        
         NavigationItems =
         [
             new NavigationViewItem()

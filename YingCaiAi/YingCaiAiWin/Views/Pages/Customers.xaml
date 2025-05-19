@@ -197,6 +197,15 @@
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Button
+                                             Content="去联系"
+                                             Style="{StaticResource  ButtonDashedPrimary}"
+                                             hc:IconElement.Width="14"
+                                             FontSize="12"
+                                             Padding="8,4"
+                                             Command="{Binding ViewModel.ToContactCommand, RelativeSource={RelativeSource AncestorType=local:Customers}}"
+                                             CommandParameter="{Binding  Id}"
+                                             />
+                                        <Button
                                             Content="打标记"
                                            
                                             Style="{StaticResource ButtonDashedPrimary}"

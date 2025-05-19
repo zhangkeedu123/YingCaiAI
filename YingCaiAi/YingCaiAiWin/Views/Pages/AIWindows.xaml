@@ -194,7 +194,7 @@
 
             <!-- 当前客户信息 -->
             <ui:Card Grid.Row="1" Background="#F5F5F5" Margin="10,0,10,5" Padding="5" Height="40">
-                <TextBlock Text="当前客户：北京英才有限责任公司" 
+                <TextBlock Text="{Binding ViewModel.CusName}" 
                            FontSize="14" 
                            FontWeight="SemiBold"
                            VerticalAlignment="Center" />

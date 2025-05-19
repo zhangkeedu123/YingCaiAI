@@ -155,7 +155,7 @@ namespace YingCaiAiWin.Views.Pages
         /// 替换为真实回答内容
         /// </summary>
         /// <param name="answerText"></param>
-        public void ReplaceLoadingBubble(string answerText)
+        public void ReplaceLoadingBubble(string answerText,string qText="")
         {
             if (_loadingBubble != null)
             {
@@ -174,8 +174,8 @@ namespace YingCaiAiWin.Views.Pages
                 // 创建悬浮按钮 (ui:SymbolIcon 模拟为 Button + TextBlock 或使用实际控件库)
                 var iconButton = new System.Windows.Controls.Button
                 {
-                    Width = 32,
-                    Height = 32,
+                    Width = 30,
+                    Height = 30,
                     Padding = new Thickness(0),
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
@@ -183,7 +183,7 @@ namespace YingCaiAiWin.Views.Pages
                     ToolTip = "弹出",
                     VerticalAlignment = VerticalAlignment.Bottom,
                     HorizontalAlignment = HorizontalAlignment.Right,
-                     Margin= new Thickness(0, 60,0, 0), // 靠右下角
+                    // Margin= new Thickness(0, 60,0, 0), // 靠右下角
                     Content = new Wpf.Ui.Controls.SymbolIcon
                     {
                         Symbol = SymbolGlyph.Parse("ArrowMaximize24"),
@@ -195,25 +195,24 @@ namespace YingCaiAiWin.Views.Pages
                 {
                     //获取父级窗口
                     var vm = ((FrameworkElement)this).DataContext as AIWindows;
-                    vm.ViewModel.ShowPopupCommand("8");
+                    vm.ViewModel.ShowPopupCommand(answerText,qText);
                 };
-                //var parentWindow = Window.GetWindow(this);
-                //Binding binding = new Binding("ShowPopupCommand")
-                //{
-                //    Source = parentWindow?.DataContext,
-                //    Mode = BindingMode.OneWay
-                //};
-                //iconButton.SetBinding(System.Windows.Controls.Button.CommandProperty, binding);
-                //iconButton.CommandParameter = "8";
-                // 创建容器 Grid
+          
                 var overlayGrid = new Grid
                 {
                     Margin = new Thickness(0),
                    
                 };
-                
+                overlayGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });       // TextBox 行
+                overlayGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(30) });
+                Grid.SetRow(textBox, 0);
                 overlayGrid.Children.Add(textBox);
-                overlayGrid.Children.Add(iconButton);
+                if (!string.IsNullOrWhiteSpace(qText))
+                {
+                    Grid.SetRow(iconButton, 1);
+                    overlayGrid.Children.Add(iconButton);
+                }
+              
 
                 _loadingBubble.Child = overlayGrid;
                 _loadingBubble = null; // 清理引用，防止误用

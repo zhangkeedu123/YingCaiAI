@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -88,6 +89,7 @@ namespace YingCaiAiWin.Views.Pages
             
           
         }
+      
 
         /// <summary>
         /// 设置窗口大小
@@ -270,6 +272,7 @@ namespace YingCaiAiWin.Views.Pages
 
         #region ai对话相关
 
+        //工具栏
         private async void Tool_Click(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement fe && fe.DataContext is ToolItem tool)
@@ -283,12 +286,18 @@ namespace YingCaiAiWin.Views.Pages
                 expander.IsExpanded = false;
                 await Task.Delay(2000);
 
-                ChatBox.ReplaceLoadingBubble(text);
+                ChatBox.ReplaceLoadingBubble(text,text);
 
 
             }
 
         }
+
+        /// <summary>
+        /// 猜你想问
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void Question_Click(object sender, RoutedEventArgs e)
         {
             if (sender is CardAction card && card.DataContext is string question)
@@ -301,7 +310,7 @@ namespace YingCaiAiWin.Views.Pages
                 Scroll();
                 await Task.Delay(2000);
 
-                ChatBox.ReplaceLoadingBubble(text);
+                ChatBox.ReplaceLoadingBubble(text, text);
                 Scroll(); // 最后再滚动一次，确保展示完整
             }
         }
@@ -322,6 +331,7 @@ namespace YingCaiAiWin.Views.Pages
 
 
         }
+       
         /// <summary>
         /// 搜索框事件
         /// </summary>
@@ -359,13 +369,13 @@ namespace YingCaiAiWin.Views.Pages
                     stopwatch.Stop();
                     if (response.Contains("</think>"))
                     {
-                        int n = response.IndexOf("</think>");
+                        var aimodel= JsonSerializer.Deserialize<AiModelRes>(response);
+                        var aitext = aimodel.answer;
+                        int n = aitext.IndexOf("</think>");
                         if (n > 0)
                         {
-
-                            var retext = Regex.Replace(response.Substring(n + 12), @"[\n""}]", ""); ;
-                            retext = retext.Replace("\\n", "\n");
-                            ChatBox.ReplaceLoadingBubble(retext);
+                            var retext = aitext.Substring(n +10);
+                            ChatBox.ReplaceLoadingBubble(retext, text);
                             Scroll(); // 最后再滚动一次，确保展示完整
 
                             Task.Run( () =>
@@ -426,5 +436,10 @@ namespace YingCaiAiWin.Views.Pages
         #endregion
 
 
+    }
+
+    public class AiModelRes
+    {
+        public string answer { get; set; }
     }
 }

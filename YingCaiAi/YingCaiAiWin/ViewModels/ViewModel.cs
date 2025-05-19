@@ -13,7 +13,6 @@ public abstract class ViewModel : ObservableObject, INavigationAware
     public virtual Task OnNavigatedToAsync()
     {
         OnNavigatedTo();
-
         return Task.CompletedTask;
     }
 

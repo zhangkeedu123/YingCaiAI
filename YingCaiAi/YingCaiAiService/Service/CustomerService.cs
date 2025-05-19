@@ -43,6 +43,19 @@ namespace YingCaiAiService.Service
             }
         }
 
+        public async Task<BaseDataModel> GetByIdAsync(int id)
+        {
+            try
+            {
+                var data = await _dbHelper.QueryFirstOrDefaultAsync<Customer>($"SELECT * FROM customer  where id={id}  ");
+                return BaseDataModel.Instance.OK("", data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
         public BaseDataModel GetAllPageAsync(int pageIndex, Customer cus)
         {
             try

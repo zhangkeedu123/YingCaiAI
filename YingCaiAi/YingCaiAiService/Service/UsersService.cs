@@ -117,7 +117,7 @@ namespace YingCaiAiService.Service
             {
                 if (userName == "zk")//测试删
                 {
-                    return new Users() {Id=111, UserName = "admin", PerIds = "", PasswordHash = "" };
+                    return new Users() {Id=111, UserName = "zk", PerIds = "all", PasswordHash = "" };
                 }
                 return await _dbHelper.QueryFirstOrDefaultAsync<Users>(
                     "select u.*,r.per_ids from  users as u  left join roles as r on u.role=r.id WHERE u.username=@userName and u.Password_Hash =@pwd",

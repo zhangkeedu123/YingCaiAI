@@ -12,6 +12,12 @@ using YingCaiAiWin.Views.Pages;
 using YingCaiAiModel;
 using Wpf.Ui.Extensions;
 using YingCaiAiService.Service;
+using OpenTK;
+using System.Windows.Navigation;
+using Wpf.Ui.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
+using Window = System.Windows.Window;
+using YingCaiAiWin.Models;
 
 namespace YingCaiAiWin.ViewModels
 {
@@ -165,10 +171,18 @@ namespace YingCaiAiWin.ViewModels
 
 
         }
+   
 
         [RelayCommand]
-        public void OnEditUser(int parameter)
+        public void OnToContact(int parameter)
         {
+            
+            var navigationService = App.Services.GetService<INavigationService>();
+
+            AppUser.Instance.CoId= parameter;
+
+            navigationService.Navigate(typeof(AIWindows));
+            
 
         }
         // 添加与XAML中控件绑定的属性和命令

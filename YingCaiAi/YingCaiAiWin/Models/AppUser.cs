@@ -16,6 +16,7 @@ namespace YingCaiAiWin.Models
         private string _username;
         private string _token;
         private string _role;
+        private int _coId;
 
         public string Username
         {
@@ -33,6 +34,11 @@ namespace YingCaiAiWin.Models
         {
             get => _role;
             set { _role = value; OnPropertyChanged(); }
+        }
+        public int CoId
+        {
+            get => _coId;
+            set { _coId = value; OnPropertyChanged(); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
