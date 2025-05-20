@@ -22,7 +22,7 @@
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
 
-        <wv2:WebView2 x:Name="MyBrowser"  Grid.Column="0" Margin="20"  Source="https://www.baidu.com/"  />
+        <wv2:WebView2 x:Name="MyBrowser"  Grid.Column="0" Margin="20"  Source="https://www.zhaopin.com/"  />
         <!--<wv2:WebView2 x:Name="MyBrowser1"  Grid.Column="0" Margin="20"  Source="https://chat.baidu.com/search" Visibility="Collapsed"  />-->
         <!-- 控制面板 -->
         <Grid Margin="20"  Grid.Column="1">
@@ -54,9 +54,12 @@
             <TextBox Grid.Row="1" Grid.Column="1" Height="40" Margin="0,4"  x:Name="KeywordTextBox" />
             
             <TextBlock Grid.Row="2" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="地区:" />
-            <TextBox Grid.Row="2" Grid.Column="1" Height="40" Margin="0,4" x:Name="Area" />
-          
-            
+       
+            <ComboBox Grid.Row="2" Grid.Column="1" Height="40" Margin="0,4" x:Name="Area">
+               
+            </ComboBox>
+
+
             <TextBlock Grid.Row="3" Grid.Column="0" FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="是否查重:" />
             <ComboBox Grid.Row="3" Grid.Column="1" Height="40" Margin="0,4"
                  x:Name="ChaChong">
@@ -75,9 +78,9 @@
             <TextBlock Grid.Row="5" Grid.Column="0" FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="获取数据/条:" />
             <ComboBox Grid.Row="5" Grid.Column="1" Height="40" Margin="0,4"
                       x:Name="DataCount">
-                <ComboBoxItem Content="10" IsSelected="True"  />
-                <ComboBoxItem Content="20" />
-                <ComboBoxItem Content="50"    />
+                <ComboBoxItem Content="20" IsSelected="True"  />
+                <ComboBoxItem Content="40" />
+                <ComboBoxItem Content="60"    />
                 <ComboBoxItem Content="100" />
             </ComboBox>
             <Grid Grid.Row="7" Grid.Column="1">

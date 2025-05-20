@@ -152,13 +152,36 @@ namespace YingCaiAiWin.Views.Pages
                 AddressBar.Text = defaultHomePage;
 
                 EmbeddedBrowser.NavigationCompleted += EmbeddedBrowser_NavigationCompleted;
-
+                EmbeddedBrowser.ZoomFactor = 0.8; // 缩放至80%（根据内容调整比例）
+                EmbeddedBrowser.CoreWebView2.Settings.IsPinchZoomEnabled = false; // 禁用用户缩放干扰
                 // 拦截新窗口（弹窗）
                 EmbeddedBrowser.CoreWebView2.NewWindowRequested += (s, e) =>
                 {
                     e.Handled = true;
                     EmbeddedBrowser.CoreWebView2.Navigate(e.Uri);
+                   
+                    if (EmbeddedBrowser.CoreWebView2 != null)
+                    {
+                       // EmbeddedBrowser.CoreWebView2.ZoomFactor = 0.9;
+
+                         EmbeddedBrowser.CoreWebView2.ExecuteScriptAsync(@"
+                                        document.body.style.zoom = '80%';
+                                        document.body.style.overflowX = 'hidden';
+                                        let style = document.createElement('style');
+                                        style.innerHTML = `
+                                            * {
+                                                max-width: 100vw !important;
+                                                box-sizing: border-box !important;
+                                            }
+                                            body {
+                                                overflow-x: hidden !important;
+                                            }
+                                        `;
+                                        document.head.appendChild(style);
+                                    ");
+                    }
                 };
+
             }
             catch (Exception ex)
             {
@@ -337,10 +360,13 @@ namespace YingCaiAiWin.Views.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void SearchBox_KeyDown(object sender, KeyEventArgs e)
+        private async void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
-            {
+
+            // 用户按下 Enter，并且没有按住 Shift
+            if   (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
+                {
+                e.Handled = true; // 阻止默认回车换行
                 string text = SearchBox.Text?.Trim();
                 if (!string.IsNullOrWhiteSpace(text))
                 {
@@ -352,7 +378,6 @@ namespace YingCaiAiWin.Views.Pages
 
                     await CallVectorizeApiAsync(text);
                 }
-
             }
         }
         private async Task CallVectorizeApiAsync(string text)

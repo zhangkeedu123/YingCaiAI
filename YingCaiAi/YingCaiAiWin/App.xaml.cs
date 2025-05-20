@@ -50,9 +50,10 @@ namespace YingCaiAiWin
          _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();
          //_ = services.AddSingleton<ViewModels.MainWindowViewModel>();
         _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
-             //_ = services.AddSingleton<Views.Login>();//注册登录窗口
-             //_ = services.AddSingleton<Views.Pages.AIWindows>();//注册登录窗口
+           
+             //单独注册需要缓存的页面单例模式
              _ = services.AddSingleton<AIWindows>();
+             _ = services.AddSingleton<BrowserCrawlerPage>();
              // All other pages and view models
              _ = services.AddTransientFromNamespace("YingCaiAiWin.Views", GalleryAssembly.Asssembly);
              _ = services.AddTransientFromNamespace(

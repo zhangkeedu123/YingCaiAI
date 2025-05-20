@@ -36,6 +36,7 @@ namespace YingCaiAiService.Service
             try
             {
                 var data =  _dbHelper.ExecuteAsync("delete from Documents  where id=@Id", new { Id = id }).Result;
+
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)

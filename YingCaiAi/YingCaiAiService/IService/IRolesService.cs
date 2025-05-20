@@ -14,5 +14,7 @@ namespace YingCaiAiService.IService
         BaseDataModel AddRoleAsync(Role role);
         BaseDataModel UpdateRoleAsync(Role role);
         BaseDataModel DeleteRoleAsync(int id);
+
+        Task<Role> GetRoleByNameAsync(string name);
     }
 }

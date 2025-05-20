@@ -55,6 +55,20 @@ namespace YingCaiAiService.Service
             }
         }
 
+        public async Task<Users> GetUserByNameAsync(string name)
+        {
+            try
+            {
+
+                return await _dbHelper.QueryFirstOrDefaultAsync<Users>(
+                    "SELECT * FROM users WHERE username = @UserName", new { UserName = name });
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException($"获取用户失败", ex);
+            }
+        }
+
         public BaseDataModel AddUserAsync(Users user)
         {
             try

@@ -66,7 +66,7 @@
                 CornerRadius="8" Margin="16,0,8,16"
                 Effect="{StaticResource EffectShadow2}">
             <DockPanel Margin="16">
-                <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -99,8 +99,7 @@
                          SelectedItem="{Binding ViewModel.SelectedRole}"
                          ItemContainerStyle="{StaticResource RoleCardStyle}"
                          BorderThickness="0"
-                         Background="Transparent"
-                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,30,0,0" Padding="0" >
+                         Background="Transparent" ScrollViewer.VerticalScrollBarVisibility="Hidden" Margin="0,0,0,0"  MaxHeight="550">
                     <ListBox.ItemTemplate>
                         <DataTemplate  >
                             <ui:CardAction IsChevronVisible="False" Padding="15" Margin="-16" Height="90" Width="260" Command="{Binding ViewModel.SelectedRoleChangedCommand,RelativeSource={RelativeSource AncestorType=local:RolesPage} }" CommandParameter="{Binding Id}" Background="Transparent" >
@@ -155,7 +154,9 @@
                                 Content="保存更改"
                                 hc:IconElement.Geometry="{StaticResource SaveGeometry}"
                                 Margin="10,10,10,10" Height="36"   Command="{Binding ViewModel.AddPerCommand }" />
-
+                        <Button Style="{StaticResource   ButtonDashedPrimary.Small}" 
+                                Content="删除角色"
+                                Margin="10,10,10,10" Height="36" Command="{Binding ViewModel.DeleteRoleCommand }"  />
                         <Button Style="{StaticResource   ButtonDashedPrimary.Small}" 
                                 Content="刷新"
                                 Margin="10,10,10,10" Height="36" Command="{Binding ViewModel.ShuaXinCommand }"/>

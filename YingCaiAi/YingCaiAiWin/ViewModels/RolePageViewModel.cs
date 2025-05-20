@@ -157,6 +157,45 @@ namespace YingCaiAiWin.ViewModels
         }
 
         [RelayCommand]
+
+        private  void OnDeleteRole()
+        {
+            if (SelectedRole != null&&SelectedRole.Id>0)
+            {
+                Growl.Ask("是否确定删除", isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        Growl.Clear();
+                        Task.Run(() => {
+                            var flag = _rolesService.DeleteRoleAsync(SelectedRole.Id??0);
+                            LoadSampleData();
+                            if (flag.Status)
+                            {
+                                Growl.Success("删除成功！");
+                            }
+
+                            else
+                            {
+                                Growl.Error("删除失败！");
+                                Thread.Sleep(2500);
+                                Growl.Clear();
+                            }
+
+                        });
+                    }
+                    else
+                    {
+
+                        Growl.Clear();
+                    }
+                    return true;
+                });
+
+            }
+        }
+
+        [RelayCommand]
         private void OnShuaXin()
         {
             LoadSampleData();

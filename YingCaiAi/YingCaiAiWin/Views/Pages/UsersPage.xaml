@@ -52,11 +52,8 @@
                     Width="170"
                     Margin="0,0,20,0"
                     SelectedIndex="{Binding ViewModel.UserSer.Role}"
+                    ItemsSource="{Binding ViewModel.RoleSerList}" DisplayMemberPath="Name"
                     >
-                    <ComboBoxItem Content="全部" IsSelected="True" />
-                    <ComboBoxItem Content="管理员" />
-                    <ComboBoxItem Content="员工"/>
-                    <ComboBoxItem Content="演示" />
                 </hc:ComboBox>
 
                 <Button 

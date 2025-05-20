@@ -2,6 +2,7 @@
 using HandyControl.Data;
 using Microsoft.Win32;
 using System.IO;
+using System.Net.Http;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using YingCaiAiModel;
@@ -33,6 +34,8 @@ namespace YingCaiAiWin.ViewModels
 
         private readonly IDocumentsService _service;
 
+        private readonly HttpClientHelper _httpClient;
+
         [ObservableProperty]
         private  Documents _documents=new Documents();
         public KnowledgeBaseViewModel(INavigationService navigationService, IDocumentsService service)
@@ -41,6 +44,7 @@ namespace YingCaiAiWin.ViewModels
             {
                 _service = service;
                 _fileHelper = new FileHelper();
+                _httpClient = new  HttpClientHelper();
                 InitializeViewModel();
 
             }
@@ -174,6 +178,8 @@ namespace YingCaiAiWin.ViewModels
                 {
                     Growl.Clear();
                     Task.Run(() => {
+                        var response =  _httpClient.PostDataAsync($"milvus/delete_by_doc_id?doc_id={parameter}",null).Result;
+
                         var flag = _service.DeleteAsync(parameter);
                         LoadSampleData();
                         if (flag.Status)

@@ -55,6 +55,14 @@ namespace YingCaiAiWin.Views.Pages
 
                 return;
             }
+            var rolesList =await _rolesService.GetRoleByNameAsync(RoleName.Text.Trim());
+            if (rolesList!=null&& rolesList.Id>0)
+            {
+                ErrorInfoBar.Message = "已存在相同角色名，请重新输入!";
+                ErrorInfoBar.IsOpen = true;
+
+                return;
+            }
 
             var role = new Role() { Name= RoleName.Text.Trim() ,Description= RoleDes .Text.Trim()};
             await Task.Run(() =>

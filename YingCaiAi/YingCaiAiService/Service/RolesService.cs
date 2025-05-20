@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
 
@@ -37,6 +38,19 @@ namespace YingCaiAiService.Service
             {
                 var data =await _dbHelper.QueryAsync<Role>("SELECT * FROM roles order by id ", new {  });
                 return BaseDataModel.Instance.OK("", data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException($"获取失败", ex);
+            }
+        }
+
+        public async Task<Role> GetRoleByNameAsync(string name)
+        {
+            try
+            {
+                var data = await _dbHelper.QueryFirstOrDefaultAsync<Role>("SELECT * FROM roles  where  name=@Name  ", new { Name=name });
+                return data;
             }
             catch (Exception ex)
             {

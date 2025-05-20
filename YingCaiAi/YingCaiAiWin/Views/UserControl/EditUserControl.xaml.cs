@@ -87,7 +87,15 @@ namespace YingCaiAiWin.Views.Pages
                 ErrorInfoBar.IsOpen = true;
                 return;
             }
-
+            if (UserEdit.Id == null || UserEdit.Id < 1)
+            {
+                var  temp=await _usersService.GetUserByNameAsync(UserName.Text.Trim());
+                if (temp != null&&temp.Id>0) {
+                    ErrorInfoBar.Message = "已存在相同用户名！";
+                    ErrorInfoBar.IsOpen = true;
+                    return;
+                }
+            }
             if (!string.IsNullOrWhiteSpace(PasswordBoxControl.Password))
             {
                 UserEdit.PasswordHash = new Helpers.FileHelper().ToMD5(PasswordBoxControl.Password);

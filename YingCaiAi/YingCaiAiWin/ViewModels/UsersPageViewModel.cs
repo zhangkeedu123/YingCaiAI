@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using EnumsNET;
 using HandyControl.Controls;
 using HandyControl.Data;
@@ -15,16 +16,11 @@ using YingCaiAiWin.Views.Pages;
 
 namespace YingCaiAiWin.ViewModels
 {
-    public partial class UsersPageViewModel: ViewModel, INotifyPropertyChanged
-        {
-         private string _password;
-    public string Password
+    public partial class UsersPageViewModel : ViewModel
     {
-        get => _password;
-        set { _password = value; OnPropertyChanged(); }
-    }
 
-    private  bool _isInitialized = false;
+
+        private bool _isInitialized = false;
 
         [ObservableProperty]
         private List<Users> _usersList = [];
@@ -40,7 +36,7 @@ namespace YingCaiAiWin.ViewModels
         public IUsersService _usersService { get; set; }
 
         [ObservableProperty]
-        public Users _userSer=new Users ();
+        public Users _userSer = new Users();
 
         [ObservableProperty]
         public Users _userEdit = new Users();
@@ -49,8 +45,12 @@ namespace YingCaiAiWin.ViewModels
         [ObservableProperty]
         private string _dialogResultText = string.Empty;
 
+        [ObservableProperty]
+        private List<Role> _roleSerList = new List<Role>();
+
 
         private readonly IRolesService _rolesService;
+
         public  UsersPageViewModel(INavigationService navigationService,  IUsersService usersService,IRolesService rolesService, IContentDialogService contentDialogService) {
 
             if (!_isInitialized)
@@ -63,17 +63,23 @@ namespace YingCaiAiWin.ViewModels
             }
 
         }
-        public void InitializeViewModel()
+        public async void InitializeViewModel()
         {
           
                 
                 // 初始化数据逻辑
-                LoadSampleData();
-                _isInitialized = true;
+             LoadSampleData();
+
+            var flag = await _rolesService.GetRoleAsync();
+            var  roles = new List<Role>() { new Role() { Name = "全部", Id = 0 } };
+            roles.AddRange(flag.Data as List<Role> ?? new List<Role>());
+
+            RoleSerList = roles;
+            _isInitialized = true;
         }
 
 
-        private void LoadSampleData()
+        private  void LoadSampleData()
         {
 
             UsersList.Clear();
@@ -86,6 +92,8 @@ namespace YingCaiAiWin.ViewModels
                 PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
 
             });
+
+            
 
         }
 
