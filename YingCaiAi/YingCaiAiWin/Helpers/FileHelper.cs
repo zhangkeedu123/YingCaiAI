@@ -8,6 +8,9 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Cryptography;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using YingCaiAiModel;
 
 namespace YingCaiAiWin.Helpers
 {
@@ -30,10 +33,6 @@ namespace YingCaiAiWin.Helpers
                     if (flag == 1)
                     {
                         textContent = SegmentText(filepath);
-                    }
-                    else
-                    {
-                        textContent = GetQAItems(filepath);
                     }
                     
                     break;
@@ -87,32 +86,34 @@ namespace YingCaiAiWin.Helpers
         }
 
 
-        public List<QAItem> GetQAItems(string filePath)
+        public List<TrainingData> GetQAItems(string filePath)
         {
-            var qaList = new List<QAItem>();
-            var fullText = ReadWordFile(filePath);
-            // 每组问答由 #### 分隔
-            var groups = fullText.Split("####", StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (var group in groups)
+            var data = new List<TrainingData>();
+            try
             {
-                var lines = group.Split('\n', StringSplitOptions.RemoveEmptyEntries)
-                                 .Select(l => l.Trim())
-                                 .ToList();
-
-                var questionLine = lines.FirstOrDefault(l => l.StartsWith("问："));
-                var answerLine = lines.FirstOrDefault(l => l.StartsWith("答："));
-
-                if (!string.IsNullOrWhiteSpace(questionLine) && !string.IsNullOrWhiteSpace(answerLine))
+                foreach (var line in File.ReadLines(filePath))
                 {
-                    qaList.Add(new QAItem
+                    if (!string.IsNullOrWhiteSpace(line))
                     {
-                        Question = questionLine.Replace("问：", "").Trim(),
-                        Answer = answerLine.Replace("答：", "").Trim()
-                    });
+
+                        var person = JsonConvert.DeserializeObject<TrainingData>(line);
+                        if (person != null)
+                            data.Add(person);
+
+                    }
                 }
             }
-            return qaList;
+            catch (Exception)
+            {
+
+                
+            }
+           
+            return data;
+           
+          
+           
         }
 
         public  string ToMD5(string input)

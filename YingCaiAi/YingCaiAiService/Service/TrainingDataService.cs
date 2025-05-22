@@ -19,8 +19,8 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                string sql = @"INSERT INTO training_data (question, answer, for_lora,status,status_name,created_at)
-                         VALUES (@Question, @Answer, @ForLora,@Status,@StatusName, @CreatedAt)";
+                string sql = @"INSERT INTO training_data (system, instruction, output,input,status,status_name,created_at)
+                         VALUES (@System, @Instruction, @Output,@Input,@Status,@StatusName, @CreatedAt)";
                 var data = await _dbHelper.InsertDocumentsAsync(sql, doc);
                 return BaseDataModel.Instance.OK("", data);
             }
@@ -30,11 +30,11 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public BaseDataModel DeleteAsync(int id)
+        public BaseDataModel DeleteAsync(int [] id)
         {
             try
             {
-                var data = _dbHelper.ExecuteAsync("delete from training_data  where id=@Id", new { Id = id }).Result;
+                var data = _dbHelper.ExecuteAsync("delete from training_data  where id=ANY(@Id)", new { Id = id }).Result;
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)
@@ -68,10 +68,10 @@ namespace YingCaiAiService.Service
                   sql += " and  status =@Status ";
                     parameters.Add("Status", td.Status);
                 }
-                if (!string.IsNullOrWhiteSpace(td.Question))
+                if (!string.IsNullOrWhiteSpace(td.Instruction))
                 {
-                    sql += $" and ( question LIKE @Question or answer LIKE @Question   )";
-                    parameters.Add("Question", $"%{td.Question}%");
+                    sql += $" and ( instruction LIKE @Instruction or output LIKE @Instruction or system LIKE @Instruction  )";
+                    parameters.Add("Instruction", $"%{td.Instruction}%");
                 }
 
                 var data =await _dbHelper.QueryPagedAsync<TrainingData>($"SELECT * FROM training_data\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM training_data {sql}", parameters, pageIndex, 20);
@@ -86,11 +86,11 @@ namespace YingCaiAiService.Service
 
      
 
-        public async Task<BaseDataModel> UpdateAsync(int id)
+        public async Task<BaseDataModel> UpdateAsync(int [] ids )
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update training_data set status=2, status_name='已审核' where id=@Id", new { Id = id });
+                var data = await _dbHelper.ExecuteAsync("update training_data set status=2, status_name='已审核' where id=ANY(@Ids)", new { Ids = ids });
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)

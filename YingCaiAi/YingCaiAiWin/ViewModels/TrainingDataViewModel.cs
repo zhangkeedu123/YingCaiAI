@@ -1,6 +1,7 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using Microsoft.Win32;
+using NPOI.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,10 @@ namespace YingCaiAiWin.ViewModels
 
         [ObservableProperty]
         private TrainingData _trainingDataSearch = new TrainingData();
+
+        [ObservableProperty]
+        private bool _isAllSelected;
+
         public TrainingDataViewModel(INavigationService navigationService, ITrainingDataService service)
         {
             if (!_isInitialized)
@@ -68,7 +73,7 @@ namespace YingCaiAiWin.ViewModels
             OpenFileDialog openFileDialog = new()
             {
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Filter = "支持的文件 (*.doc;*.docx;*.xls;*.xlsx;*.txt)|*.doc;*.docx;*.xls;*.xlsx;*.txt",
+                Filter = "支持的文件 (*.jsonl)|*.jsonl",
             };
 
             if (openFileDialog.ShowDialog() != true)
@@ -78,27 +83,17 @@ namespace YingCaiAiWin.ViewModels
 
             if (File.Exists(openFileDialog.FileName))
             {
-                var data = _fileHelper.FileReadAll(openFileDialog.FileName, 2);
-                var docs = new List<TrainingData>();
+                var data = _fileHelper.GetQAItems(openFileDialog.FileName);
+             
                 foreach (var document in data)
                 {
-                    if (!string.IsNullOrWhiteSpace(document.Question))
-                    {
-                        var doc = new TrainingData()
-                        {
-                            Question = document.Question,
-                            Answer = document.Answer,
-                            CreatedAt = DateTime.Now,
-                            ForLora = false,
-                            Status =1,
-                            StatusName = "未审核"
-                        };
-                        docs.Add(doc);
-                    }
 
+                    document.CreatedAt = DateTime.Now;
+                    document.Status = 1;
+                    document.StatusName = "未审核";
                 }
               
-                  await  _service.AddListAsync(docs);
+                await  _service.AddListAsync(data);
             
                 await LoadSampleData();
                 Growl.Success("上传成功！");
@@ -132,7 +127,7 @@ namespace YingCaiAiWin.ViewModels
 
 
         [RelayCommand]
-        private void OnApproveStatus(int parameter)
+        private  void OnApproveStatus()
         {
 
 
@@ -140,23 +135,38 @@ namespace YingCaiAiWin.ViewModels
             {
                 if (isConfirmed)
                 {
-                    Growl.Clear();
-                    Task.Run(() =>
+                    //Growl.Clear();
+                    var select = Docs.Where(m => m.IsSelected);
+                    if (select.Count() == 0)
                     {
-                        var flag = _service.UpdateAsync(parameter).Result;
-                        LoadSampleData();
-                        if (flag.Status)
-                        {
-                            Growl.Success("审核成功！");
-                        }
+                        Task.Run(() => {
+                            Growl.Info("请选择要审核的数据！");
+                           
 
-                        else
+                        });
+                       
+                    }
+                    else
+                    {
+                        Task.Run(() =>
                         {
-                            Growl.Error("审核失败！");
-                            Thread.Sleep(2500);
-                            Growl.Clear();
-                        }
-                    });
+                            var ids = select.Select(s => s.Id).ToArray();
+                            var flag = _service.UpdateAsync(ids).Result;
+                            LoadSampleData();
+                            if (flag.Status)
+                            {
+                                Growl.Success("审核成功！");
+                            }
+
+                            else
+                            {
+                                Growl.Error("审核失败！");
+                                Thread.Sleep(2500);
+                                Growl.Clear();
+                            }
+                        });
+                    }
+                    
                 }
                 else
                 {
@@ -168,7 +178,7 @@ namespace YingCaiAiWin.ViewModels
         }
 
         [RelayCommand]
-        private void OnDelete(int parameter)
+        private void OnDelete()
         {
 
             Growl.Ask("是否确定删除", isConfirmed =>
@@ -178,19 +188,32 @@ namespace YingCaiAiWin.ViewModels
                     Growl.Clear();
                     Task.Run(() =>
                     {
-                        var flag = _service.DeleteAsync(parameter);
-                        LoadSampleData();
-                        if (flag.Status)
+                        var select = Docs.Where(m => m.IsSelected);
+                        if (select.Count() == 0)
                         {
-                            Growl.Success("删除成功！");
-                        }
+                            Task.Run(() => {
+                                Growl.Info("请选择要删除的数据！");
+                            });
 
+                        }
                         else
                         {
-                            Growl.Error("删除失败！");
-                            Thread.Sleep(2500);
-                            Growl.Clear();
+                            var ids = select.Select(s => s.Id).ToArray();
+                            var flag = _service.DeleteAsync(ids);
+                            LoadSampleData();
+                            if (flag.Status)
+                            {
+                                Growl.Success("删除成功！");
+                            }
+
+                            else
+                            {
+                                Growl.Error("删除失败！");
+                                Thread.Sleep(2500);
+                                Growl.Clear();
+                            }
                         }
+                        
 
                     });
                 }
@@ -205,6 +228,32 @@ namespace YingCaiAiWin.ViewModels
 
         }
 
+        [RelayCommand]
+        private async void OnALLCheckChanged()
+        {
+            var temp = Docs.Copy();
+            //IsAllSelected = !IsAllSelected;
+            foreach (var item in temp)
+            {
+                item.IsSelected = IsAllSelected;
+            }
+            Docs=temp;
+        }
+
+        [RelayCommand]
+        private async void OnCheckChanged(int parameter)
+        {
+            var temp = Docs.Copy();
+            temp.ForEach(item => {
+                if (item.Id == parameter)
+                    item.IsSelected = !item.IsSelected;
+
+                if(!item.IsSelected)
+                    IsAllSelected=false;
+            });
+
+            Docs = temp;
+        }
 
 
         /// <summary>

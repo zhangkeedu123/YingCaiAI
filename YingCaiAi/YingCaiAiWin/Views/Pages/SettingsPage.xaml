@@ -52,6 +52,9 @@
                 <ColumnDefinition Width="*" />
                 <!-- 密码框占满剩余 -->
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <!-- 按钮自适应宽度 -->
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -74,8 +77,8 @@
                     Grid.Row="0"
             Background="SkyBlue"
             HorizontalAlignment="Right" />
-
-            <Button Content="退出登录" Grid.Row="1" Margin="0,20"
+            <TextBlock Grid.Row="1" Foreground="DarkBlue" Margin="0,12,0,0" Text="截图提取文字：CTRL+WIN+S/prt scr 截取图片,然后CTRL+SHIFT+X,再CTRL+V 粘贴" />
+            <Button Content="退出登录" Grid.Row="2" Margin="0,20"
                     Width="80"
                     Height="35"
                     Grid.Column="0"

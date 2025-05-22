@@ -41,13 +41,17 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="HandyControl" Version="3.5.1" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+    <PackageReference Include="InputSimulator" Version="1.0.4" />
     <PackageReference Include="LiveCharts" Version="0.9.7" />
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
     <PackageReference Include="Microsoft.Playwright" Version="1.52.0" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3296-prerelease" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NHotkey.Wpf" Version="3.0.0" />
     <PackageReference Include="NPOI" Version="2.7.3" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
     <PackageReference Include="WPF-UI" Version="4.0.2" />
     <PackageReference Include="WPF-UI.Tray" Version="4.0.2" />
   </ItemGroup>
@@ -90,8 +94,22 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\ocr\PaddleOCR_json.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ocr\paddle_inference.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<!-- 或指定具体版本如 10.0 -->
 	</PropertyGroup>
+<ItemGroup>
+  <Content Include="Assets\ocr\**\*.*">
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
 </Project>

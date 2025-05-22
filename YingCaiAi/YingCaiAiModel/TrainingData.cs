@@ -9,14 +9,19 @@ namespace YingCaiAiModel
     public class TrainingData
     {
         public int Id { get; set; }
-        public string? Question { get; set; }
-        public string? Answer { get; set; }
-      
-        public bool? ForLora { get; set; }
+        public string? System { get; set; }
+        public string? Instruction { get; set; }
+        public string? Output { get; set; }
+
+        public string? Input { get; set; }
+
         public int? Status { get; set; }
 
         public string? StatusName { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public DateTime EditAt { get; set; }
+
+        public bool IsSelected { get; set; } = false;
     }
 }

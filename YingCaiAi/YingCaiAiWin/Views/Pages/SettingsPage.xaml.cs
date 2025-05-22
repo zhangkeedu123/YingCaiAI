@@ -3,11 +3,20 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
+using System.Text;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
 using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
+
+using YingCaiAiWin.Services;
 
 namespace YingCaiAiWin.Views.Pages;
 
@@ -18,12 +27,13 @@ public partial class SettingsPage : INavigableView<ViewModels.SettingsViewModel>
 {
     public ViewModels.SettingsViewModel ViewModel { get; }
     private INavigationWindow? _navigationWindow;
+
+
     public SettingsPage(ViewModels.SettingsViewModel viewModel, INavigationWindow navigationWindow)
     {
         ViewModel = viewModel;
         DataContext = this;
         _navigationWindow = navigationWindow;
-
         InitializeComponent();
     }
 
@@ -45,4 +55,8 @@ public partial class SettingsPage : INavigableView<ViewModels.SettingsViewModel>
            
         }
     }
+
+
+
+
 }

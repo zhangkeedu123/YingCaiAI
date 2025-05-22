@@ -114,7 +114,7 @@ namespace YingCaiAiWin
         private async void OnExit(object sender, ExitEventArgs e)
         {
             await _host.StopAsync();
-
+            new PaddleOcrService().Stop();
             _host.Dispose();
         }
 
