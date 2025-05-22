@@ -165,15 +165,20 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="答案"  Binding="{Binding Output}" Width="*"  >
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-                                    <Setter Property="TextWrapping" Value="NoWrap"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Header="答案"  Width="*"  >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox
+                                      Text="{Binding Output}"
+                                      IsReadOnly="True"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      TextWrapping="Wrap"
+                                      VerticalAlignment="Center"
+                                      Cursor="IBeam" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="审核状态"  Binding="{Binding StatusName}" Width="80"  >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
