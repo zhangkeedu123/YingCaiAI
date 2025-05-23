@@ -43,11 +43,16 @@ namespace YingCaiAiService.Service
             }
         }
 
+        /// <summary>
+        /// 查询已审核数据
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="UserServiceException"></exception>
         public async Task<BaseDataModel> GetAllAsync()
         {
             try
             {
-                var data =await _dbHelper.QueryAsync<TrainingData>("SELECT * FROM training_data ORDER BY id");
+                var data =await _dbHelper.QueryAsync<TrainingData>("SELECT * FROM training_data where status=2 ORDER BY id");
                 return BaseDataModel.Instance.OK("", data);
             }
             catch (Exception ex)
@@ -86,11 +91,17 @@ namespace YingCaiAiService.Service
 
      
 
-        public async Task<BaseDataModel> UpdateAsync(int [] ids )
+        public async Task<BaseDataModel> UpdateAsync(int [] ids ,int status=2)
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update training_data set status=2, status_name='已审核' where id=ANY(@Ids)", new { Ids = ids });
+                string name = "已审核";
+                if (status == 3)
+                {
+                    name = "已训练";
+                }
+                
+                var data = await _dbHelper.ExecuteAsync($"update training_data set status=@status, status_name=@Name where id=ANY(@Ids)", new { status,Ids = ids,Name=name });
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)

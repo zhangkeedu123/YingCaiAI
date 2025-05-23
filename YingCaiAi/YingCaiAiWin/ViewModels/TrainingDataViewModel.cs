@@ -1,6 +1,8 @@
-﻿using HandyControl.Controls;
+﻿using DocumentFormat.OpenXml.Drawing;
+using HandyControl.Controls;
 using HandyControl.Data;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using NPOI.Util;
 using System;
 using System.Collections.Generic;
@@ -253,6 +255,42 @@ namespace YingCaiAiWin.ViewModels
             });
 
             Docs = temp;
+        }
+
+        [RelayCommand]
+        private async void OnExport()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "JSONL 文件 (*.jsonl)|*.jsonl",
+                FileName = $"训练数据集{DateTime.Now.ToString("yyyyMMddHH")}.jsonl"
+            };
+
+            var  dataList=(await _service.GetAllAsync()).Data as List<TrainingData>;
+            if (dataList!=null&&dataList.Count>0&&dialog.ShowDialog() == true)
+            {
+                using (var writer = new StreamWriter(dialog.FileName, false, Encoding.UTF8))
+                {
+                    foreach (var item in dataList)
+                    {
+                        var formattedText = $"<|im_start|>system\n{item.System}<|im_end|>\n" +
+                                            $"<|im_start|>user\n{item.Instruction}<|im_end|>\n" +
+                                            $"<|im_start|>assistant\n{item.Output}<|im_end|>";
+
+                        var lineObject = new { text = formattedText };
+                        string jsonLine = JsonConvert.SerializeObject(lineObject);
+                        writer.WriteLine(jsonLine);
+                    }
+                }
+
+                await _service.UpdateAsync(dataList.Select(m=>m.Id).ToArray(),3);
+
+                System.Windows.MessageBox.Show("导出成功！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("导出失败，没有数据！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
 

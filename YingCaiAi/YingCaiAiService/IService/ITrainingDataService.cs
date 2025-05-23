@@ -12,7 +12,7 @@ namespace YingCaiAiService.IService
         Task<BaseDataModel> GetAllAsync();
         Task<BaseDataModel> GetAllPageAsync(int pageIndex, TrainingData td);
         Task<BaseDataModel> AddListAsync(List<TrainingData> td);
-        Task<BaseDataModel> UpdateAsync(int [] ids);
+        Task<BaseDataModel> UpdateAsync(int [] ids, int status = 2);
         BaseDataModel DeleteAsync(int [] id);
 
 

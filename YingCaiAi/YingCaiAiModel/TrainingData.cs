@@ -19,8 +19,8 @@ namespace YingCaiAiModel
 
         public string? StatusName { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-        public DateTime EditAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? EditAt { get; set; }
 
         public bool IsSelected { get; set; } = false;
     }
