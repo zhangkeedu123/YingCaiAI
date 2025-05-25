@@ -29,6 +29,7 @@ namespace YingCaiAiWin.Helpers
                 if (loadedUser != null)
                 {
                     AppUser.Instance.Username = loadedUser.Username;
+                    AppUser.Instance.Id = loadedUser.Id;
                     AppUser.Instance.Token = loadedUser.Token;
                     AppUser.Instance.Role = loadedUser.Role;
                 }

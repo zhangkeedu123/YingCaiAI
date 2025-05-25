@@ -11,6 +11,9 @@ using System.Security.Cryptography;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using YingCaiAiModel;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using YingCaiAiWin.Models;
 
 namespace YingCaiAiWin.Helpers
 {
@@ -129,6 +132,37 @@ namespace YingCaiAiWin.Helpers
             }
             return sb.ToString();
         }
+
+        public async Task<string> UploadAndRecognizeAudio(string filePath)
+        {
+            using var client = new HttpClient();
+            using var form = new MultipartFormDataContent();
+
+            // 添加文件部分
+            var fileContent = new ByteArrayContent(await File.ReadAllBytesAsync(filePath));
+            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("audio/wav");
+
+            // 这里的 "file" 要和 FastAPI 接口定义一致
+            form.Add(fileContent, "file", Path.GetFileName(filePath));
+
+            // 添加其他字段
+            form.Add(new StringContent(AppUser.Instance.Id.ToString()), "user_id");
+            form.Add(new StringContent(AppUser.Instance.Username), "user_name");
+
+            // 发送 POST 请求
+            var response = await client.PostAsync("http://113.105.116.171:8000/whisper/recognize/", form);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string result = await response.Content.ReadAsStringAsync();
+                return result;
+            }
+            else
+            {
+                return $"Error: {response.StatusCode}";
+            }
+        }
+
     }
     public class QAItem
     {

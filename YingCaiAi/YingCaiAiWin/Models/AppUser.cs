@@ -17,11 +17,18 @@ namespace YingCaiAiWin.Models
         private string _token;
         private string _role;
         private int _coId;
+        private int _id;
 
         public string Username
         {
             get => _username;
             set { _username = value; OnPropertyChanged(); }
+        }
+
+        public int Id
+        {
+            get => _id;
+            set { _id = value; OnPropertyChanged(); }
         }
 
         public string Token

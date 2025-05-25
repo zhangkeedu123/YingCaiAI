@@ -17,5 +17,7 @@ namespace YingCaiAiService.IService
         BaseDataModel DeleteUserAsync(int id);
         Task<Users> LoginUsersAsync(string userName, string pwd);
         Task<Users> GetUserByNameAsync(string name);
+
+        Task<List<Users>> GetAllUserAsync();
     }
 }

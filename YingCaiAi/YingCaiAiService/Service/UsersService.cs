@@ -45,13 +45,28 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                
+               
                 return await _dbHelper.QueryFirstOrDefaultAsync<Users>(
                     "SELECT * FROM users WHERE id = @Id", new { Id = id });
             }
             catch (Exception ex)
             {
                 throw new UserServiceException($"获取ID为{id}的用户失败", ex);
+            }
+        }
+
+        public async Task<List<Users>> GetAllUserAsync()
+        {
+            try
+            {
+                
+                var  data= await _dbHelper.QueryAsync<Users>(
+                     "SELECT * FROM users ", new { });
+                return data.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException($"获取用户失败", ex);
             }
         }
 

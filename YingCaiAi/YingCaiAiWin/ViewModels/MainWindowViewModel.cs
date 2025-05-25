@@ -41,7 +41,7 @@ public partial class MainWindowViewModel : ViewModel
     private void InitializeViewModel()
     {
         ApplicationTitle = "英才AI工作台";
-        
+
         NavigationItems =
         [
             new NavigationViewItem()
@@ -49,13 +49,13 @@ public partial class MainWindowViewModel : ViewModel
                 Content = "主页",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage),
-               
+
             },
             new NavigationViewItem()
             {
                 Content = "用户管理",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-                
+
                  MenuItemsSource = new object[]
                 {
                         new NavigationViewItem("用户信息", typeof(Views.Pages.UsersPage)),
@@ -97,9 +97,12 @@ public partial class MainWindowViewModel : ViewModel
 
                  MenuItemsSource = new object[]
                 {
-                        new NavigationViewItem("话术预览", typeof(Views.Pages.TrainingDataPage))
+                        new NavigationViewItem("话术预览", typeof(Views.Pages.TrainingDataPage)),
+                        new NavigationViewItem("录音管理", typeof(Views.Pages.AudioRecordPage))
                   },
-            },    new NavigationViewItem()
+
+            },
+            new NavigationViewItem()
             {
                Content = "数据看板",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
