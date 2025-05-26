@@ -151,14 +151,18 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="文件名称" Binding="{Binding FileName}" Width="80" >
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                    <Setter Property="FontWeight" Value="SemiBold" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                     
+                        <DataGridTemplateColumn Header="录音" Width="150">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock VerticalAlignment="Center" FontWeight="SemiBold">
+                                        <Hyperlink NavigateUri="{Binding FileUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                            <TextBlock Text="{Binding FileName}" />
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="上传时间" Binding="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}"  MinWidth="120" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">

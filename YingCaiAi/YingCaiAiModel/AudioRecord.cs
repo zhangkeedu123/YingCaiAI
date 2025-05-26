@@ -11,6 +11,8 @@ namespace YingCaiAiModel
         public int? Id {  get; set; }
         public string FileName { get; set; }
 
+        public string FileUrl { get { return "http://113.105.116.171:8000/uploads/audio/" + FileName; } set{ } }
+
         /// <summary>
         /// 识别文本
         /// </summary>

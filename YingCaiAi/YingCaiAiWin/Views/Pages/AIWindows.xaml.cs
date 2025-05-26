@@ -302,14 +302,16 @@ namespace YingCaiAiWin.Views.Pages
             {
                 string text = tool.Title;
 
-                ChatBox.AddLoadingBubble();
+               
+               ViewModel.ShowCustomer(text);
+                //ChatBox.AddLoadingBubble();
                 // 滚动到底部
-                Scroll();
+               // Scroll();
                 // 关闭展开框
                 expander.IsExpanded = false;
                 await Task.Delay(2000);
 
-                ChatBox.ReplaceLoadingBubble(text,text);
+                //ChatBox.ReplaceLoadingBubble(text,text);
 
 
             }
@@ -458,9 +460,10 @@ namespace YingCaiAiWin.Views.Pages
 
             return FindParent<T>(parentObject);
         }
+
         #endregion
 
-
+   
     }
 
     public class AiModelRes

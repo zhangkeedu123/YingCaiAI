@@ -106,53 +106,59 @@
                       Padding="0"
                       VerticalAlignment="Stretch"
                      Background="{Binding IconPath}"
-                     MaxHeight="210"
+                     MaxHeight="220"
                      Width="305"
                       IsChevronVisible="False">
 
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="30" />
-                                                </Grid.ColumnDefinitions>
-                                                <!-- 关闭按钮 -->
+                                            <Grid >
 
-                                                <StackPanel Grid.Column="0" Margin="10"  VerticalAlignment="Center" MaxHeight="200">
-                                                    <TextBlock
-                             FontWeight="SemiBold"
-                             FontSize="16"
-                             Text="{Binding Title}"
-                             TextTrimming="CharacterEllipsis"
-                             TextWrapping="NoWrap"
-                             ToolTip="{Binding Title}" />
-                                                    <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="170" >
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30" />
+                                                    <RowDefinition Height="*" />
+                                                </Grid.RowDefinitions>
+                                                <Grid  Grid.Column="0"  Grid.Row="0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="20" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <!-- 关闭按钮 -->
+                                                    <TextBlock Grid.Column="0"  Grid.Row="0" Margin="10,10,0,0"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="16"
+                                                   Text="{Binding Title}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="NoWrap"
+                                                   ToolTip="{Binding Title}" />
+                                                    <Button Content="✕" Grid.Column="0" Grid.Row="1"
+                                             
+                                             FontWeight="Bold"
+                                             VerticalAlignment="Top"
+                                             HorizontalAlignment="Right"
+                                             BorderBrush="{x:Null}"
+                                             Background="Transparent"                              
+                                             ToolTip="关闭卡片"
+                                             Cursor="Hand"
+                                            Command="{Binding ViewModel.CloseCardCommand,  RelativeSource={RelativeSource AncestorType=local:AIWindows}}"
+                                            CommandParameter="{Binding CommandParam}"
+                                             />
+                                                </Grid>
+                                                <StackPanel   Grid.Row="1"  VerticalAlignment="Center" MaxHeight="220">
+                                                    <ScrollViewer VerticalScrollBarVisibility="Hidden" MaxHeight="200"  >
                                                         <TextBox
-                             Text="{Binding Description}"
-                             TextWrapping="Wrap"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             IsReadOnly="True"
-                             IsReadOnlyCaretVisible="False"
-                             VerticalScrollBarVisibility="Auto"
-                             FontSize="14"
-                             Foreground="{DynamicResource  DarkPrimaryBrush}" />
+                                                             Text="{Binding Description}"
+                                                             TextWrapping="Wrap"
+                                                             Background="Transparent"
+                                                             BorderThickness="0"
+                                                             IsReadOnly="True"
+                                                             IsReadOnlyCaretVisible="False"
+                                                             VerticalScrollBarVisibility="Auto"
+                                                             FontSize="14"
+                                                             Padding="10,0,0,10"
+                                                             Margin="0,10,0,0"
+                                                             Foreground="{DynamicResource  DarkPrimaryBrush}" />
                                                     </ScrollViewer>
                                                 </StackPanel>
-                                                <Button Content="✕" Grid.Column="2"
-                            
-                              Height="35"
-                              FontSize="35"
-                              FontWeight="Bold"
-                              VerticalAlignment="Top"
-                              HorizontalAlignment="Right"
-                              BorderBrush="{x:Null}"
-                              Background="Transparent"                              
-                              ToolTip="关闭卡片"
-                              Cursor="Hand"
-                             Command="{Binding ViewModel.CloseCardCommand,  RelativeSource={RelativeSource AncestorType=local:AIWindows}}"
-                             CommandParameter="{Binding CommandParam}"
-    
-                              />
+
                                             </Grid>
                                         </ui:CardAction>
                                     </DataTemplate>
@@ -161,7 +167,7 @@
 
                         </ScrollViewer>
                     </Grid>
-                   
+
                 </TabItem>
             </TabControl>
         </ui:Card>
