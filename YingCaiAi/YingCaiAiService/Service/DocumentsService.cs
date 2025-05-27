@@ -45,12 +45,24 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public BaseDataModel GetAllAsync()
+        public async  Task<List<Documents>> GetAllSystemAsync()
         {
             try
             {
-                var data = _dbHelper.QueryAsync<Documents>("SELECT * FROM Documents ORDER BY id").Result;
-                return BaseDataModel.Instance.OK("", data);
+                return (await _dbHelper.QueryAsync<Documents>("SELECT * FROM Documents where status=5 ORDER BY id")).ToList();
+               
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+        public async Task<Documents> GetByFileNameAsync(string fileName)
+        {
+            try
+            {
+               return await _dbHelper.QueryFirstOrDefaultAsync<Documents>("SELECT * FROM Documents where filename=@fileName ",new { fileName });
+               
             }
             catch (Exception ex)
             {
@@ -67,8 +79,12 @@ namespace YingCaiAiService.Service
                 if (documents.Status != null&&documents.Status!=0)
                 {
                    
-                   sql += " and  status =@Status ";
+                    sql += " and  status =@Status ";
                     parameters.Add("Status", documents.Status);
+                }
+                else
+                {
+                    sql += " and  status !=5 ";
                 }
                  if ( !string.IsNullOrWhiteSpace(documents.Filename))
                 {
@@ -87,9 +103,43 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public Task<BaseDataModel> GetByIdAsync(int id)
+        public BaseDataModel GetSystemPageAsync(int pageIndex, Documents documents)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string sql = "WHERE 1=1 ";
+                var parameters = new DynamicParameters();
+              
+                sql += " and  status =5 ";
+               
+                if (!string.IsNullOrWhiteSpace(documents.Filename))
+                {
+                    sql += $" and ( filename LIKE @Filename or content LIKE @Content   )";
+                    parameters.Add("Filename", $"%{documents.Filename}%");
+                    parameters.Add("Content", $"%{documents.Filename}%");
+                }
+
+                var data = _dbHelper.QueryPagedAsync<Documents>($"SELECT id, filename, content,created_at,status_name,status FROM Documents\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM Documents {sql}", parameters, pageIndex, 20).Result;
+
+                return BaseDataModel.Instance.OK(data.TotalCount.ToString(), data.Data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
+        public async Task<Documents> GetByIdAsync(int id)
+        {
+            try
+            {
+                return await _dbHelper.QueryFirstOrDefaultAsync<Documents>("SELECT * FROM Documents where id=@id ", new { id });
+
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
         }
 
         public Task<BaseDataModel> SearchAsync(string keyword)
@@ -102,6 +152,19 @@ namespace YingCaiAiService.Service
             try
             {
                 var data = await _dbHelper.ExecuteAsync("update Documents set status=2, status_name='已审核' where id=@Id", new { Id=id });
+                return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
+        public async Task<BaseDataModel> UpdateAsync(Documents dc)
+        {
+            try
+            {
+                var data = await _dbHelper.ExecuteAsync("update Documents set filename=@Filename, content=@Content where id=@Id", dc);
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)

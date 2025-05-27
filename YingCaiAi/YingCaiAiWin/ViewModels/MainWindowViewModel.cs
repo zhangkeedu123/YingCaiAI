@@ -76,7 +76,7 @@ public partial class MainWindowViewModel : ViewModel
                  MenuItemsSource = new object[]
                 {
                         new NavigationViewItem("知识预览", typeof(Views.Pages.KnowledgeBase)),
-                        //new NavigationViewItem("知识入库", typeof(Views.Pages.KnowledgeBase)),
+                        new NavigationViewItem("系统配置", typeof(Views.Pages.SystemConfigPage)),
                   },
             },
               new NavigationViewItem()

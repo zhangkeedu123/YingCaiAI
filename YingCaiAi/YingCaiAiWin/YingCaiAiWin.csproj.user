@@ -36,6 +36,9 @@
     <Compile Update="Views\Pages\RolesPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Pages\SystemConfigPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Pages\TrainingDataPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -46,6 +49,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\UserControl\AddRoleDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\UserControl\AddSystemConfig.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\UserControl\CustomerStatus.xaml.cs">
@@ -101,6 +107,9 @@
     <Page Update="Views\Pages\SettingsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Pages\SystemConfigPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Pages\TrainingDataPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -111,6 +120,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\UserControl\AddRoleDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\UserControl\AddSystemConfig.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\UserControl\CustomerStatus.xaml">

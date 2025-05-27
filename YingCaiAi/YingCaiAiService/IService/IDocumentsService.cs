@@ -9,12 +9,17 @@ namespace YingCaiAiService.IService
 {
     public interface IDocumentsService : IScopedService
     {
-        BaseDataModel GetAllAsync(); 
+        Task<List<Documents>> GetAllSystemAsync(); 
         BaseDataModel GetAllPageAsync(int pageIndex, Documents documents);
-        Task<BaseDataModel> GetByIdAsync(int id);
+        Task<Documents> GetByIdAsync(int id);
         Task<BaseDataModel> AddListAsync(List<Documents> doc);
-        Task<BaseDataModel> UpdateAsync(int  id);
-       BaseDataModel DeleteAsync(int id);
+        Task<BaseDataModel> UpdateAsync(Documents dc);
+        Task<BaseDataModel> UpdateAsync(int id);
+        BaseDataModel DeleteAsync(int id);
         Task<BaseDataModel> SearchAsync(string keyword);
+
+        Task<Documents> GetByFileNameAsync(string fileName);
+
+        BaseDataModel GetSystemPageAsync(int pageIndex, Documents documents);
     }
 }

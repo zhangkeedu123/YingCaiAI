@@ -1,18 +1,22 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
 using Microsoft.Win32;
-using System.IO;
-using System.Net.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 using Wpf.Ui;
-using Wpf.Ui.Controls;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
+using YingCaiAiService.Service;
 using YingCaiAiWin.Helpers;
+using YingCaiAiWin.Views.Pages;
 
 namespace YingCaiAiWin.ViewModels
 {
-
-    public partial class KnowledgeBaseViewModel : ViewModel
+     public  partial class SystemConfigViewModel:ViewModel
     {
         private bool _isInitialized = false;
 
@@ -37,14 +41,23 @@ namespace YingCaiAiWin.ViewModels
         private readonly HttpClientHelper _httpClient;
 
         [ObservableProperty]
-        private  Documents _documents=new Documents();
-        public KnowledgeBaseViewModel(INavigationService navigationService, IDocumentsService service)
+        private Documents _documents = new Documents();
+
+        [ObservableProperty]
+        private Documents _documentEdit = new Documents();
+
+        [ObservableProperty]
+        private int _intId = 0;
+
+        private readonly IContentDialogService _contentDialogService;
+        public SystemConfigViewModel(INavigationService navigationService, IDocumentsService service, IContentDialogService contentDialogService)
         {
             if (!_isInitialized)
             {
                 _service = service;
+                _contentDialogService = contentDialogService;
                 _fileHelper = new FileHelper();
-                _httpClient = new  HttpClientHelper();
+                _httpClient = new HttpClientHelper();
                 InitializeViewModel();
 
             }
@@ -54,73 +67,24 @@ namespace YingCaiAiWin.ViewModels
         {
             LoadSampleData();
             _isInitialized = true;
-         
+
 
         }
 
 
 
-        [RelayCommand]
-        public void OnOpenFile()
-        {
-            OpenedFilePathVisibility = Visibility.Collapsed;
-
-            OpenFileDialog openFileDialog = new()
-            {
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Filter = "支持的文件 (*.doc;*.docx;*.xls;*.xlsx;*.txt)|*.doc;*.docx;*.xls;*.xlsx;*.txt",
-            };
-
-            if (openFileDialog.ShowDialog() != true)
-            {
-                return;
-            }
-
-            if (File.Exists(openFileDialog.FileName))
-            {
-                var data = _fileHelper.FileReadAll(openFileDialog.FileName,1);
-                var docs = new List<Documents>();
-                foreach (var document in data)
-                {
-                    if (!string.IsNullOrWhiteSpace(document.Question))
-                    {
-                        var doc = new Documents()
-                        {
-                            Content = document.Answer,
-                            Filename =document.Question,
-                            CreatedAt = DateTime.Now,
-                            Status = 1,
-                            StatusName = "未审核"
-                        };
-                        docs.Add(doc);
-                    }
-
-                }
-                Task.Run(() =>
-                {
-                    _service.AddListAsync(docs);
-                });
-                Growl.Success("上传成功！");
-
-            }
-
-            OpenedFilePath = openFileDialog.FileName;
-            OpenedFilePathVisibility = Visibility.Visible;
-        }
-
-
-        private  void LoadSampleData()
+      
+        private void LoadSampleData()
         {
 
             Docs.Clear();
 
             Task.Run(() =>
             {
-                
-                var data = _service.GetAllPageAsync(_currentPage, _documents);
+                var data = _service.GetSystemPageAsync(_currentPage, _documents);
                 Docs = data.Data as List<Documents> ?? new List<Documents>(); ;
-                PageCount =Convert.ToInt32( Math.Ceiling( Convert.ToInt32(data.Message)/20f));
-               
+                PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
+
             });
 
 
@@ -128,17 +92,35 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private void OnSerach(string parameter)
         {
-            
+
             LoadSampleData();
 
         }
 
+        [RelayCommand]
+        public async Task OnAddSystem(int parameter)
+        {
+
+
+            if (parameter != 0)
+            {
+                DocumentEdit = (await _service.GetByIdAsync(parameter))?? new Documents();
+            }
+            else
+            {
+                DocumentEdit = new Documents();
+            }
+            var termsOfUseContentDialog = new AddSystemConfig(_contentDialogService.GetDialogHost(), DocumentEdit, _service);
+            var result = await termsOfUseContentDialog.ShowAsync();
+            LoadSampleData();
+            return;
+        }
 
         [RelayCommand]
         private void OnApproveStatus(int parameter)
         {
 
-           
+
             Growl.Ask("请先确认资料准确无误，再点击确定按钮入库!", isConfirmed =>
             {
                 if (isConfirmed)
@@ -172,29 +154,29 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private void OnDelete(int parameter)
         {
-            
-            Growl.Ask("是否确定删除",  isConfirmed =>
+
+            Growl.Ask("是否确定删除", isConfirmed =>
             {
                 if (isConfirmed)
                 {
                     Growl.Clear();
                     Task.Run(() => {
-                        var response =  _httpClient.PostDataAsync($"milvus/delete_by_doc_id?doc_id={parameter}",null).Result;
+                        var response = _httpClient.PostDataAsync($"milvus/delete_by_doc_id?doc_id={parameter}", null).Result;
 
                         var flag = _service.DeleteAsync(parameter);
                         LoadSampleData();
                         if (flag.Status)
                         {
-                             Growl.Success("删除成功！");
+                            Growl.Success("删除成功！");
                         }
-                           
+
                         else
                         {
                             Growl.Error("删除失败！");
                             Thread.Sleep(2500);
                             Growl.Clear();
                         }
-                     
+
                     });
                 }
                 else
@@ -204,11 +186,11 @@ namespace YingCaiAiWin.ViewModels
                 }
                 return true;
             });
-       
+
 
         }
 
-     
+
 
         /// <summary>
         ///     页码改变命令
@@ -223,7 +205,5 @@ namespace YingCaiAiWin.ViewModels
             _currentPage = info.Info;
             LoadSampleData();
         }
-
-       
     }
 }
