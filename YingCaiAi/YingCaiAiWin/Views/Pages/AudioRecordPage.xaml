@@ -114,15 +114,21 @@
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
                      
-                        <DataGridTextColumn Header="录音内容"  Binding="{Binding TranScript}" Width="*" MinWidth="120" >
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                    <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
-                                    <Setter Property="TextWrapping" Value="NoWrap"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                      
+                        <DataGridTemplateColumn Header="录音内容"  Width="*"  MinWidth="120" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox
+                    Text="{Binding TranScript}"
+                    IsReadOnly="True"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Center"
+                    Cursor="IBeam" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="情感正反面"  Binding="{Binding Sentiment}" Width="120"  >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">

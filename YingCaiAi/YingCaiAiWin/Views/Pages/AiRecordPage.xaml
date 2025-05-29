@@ -55,10 +55,6 @@
                     Margin="0,0,20,0"
                     SelectedValue="{Binding ViewModel.AiRecords.CreatedUser}"
                     >
-                    <ComboBoxItem Content="全部" IsSelected="True" />
-                    <ComboBoxItem Content="未审核" />
-                    <ComboBoxItem Content="已审核" />
-                    <ComboBoxItem Content="已入库" />
                 </hc:ComboBox>
 
                 <Button 
