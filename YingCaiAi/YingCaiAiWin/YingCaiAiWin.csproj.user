@@ -45,6 +45,9 @@
     <Compile Update="Views\Pages\UsersPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\UserControl\AddCustomerDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\UserControl\AddRole.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -114,6 +117,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Pages\UsersPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\UserControl\AddCustomerDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\UserControl\AddRole.xaml">

@@ -127,8 +127,8 @@ namespace YingCaiAiService.Service
             try
             {
                 string sql = @"INSERT INTO public.customer(
-	                        name, area, co_property, co_size, contacts, phone, job_title, salary,  status,status_name, created_at)
-	                        VALUES (@Name, @Area, @CoProperty, @CoSize, @Contacts, @Phone, @JobTitle, @Salary, @Status,@StatusName, @CreatedAt) ";
+	                        name, area, co_property, co_size, contacts, phone, job_title, salary,  status,status_name, created_at,created_user,intro)
+	                        VALUES (@Name, @Area, @CoProperty, @CoSize, @Contacts, @Phone, @JobTitle, @Salary, @Status,@StatusName, @CreatedAt,@CreatedUser,@Intro) ";
                 var data = await _dbHelper.ExecuteAsync(sql, cus);
                 return BaseDataModel.Instance.OK("", data);
             }
@@ -142,7 +142,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update customer set status=@Status, status_name=@StatusName,phone=@Phone, remark=@Remark,intro=@Intro where id=@Id", customer);
+                var data = await _dbHelper.ExecuteAsync("update customer set name=@Name,area=@Area,co_property=@CoProperty,co_size=@CoSize,contacts=@Contacts, status=@Status, status_name=@StatusName,phone=@Phone, remark=@Remark,intro=@Intro,created_user=@CreatedUser where id=@Id", customer);
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)
@@ -151,6 +151,18 @@ namespace YingCaiAiService.Service
             }
         }
 
+        public async Task<BaseDataModel> UpdateUserAsync(Customer customer)
+        {
+            try
+            {
+                var data = await _dbHelper.ExecuteAsync("update customer set created_user=@CreatedUser where id=@Id", customer);
+                return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
 
     }
 }

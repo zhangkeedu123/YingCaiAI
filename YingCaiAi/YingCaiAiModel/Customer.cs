@@ -63,5 +63,10 @@ namespace YingCaiAiModel
         public int? Status { get; set; }
         public string StatusName { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        /// <summary>
+        /// 认领人
+        /// </summary>
+        public string  CreatedUser { get; set; }
     }
 }

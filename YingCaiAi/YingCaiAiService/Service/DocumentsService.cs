@@ -45,11 +45,15 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async  Task<List<Documents>> GetAllSystemAsync()
+        public async  Task<List<Documents>> GetAllSystemAsync(string fileName="")
         {
             try
             {
-                return (await _dbHelper.QueryAsync<Documents>("SELECT * FROM Documents where status=5 ORDER BY id")).ToList();
+                if (fileName == null || fileName == "")
+                {
+                    return (await _dbHelper.QueryAsync<Documents>("SELECT * FROM Documents where status=5 ORDER BY id")).ToList();
+                }
+                return (await _dbHelper.QueryAsync<Documents>($"SELECT * FROM Documents where status=5 and filename='{fileName}' ORDER BY id")).ToList();
                
             }
             catch (Exception ex)

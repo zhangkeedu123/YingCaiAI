@@ -259,11 +259,11 @@
                                     <ItemsControl x:Name="QuestionsList">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <ui:CardAction Padding="12" Margin="0,0,0,10" Click="Question_Click" Tag="{Binding}" >
+                                                <ui:CardAction Padding="12" Margin="0,0,0,10" Click="Question_Click" Tag="{Binding Content}" >
                                                     <Grid  >
                                                         <StackPanel Orientation="Horizontal">
                                                             <ui:SymbolIcon Symbol="QuestionCircle24" Foreground="#4285F4" Margin="0,0,10,0" />
-                                                            <TextBlock Text="{Binding}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                            <TextBlock  Text="{Binding Content}" VerticalAlignment="Center" TextWrapping="Wrap" />
                                                         </StackPanel>
 
                                                     </Grid>

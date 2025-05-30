@@ -9,7 +9,7 @@ namespace YingCaiAiService.IService
 {
     public interface IDocumentsService : IScopedService
     {
-        Task<List<Documents>> GetAllSystemAsync(); 
+        Task<List<Documents>> GetAllSystemAsync(string fileName = ""); 
         BaseDataModel GetAllPageAsync(int pageIndex, Documents documents);
         Task<Documents> GetByIdAsync(int id);
         Task<BaseDataModel> AddListAsync(List<Documents> doc);

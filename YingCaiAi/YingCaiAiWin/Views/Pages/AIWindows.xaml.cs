@@ -1,6 +1,9 @@
-﻿using Microsoft.Web.WebView2.Core;
+﻿using DocumentFormat.OpenXml.Office.SpreadSheetML.Y2023.MsForms;
+using Microsoft.Web.WebView2.Core;
+using NPOI.SS.Formula.Functions;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -16,6 +19,7 @@ using YingCaiAiService.Service;
 using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.ViewModels;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -24,16 +28,7 @@ namespace YingCaiAiWin.Views.Pages
     /// </summary>
     public partial class AIWindows : INavigableView<ViewModels.AIWindowsViewModel>
     {
-        private ObservableCollection<string> questions = new ObservableCollection<string>
-        {
-            "当前客户的开场白?",
-            "当前客户是否正在其他平台招聘?",
-            "输入客户预算，为你推荐合适套餐?",
-            "入驻审核失败的原因是什么?",
-            "想知道最近的平台活跃度吗?",
-            "企业相关专业知识?",
-            "还会想好?"
-        };
+        private List<Documents> questions = new List<Documents>();
 
         private ObservableCollection<string> alternateQuestions = new ObservableCollection<string>
         {
@@ -56,14 +51,15 @@ namespace YingCaiAiWin.Views.Pages
         public AIWindowsViewModel ViewModel { get; set; }
 
         private readonly IAiRecordService _aiRecordService;
+        private readonly IDocumentsService _service;
 
-     
 
-        public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService)
+        public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService, IDocumentsService service)
         {
          
                 ViewModel = viewModel;
                 _aiRecordService = aiRecordService;
+                _service = service;
                 _httpClient = new HttpClientHelper();
                 DataContext = this;
                 InitializeComponent();
@@ -128,9 +124,11 @@ namespace YingCaiAiWin.Views.Pages
         }
 
 
-        private void LoadQuestions()
+        private async void LoadQuestions()
         {
-            QuestionsList.ItemsSource = questions;
+            questions = await _service.GetAllSystemAsync("猜你想问")??new List<Documents>();
+            Random rand = new Random();
+            QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count/2).ToList();
         }
 
 
@@ -325,17 +323,17 @@ namespace YingCaiAiWin.Views.Pages
         /// <param name="e"></param>
         private async void Question_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is CardAction card && card.DataContext is string question)
+            if (sender is CardAction card && card.DataContext is Documents question)
             {
 
                 var cards = sender as CardAction;
                 string text = cards?.Tag?.ToString();
+                ChatBox.AddMessage(text, true);
                 ChatBox.AddLoadingBubble();
                 // 滚动到底部
                 Scroll();
-                await Task.Delay(2000);
 
-                ChatBox.ReplaceLoadingBubble(text, text);
+                await CallVectorizeApiAsync(text);
                 Scroll(); // 最后再滚动一次，确保展示完整
             }
         }
@@ -344,14 +342,14 @@ namespace YingCaiAiWin.Views.Pages
         {
             // 切换问题集合
             isQuestionsAlternate = !isQuestionsAlternate;
-
+            Random rand = new Random();
             if (isQuestionsAlternate)
             {
-                QuestionsList.ItemsSource = alternateQuestions;
+                QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count / 2).ToList();
             }
             else
             {
-                QuestionsList.ItemsSource = questions;
+                QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count / 2).ToList();
             }
 
 

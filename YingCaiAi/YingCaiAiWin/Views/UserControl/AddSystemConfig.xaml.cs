@@ -1,25 +1,9 @@
-﻿using DocumentFormat.OpenXml.Office2013.Drawing.Chart;
-using HandyControl.Controls;
-using NPOI.HPSF;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using HandyControl.Controls;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Wpf.Ui.Controls;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
-using static ICSharpCode.SharpZipLib.Zip.ExtendedUnixData;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -70,25 +54,30 @@ namespace YingCaiAiWin.Views.Pages
             {
                 ErrorInfoBar.Message = "类别不能为空！请重新输入!";
                 ErrorInfoBar.IsOpen = true;
-
+                obj = true;
                 return;
             }
             if (string.IsNullOrWhiteSpace(Content.Text.Trim()))
             {
                 ErrorInfoBar.Message = "内容不能为空！请重新输入!";
                 ErrorInfoBar.IsOpen = true;
+                obj = true;
                 return;
             }
             if (DocumentsEdit.Id == null || DocumentsEdit.Id < 1)
             {
-                var temp = await _service.GetByFileNameAsync(Filename.Text.Trim());
-                if (temp != null && temp.Id > 0)
+                if (!Filename.Text.Trim().Contains("猜你想问"))
                 {
-                    ErrorInfoBar.Message = "已存在相同类名！";
-                    ErrorInfoBar.IsOpen = true;
-                    return;
+                    var temp = await _service.GetByFileNameAsync(Filename.Text.Trim());
+                    if (temp != null && temp.Id > 0)
+                    {
+                        ErrorInfoBar.Message = "已存在相同类名！";
+                        ErrorInfoBar.IsOpen = true;
+                        return;
 
+                    }
                 }
+              
                 DocumentsEdit.Status = 5;
                 DocumentsEdit.CreatedAt = DateTime.Now;
             }

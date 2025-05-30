@@ -21,12 +21,18 @@
         <!-- 用户名 -->
         <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="选择状态:" />
         <ComboBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4"
-         SelectedIndex="{Binding Status}">
+         SelectedIndex="{Binding Name}">
             <ComboBoxItem Content=""  Visibility="Collapsed"  />
             <ComboBoxItem Content="已联系"  />
             <ComboBoxItem Content="联系不上"/>
         </ComboBox>
-
+        <TextBlock Grid.Row="1" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="认领客户:" />
+        <ComboBox Grid.Row="1" Grid.Column="1" Height="40" Margin="0,4"
+                SelectedIndex="{Binding Area}">
+            <ComboBoxItem Content=""  Visibility="Collapsed"  />
+            <ComboBoxItem Content="认领"  />
+            <ComboBoxItem Content="取消"/>
+        </ComboBox>
 
     </Grid>
 

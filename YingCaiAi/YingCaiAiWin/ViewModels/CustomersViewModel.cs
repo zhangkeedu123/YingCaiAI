@@ -18,6 +18,7 @@ using Wpf.Ui.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Window = System.Windows.Window;
 using YingCaiAiWin.Models;
+using NPOI.Util;
 
 namespace YingCaiAiWin.ViewModels
 {
@@ -44,6 +45,8 @@ namespace YingCaiAiWin.ViewModels
         [ObservableProperty]
         public Customer _customerSelect = new Customer();
 
+        [ObservableProperty]
+        public Customer _customerUser = new Customer();
         private readonly IContentDialogService _contentDialogService;
         [ObservableProperty]
         private string _dialogResultText = string.Empty;
@@ -79,7 +82,7 @@ namespace YingCaiAiWin.ViewModels
             {
 
                 var data = _customerService.GetAllPageAsync(_currentPage, _customerSer);
-                CustomersList = data.Data as List<Customer> ;
+                CustomersList = data.Data as List<Customer>;
                 PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
 
             });
@@ -101,12 +104,15 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private async void OnApproveStatus(int parameter)
         {
+            CustomerUser = CustomerSelect.Copy();
+            CustomerUser.Name = "";
+            CustomerUser.Area = "";
             var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
             {
                 Title = "标记状态",
                 Content = new Views.Pages.CustomerStatus
                 {
-                    DataContext = CustomerSelect
+                    DataContext = CustomerUser
                 },
                 PrimaryButtonText = "保存",
                 //SecondaryButtonText = "取消",
@@ -115,8 +121,32 @@ namespace YingCaiAiWin.ViewModels
 
             if (dialog == ContentDialogResult.Primary)
             {
-                CustomerSelect.StatusName = CustomerSelect.Status == 1 ? "已联系" : "联系不上";
-               var flag=await _customerService.UpdateAsync(CustomerSelect);
+                if (CustomerUser.Name !="")
+                {
+                    CustomerUser.Status = Convert.ToInt32(CustomerUser.Name);
+                    CustomerUser.StatusName = CustomerUser.Status == 1 ? "已联系" : "联系不上";
+                }
+                
+
+                var cus = (await _customerService.GetByIdAsync(CustomerUser.Id??0)).Data as Customer;
+
+                if (cus?.CreatedUser==AppUser.Instance.Username) {
+                   
+                     if (CustomerUser.Area == "2")
+                    {
+                        CustomerUser.CreatedUser = "";
+                    }
+                }else if (string.IsNullOrWhiteSpace(cus?.CreatedUser))
+                {
+                    if (CustomerUser.Area == "1")
+                    {
+                        CustomerUser.CreatedUser = AppUser.Instance.Username;
+                    }
+                }
+             
+                
+
+                var flag = await _customerService.UpdateAsync(CustomerUser);
 
                 if (flag.Status)
                 {
@@ -132,7 +162,7 @@ namespace YingCaiAiWin.ViewModels
             }
         }
 
-  
+
 
 
         [RelayCommand]
@@ -144,7 +174,8 @@ namespace YingCaiAiWin.ViewModels
                 if (isConfirmed)
                 {
                     Growl.Clear();
-                    Task.Run(() => {
+                    Task.Run(() =>
+                    {
                         var flag = _customerService.DeleteAsync(parameter);
                         LoadSampleData();
                         if (flag.Status)
@@ -171,24 +202,53 @@ namespace YingCaiAiWin.ViewModels
 
 
         }
-   
+
 
         [RelayCommand]
-        public void OnToContact(int parameter)
+        public async void OnToContact(int parameter)
         {
-            
-            var navigationService = App.Services.GetService<INavigationService>();
 
-            AppUser.Instance.CoId= parameter;
+            var cus = (await _customerService.GetByIdAsync(parameter)).Data as Customer;
+            if (cus.CreatedUser!=AppUser.Instance.Username)
+            {
+                Growl.Error("不能联系不属于你的客户！");
+                await Task.Delay(2000);
+                Growl.Clear();
+                
+            }
+            else
+            {
+                var navigationService = App.Services.GetService<INavigationService>();
 
-            navigationService.Navigate(typeof(AIWindows));
-            
+                AppUser.Instance.CoId = parameter;
+
+                navigationService.Navigate(typeof(AIWindows));
+            }
+          
+
 
         }
+
+        [RelayCommand]
+        private async void OnAddCus()
+        {
+            
+            var termsOfUseContentDialog = new AddCustomerDialog(_contentDialogService.GetDialogHost(),new Customer(), _customerService);
+            var result = await termsOfUseContentDialog.ShowAsync();
+            LoadSampleData();
+            return;
+        }
+
+
+
         // 添加与XAML中控件绑定的属性和命令
         [RelayCommand]
         public async Task GetPhone()
         {
+            if(string.IsNullOrWhiteSpace(CustomerSelect.Remark))
+            {
+                CustomerSelect.Remark = CustomerSelect.Phone;
+            }
             var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
             {
                 Title = "电话说明",
@@ -204,7 +264,7 @@ namespace YingCaiAiWin.ViewModels
             if (dialog == ContentDialogResult.Primary)
             {
 
-               
+
             }
 
         }
