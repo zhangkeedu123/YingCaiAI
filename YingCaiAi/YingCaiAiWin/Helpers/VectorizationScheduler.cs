@@ -17,7 +17,7 @@ namespace YingCaiAiWin.Helpers
         {
             _httpClient = new HttpClient();
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMinutes(1); // 每 5 分钟执行一次
+            _timer.Interval = TimeSpan.FromMinutes(60); // 每 5 分钟执行一次
             _timer.Tick += async (s, e) => await CallVectorizeApiAsync();
         }
 

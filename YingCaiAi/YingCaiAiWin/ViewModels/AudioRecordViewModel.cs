@@ -14,6 +14,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
 using YingCaiAiService.Service;
@@ -51,14 +53,19 @@ namespace YingCaiAiWin.ViewModels
         private AudioRecord _audioRecordM = new AudioRecord();
 
         [ObservableProperty]
+        private AudioRecord _audioRecordSelect = new AudioRecord();
+
+        [ObservableProperty]
         private List<Users> _users = new List<Users>();
+        private readonly IContentDialogService _contentDialogService;
         public IUsersService _usersService { get; set; }
-        public AudioRecordViewModel(INavigationService navigationService, IAudioRecordService service, IUsersService usersService)
+        public AudioRecordViewModel(INavigationService navigationService, IAudioRecordService service, IUsersService usersService, IContentDialogService contentDialogService)
         {
             if (!_isInitialized)
             {
                 _service = service;
                 _usersService = usersService;
+                _contentDialogService = contentDialogService;
                 _fileHelper = new FileHelper();
                 _httpClient = new HttpClientHelper();
                 InitializeViewModel();
@@ -103,34 +110,33 @@ namespace YingCaiAiWin.ViewModels
                 {
                     var json = JObject.Parse(data);
                     var id = Convert.ToInt32(json.GetValue("id"));
-                    var text = json.GetValue("text")?.ToString();
                 
                     try
                     {
-                        if (text.Contains("</think>"))
-                        {
-                            int n = text.IndexOf("</think>");
-                            if (n > 0)
-                            {
-                                var retext = text.Substring(n + 10).Replace("```json", "").Replace("```", "").Trim();
-                                var aiRes = JsonConvert.DeserializeObject<AudioSentiment>(retext);
-                                var sentiment = string.Join(",", aiRes.sentiment.label);
-                                var emotion = string.Join(",", aiRes.emotion.Select(s => s.label));
-                                var intent = string.Join(",", aiRes.intent.Select(s => s.label));
-                                var violation = string.Join(",", aiRes.violation.Select(s => s.label));
-                                var ar = new AudioRecord()
-                                {
-                                    Id = id,
-                                    Sentiment = sentiment,
-                                    Emotion = emotion,
-                                    Intent = intent,
-                                    ViolationTag = violation,
+                        //if (text.Contains("</think>"))
+                        //{
+                        //    int n = text.IndexOf("</think>");
+                        //    if (n > 0)
+                        //    {
+                        //        var retext = text.Substring(n + 10).Replace("```json", "").Replace("```", "").Trim();
+                        //        var aiRes = JsonConvert.DeserializeObject<AudioSentiment>(retext);
+                        //        var sentiment = string.Join(",", aiRes.sentiment.label);
+                        //        var emotion = string.Join(",", aiRes.emotion.Select(s => s.label));
+                        //        var intent = string.Join(",", aiRes.intent.Select(s => s.label));
+                        //        var violation = string.Join(",", aiRes.violation.Select(s => s.label));
+                        //        var ar = new AudioRecord()
+                        //        {
+                        //            Id = id,
+                        //            Sentiment = sentiment,
+                        //            Emotion = emotion,
+                        //            Intent = intent,
+                        //            ViolationTag = violation,
 
-                                };
-                                _service.UpdateAsync(ar);
+                        //        };
+                        //        _service.UpdateAsync(ar);
 
-                            }
-                        }
+                        //    }
+                        //}
                     }
                     catch (Exception)
                     {
@@ -212,7 +218,35 @@ namespace YingCaiAiWin.ViewModels
 
         }
 
+        // 添加与XAML中控件绑定的属性和命令
+        [RelayCommand]
+        public async Task GetNLP(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+            var data = new {text };
+            var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
+            {
+                Title = "NLP分析报告",
+                Content = new Views.Pages.ShowNLPControl
+                {
+                    DataContext = AudioRecordSelect,
+                    
+                },
+                //PrimaryButtonText = "保存",
+                //SecondaryButtonText = "取消",
+                CloseButtonText = "关闭",
+            });
 
+            if (dialog == ContentDialogResult.Primary)
+            {
+
+
+            }
+
+        }
 
         /// <summary>
         ///     页码改变命令

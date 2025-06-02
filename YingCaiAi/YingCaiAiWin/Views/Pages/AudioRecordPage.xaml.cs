@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Wpf.Ui.Abstractions.Controls;
+using YingCaiAiModel;
 using YingCaiAiWin.ViewModels;
 
 namespace YingCaiAiWin.Views.Pages
@@ -69,6 +70,13 @@ namespace YingCaiAiWin.Views.Pages
                 UseShellExecute = true
             });
             e.Handled = true;
+        }
+        private async void PhoneTextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TextBlock tb && tb.DataContext is AudioRecord model)
+            {
+                await ViewModel.GetNLP(model.Sentiment);
+            }
         }
     }
 }

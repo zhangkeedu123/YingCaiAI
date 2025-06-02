@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:YingCaiAiWin.Views.Pages"
     xmlns:hc="https://handyorg.github.io/handycontrol"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     mc:Ignorable="d"
     Title="录音管理"
     d:DataContext="{d:DesignInstance local:AudioRecordPage,                     IsDesignTimeCreatable=False}"
@@ -99,6 +100,7 @@
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    ItemsSource="{Binding ViewModel.Docs, Mode=OneWay}"
+                    SelectedItem="{Binding ViewModel.AudioRecordSelect}"
                    Height="620"
                     >
 
@@ -129,14 +131,32 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="情感正反面"  Binding="{Binding Sentiment}" Width="120"  >
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn Header="情绪"  Binding="{Binding Emotion}" Width="120"  >
+                  
+                        <DataGridTemplateColumn Header="NLP分析报告" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="立即查看" x:Name="SentimentTextBlock"
+                          Foreground="Blue"
+                          TextDecorations="Underline"
+                          Cursor="Hand"
+                          VerticalAlignment="Center"
+                          TextWrapping="NoWrap"
+                                              
+                          MouseLeftButtonUp="PhoneTextBlock_MouseLeftButtonUp"/>
+
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Sentiment}" Value="">
+                                            <Setter TargetName="SentimentTextBlock" Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Sentiment}" Value="{x:Null}">
+                                            <Setter TargetName="SentimentTextBlock" Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                      
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!--<DataGridTextColumn Header="情绪"  Binding="{Binding Emotion}" Width="120"  >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center" />
@@ -156,7 +176,7 @@
                                     <Setter Property="VerticalAlignment" Value="Center" />
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        </DataGridTextColumn>-->
                      
                         <DataGridTemplateColumn Header="录音" Width="150">
                             <DataGridTemplateColumn.CellTemplate>
