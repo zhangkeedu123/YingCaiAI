@@ -41,7 +41,7 @@ namespace YingCaiAiWin.Views.Pages
 
         private async void Load()
         {
-             Name.Text = CustomerEdit.Name;
+            Name.Text = CustomerEdit.Name;
             Area.Text= CustomerEdit.Area;
             Contacts.Text = CustomerEdit.Contacts;
             CoProperty.Text = CustomerEdit.CoProperty;

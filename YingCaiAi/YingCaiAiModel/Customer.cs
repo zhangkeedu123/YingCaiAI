@@ -68,5 +68,7 @@ namespace YingCaiAiModel
         /// 认领人
         /// </summary>
         public string  CreatedUser { get; set; }
+
+        public bool IsSelected { get; set; } = false;
     }
 }

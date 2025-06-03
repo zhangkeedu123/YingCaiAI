@@ -15,7 +15,8 @@ namespace YingCaiAiWin.Models
 
         private string _username;
         private string _token;
-        private string _role;
+        private string _role; 
+        private string _role_name;
         private int _coId;
         private int _id;
 
@@ -42,6 +43,14 @@ namespace YingCaiAiWin.Models
             get => _role;
             set { _role = value; OnPropertyChanged(); }
         }
+
+        public string RoleName
+        {
+            get => _role_name;
+            set { _role_name = value; OnPropertyChanged(); }
+        }
+
+
         public int CoId
         {
             get => _coId;

@@ -19,6 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Window = System.Windows.Window;
 using YingCaiAiWin.Models;
 using NPOI.Util;
+using System.Windows.Controls;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace YingCaiAiWin.ViewModels
 {
@@ -50,6 +52,9 @@ namespace YingCaiAiWin.ViewModels
         private readonly IContentDialogService _contentDialogService;
         [ObservableProperty]
         private string _dialogResultText = string.Empty;
+
+        [ObservableProperty]
+        private bool _isAllSelected;
         public CustomersViewModel(INavigationService navigationService, ICustomerService customerService, IContentDialogService contentDialogService)
         {
 
@@ -80,7 +85,14 @@ namespace YingCaiAiWin.ViewModels
 
             Task.Run(() =>
             {
-
+                var roleName = AppUser.Instance.RoleName;
+                if (roleName != null && roleName != "")
+                {
+                    if (roleName != "管理员")
+                    {
+                        _customerSer.CreatedUser = AppUser.Instance.Username;
+                    }
+                }
                 var data = _customerService.GetAllPageAsync(_currentPage, _customerSer);
                 CustomersList = data.Data as List<Customer>;
                 PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
@@ -104,9 +116,8 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private async void OnApproveStatus(int parameter)
         {
-            CustomerUser = CustomerSelect.Copy();
-            CustomerUser.Name = "";
-            CustomerUser.Area = "";
+
+            CustomerUser = new Customer() { Id = CustomerSelect.Id, Name = "", Area = "", Status = null };
             var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
             {
                 Title = "标记状态",
@@ -121,32 +132,38 @@ namespace YingCaiAiWin.ViewModels
 
             if (dialog == ContentDialogResult.Primary)
             {
-                if (CustomerUser.Name !="")
+                if (CustomerUser.Name != "")
                 {
                     CustomerUser.Status = Convert.ToInt32(CustomerUser.Name);
                     CustomerUser.StatusName = CustomerUser.Status == 1 ? "已联系" : "联系不上";
                 }
-                
 
-                var cus = (await _customerService.GetByIdAsync(CustomerUser.Id??0)).Data as Customer;
 
-                if (cus?.CreatedUser==AppUser.Instance.Username) {
-                   
-                     if (CustomerUser.Area == "2")
+                var cus = (await _customerService.GetByIdAsync(CustomerUser.Id ?? 0)).Data as Customer;
+
+                if (cus?.CreatedUser == AppUser.Instance.Username)
+                {
+
+                    if (CustomerUser.Area == "2")
                     {
                         CustomerUser.CreatedUser = "";
                     }
-                }else if (string.IsNullOrWhiteSpace(cus?.CreatedUser))
+                }
+                else if (string.IsNullOrWhiteSpace(cus?.CreatedUser))
                 {
                     if (CustomerUser.Area == "1")
                     {
                         CustomerUser.CreatedUser = AppUser.Instance.Username;
                     }
                 }
-             
-                
+                else
+                {
+                    CustomerUser.Area = "";
+                }
 
-                var flag = await _customerService.UpdateAsync(CustomerUser);
+
+
+                var flag = await _customerService.UpdateUserAsync(CustomerUser);
 
                 if (flag.Status)
                 {
@@ -166,7 +183,7 @@ namespace YingCaiAiWin.ViewModels
 
 
         [RelayCommand]
-        private void OnDelete(int parameter)
+        private void OnDelete()
         {
 
             Growl.Ask("是否确定删除", isConfirmed =>
@@ -176,18 +193,32 @@ namespace YingCaiAiWin.ViewModels
                     Growl.Clear();
                     Task.Run(() =>
                     {
-                        var flag = _customerService.DeleteAsync(parameter);
-                        LoadSampleData();
-                        if (flag.Status)
-                        {
-                            Growl.Success("删除成功！");
-                        }
 
+                        var select = CustomersList.Where(m => m.IsSelected);
+                        if (select.Count() == 0)
+                        {
+                            Task.Run(() =>
+                            {
+                                Growl.Info("请选择要删除的数据！");
+                            });
+
+                        }
                         else
                         {
-                            Growl.Error("删除失败！");
-                            Thread.Sleep(2500);
-                            Growl.Clear();
+                            var ids = select.Select(s => s.Id).ToArray();
+                            var flag = _customerService.DeleteAsync(ids);
+                            LoadSampleData();
+                            if (flag.Status)
+                            {
+                                Growl.Success("删除成功！");
+                            }
+
+                            else
+                            {
+                                Growl.Error("删除失败！");
+                                Thread.Sleep(2500);
+                                Growl.Clear();
+                            }
                         }
 
                     });
@@ -209,12 +240,12 @@ namespace YingCaiAiWin.ViewModels
         {
 
             var cus = (await _customerService.GetByIdAsync(parameter)).Data as Customer;
-            if (cus.CreatedUser!=AppUser.Instance.Username)
+            if (cus.CreatedUser != AppUser.Instance.Username)
             {
                 Growl.Error("不能联系不属于你的客户！");
                 await Task.Delay(2000);
                 Growl.Clear();
-                
+
             }
             else
             {
@@ -224,7 +255,7 @@ namespace YingCaiAiWin.ViewModels
 
                 navigationService.Navigate(typeof(AIWindows));
             }
-          
+
 
 
         }
@@ -232,20 +263,29 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private async void OnAddCus()
         {
-            
-            var termsOfUseContentDialog = new AddCustomerDialog(_contentDialogService.GetDialogHost(),new Customer(), _customerService);
+
+            var termsOfUseContentDialog = new AddCustomerDialog(_contentDialogService.GetDialogHost(), new Customer(), _customerService);
+            var result = await termsOfUseContentDialog.ShowAsync();
+            LoadSampleData();
+            return;
+        }
+
+        [RelayCommand]
+        private async void OnEditCus(int parameter)
+        {
+
+            var termsOfUseContentDialog = new AddCustomerDialog(_contentDialogService.GetDialogHost(), CustomerSelect, _customerService);
             var result = await termsOfUseContentDialog.ShowAsync();
             LoadSampleData();
             return;
         }
 
 
-
         // 添加与XAML中控件绑定的属性和命令
         [RelayCommand]
         public async Task GetPhone()
         {
-            if(string.IsNullOrWhiteSpace(CustomerSelect.Remark))
+            if (string.IsNullOrWhiteSpace(CustomerSelect.Remark))
             {
                 CustomerSelect.Remark = CustomerSelect.Phone;
             }
@@ -267,6 +307,34 @@ namespace YingCaiAiWin.ViewModels
 
             }
 
+        }
+
+        [RelayCommand]
+        private async void OnALLCheckChanged()
+        {
+            var temp = CustomersList.Copy();
+            //IsAllSelected = !IsAllSelected;
+            foreach (var item in temp)
+            {
+                item.IsSelected = IsAllSelected;
+            }
+            CustomersList = temp;
+        }
+
+        [RelayCommand]
+        private async void OnCheckChanged(int parameter)
+        {
+            var temp = CustomersList.Copy();
+            temp.ForEach(item =>
+            {
+                if (item.Id == parameter)
+                    item.IsSelected = !item.IsSelected;
+
+                if (!item.IsSelected)
+                    IsAllSelected = false;
+            });
+
+            CustomersList = temp;
         }
 
 

@@ -73,6 +73,7 @@ namespace YingCaiAiWin.Views
                 AppUser.Instance.Username = flag.UserName;
                 AppUser.Instance.Token = password;
                 AppUser.Instance.Role =flag.PerIds;
+                AppUser.Instance.RoleName = flag.RoleName;
                 AppUser.Instance.Id = flag.Id;
                 UserStorageHelper.SaveUser(AppUser.Instance); // 保存持久化
 

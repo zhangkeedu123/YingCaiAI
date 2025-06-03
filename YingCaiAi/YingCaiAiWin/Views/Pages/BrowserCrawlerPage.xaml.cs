@@ -338,7 +338,7 @@ namespace YingCaiAiWin.Views.Pages
             var result = await _customerService.GetAllAsync();//获取手机号为空的，且未联系的数据
             if (result.Status)
             {
-                var data = result.Data as List<Customer>;
+                var data = (result.Data as List<Customer>);
                 if (data != null && data.Count > 0)
                 {
                     foreach (var customer in data)

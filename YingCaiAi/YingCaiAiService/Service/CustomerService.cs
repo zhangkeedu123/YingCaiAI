@@ -17,11 +17,11 @@ namespace YingCaiAiService.Service
 
         }
    
-        public BaseDataModel DeleteAsync(int id)
+        public BaseDataModel DeleteAsync(int?[] id)
         {
             try
             {
-                var data = _dbHelper.ExecuteAsync("delete from customer  where id=@Id", new { Id = id }).Result;
+                var data = _dbHelper.ExecuteAsync("delete from customer  where id=ANY(@Id)", new { Id = id }).Result;
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data =await _dbHelper.QueryAsync<Customer>("SELECT * FROM customer  where status=0 and phone is null order by id desc ");
+                var data =await _dbHelper.QueryAsync<Customer>("SELECT  * FROM customer  where status=0 and phone is null order by id desc ");
                 return  BaseDataModel.Instance.OK("", data);
             }
             catch (Exception ex)
@@ -96,6 +96,11 @@ namespace YingCaiAiService.Service
                     parameters.Add("Name", $"%{cus.Name}%");
                     parameters.Add("JobTitle", $"%{cus.Name}%");
                 }
+                if(!string.IsNullOrWhiteSpace(cus.CreatedUser))
+                {
+                    sql += $" and ( created_user =@CreatedUser or created_user is null or created_user ='' )";
+                    parameters.Add("CreatedUser", cus.CreatedUser);
+                }
 
                 var data = _dbHelper.QueryPagedAsync<Customer>($"SELECT *  FROM customer\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM customer {sql}", parameters, pageIndex, 20).Result;
 
@@ -142,8 +147,12 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update customer set name=@Name,area=@Area,co_property=@CoProperty,co_size=@CoSize,contacts=@Contacts, status=@Status, status_name=@StatusName,phone=@Phone, remark=@Remark,intro=@Intro,created_user=@CreatedUser where id=@Id", customer);
-                return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
+               
+                    var data = await _dbHelper.ExecuteAsync("update customer set name=@Name, area=@Area,co_property=@CoProperty,co_size=@CoSize,contacts=@Contacts, status=@Status, status_name=@StatusName,phone=@Phone, remark=@Remark,intro=@Intro,created_user=@CreatedUser where id=@Id", customer);
+                    return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
+              
+               
+                
             }
             catch (Exception ex)
             {
@@ -151,12 +160,39 @@ namespace YingCaiAiService.Service
             }
         }
 
+
         public async Task<BaseDataModel> UpdateUserAsync(Customer customer)
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update customer set created_user=@CreatedUser where id=@Id", customer);
-                return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
+
+                if (customer.Name !="" || customer.Area!="")
+                {
+                    var sql = "update customer set ";
+                    if (customer.Name != "")
+                    {
+                        sql += " status=@Status,status_name=@StatusName ";
+                    }
+                    if (customer.Area != "")
+                    {
+                        if (sql.Contains("status=@Status"))
+                        {
+                            sql += " , created_user=@CreatedUser";
+                        }
+                        else
+                        {
+                            sql += "  created_user=@CreatedUser";
+                        }
+                    }
+                    sql += " where id=@Id ";
+                    var data = await _dbHelper.ExecuteAsync(sql, customer);
+                    return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
+                }
+                else
+                {
+                    return BaseDataModel.Instance.OK("");
+                }
+               
             }
             catch (Exception ex)
             {
