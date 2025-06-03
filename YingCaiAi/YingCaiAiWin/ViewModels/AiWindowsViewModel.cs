@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using HandyControl.Data;
+using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using NPOI.Util;
 using System.Collections.ObjectModel;
@@ -220,6 +221,7 @@ namespace YingCaiAiWin.ViewModels
                                 var newList = CardItems.Copy();
                                 var i = new Random();
                                 var retext = aitext.Substring(n + 10);
+                                
                                 newList.Add(new CardItem
                                 {
                                     Title = title,

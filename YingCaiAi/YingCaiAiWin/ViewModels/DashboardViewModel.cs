@@ -3,6 +3,7 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 using System.Collections.ObjectModel;
+using System.Windows.Documents;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using YingCaiAiService.IService;
@@ -104,4 +105,5 @@ public class CardItem
     public string Description { get; set; }
     public string IconPath { get; set; } // Í¼Æ¬Â·¾¶
     public string CommandParam { get; set; }
+
 }

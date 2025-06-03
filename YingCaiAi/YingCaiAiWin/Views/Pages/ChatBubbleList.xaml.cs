@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Markdig;
+using Markdig.Wpf;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -6,6 +8,7 @@ using System.Windows.Media.Animation;
 
 using Wpf.Ui.Controls;
 using YingCaiAiWin.ViewModels;
+using RichTextBox = Wpf.Ui.Controls.RichTextBox;
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
@@ -159,17 +162,41 @@ namespace YingCaiAiWin.Views.Pages
         {
             if (_loadingBubble != null)
             {
-                var textBox = new System.Windows.Controls.TextBox
+                //var textBox = new System.Windows.Controls.TextBox
+                //{
+                //    Text = answerText,
+                //    Background = Brushes.Transparent,
+                //    BorderThickness = new Thickness(0),
+                //    IsReadOnly = true,
+                //    TextWrapping = TextWrapping.Wrap,
+                //    FontSize = 14,
+                //    Foreground = Brushes.Black,
+                //    Cursor = Cursors.IBeam
+                //};
+                var pipeline = new MarkdownPipelineBuilder().UseSupportedExtensions().Build();
+                var flowDocument = Markdig.Wpf.Markdown.ToFlowDocument(answerText, pipeline);
+
+                // 创建只读 RichTextBox 作为展示控件
+                var textBox = new RichTextBox
                 {
-                    Text = answerText,
+                    IsReadOnly = true,
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
-                    IsReadOnly = true,
-                    TextWrapping = TextWrapping.Wrap,
                     FontSize = 14,
                     Foreground = Brushes.Black,
-                    Cursor = Cursors.IBeam
+                    Cursor = Cursors.IBeam,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                    Document = flowDocument
                 };
+                //var textBox = new Markdig.Wpf.MarkdownViewer
+                //{
+                //    Markdown = answerText,
+                //    FontSize = 14,
+                //    Foreground = Brushes.Black,
+                //    Background = Brushes.Transparent,
+                //    Padding = new Thickness(0),
+                //};
+
 
                 // 创建悬浮按钮 (ui:SymbolIcon 模拟为 Button + TextBlock 或使用实际控件库)
                 var iconButton = new System.Windows.Controls.Button
