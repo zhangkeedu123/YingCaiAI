@@ -48,6 +48,13 @@
             <ComboBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4" x:Name="UrlTextBox">
                 <ComboBoxItem Content="智联：https://www.zhaopin.com/"  IsSelected="True"  />
                 <ComboBoxItem Content="猎聘: https://www.liepin.com/" />
+                <ComboBoxItem Content="一览媒化工：http://mh.job1001.com/" />
+                <ComboBoxItem Content="一览化工：http://chem.job1001.com/ " />
+                <ComboBoxItem Content="一览设计：https://www.sjjob88.com/" />
+                <ComboBoxItem Content="一览市政：https://sz.tmjob88.com/" />
+                <ComboBoxItem Content="一览土木：https://www.tmjob88.com/" />
+                <ComboBoxItem Content="一览路桥：https://www.lqjob88.com/" />
+                <ComboBoxItem Content="一览监理：https://www.jljob88.com/" />
             </ComboBox>
 
             <TextBlock Grid.Row="1" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="关键词:" />
@@ -90,10 +97,12 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <ui:Button Grid.Row="0" Grid.Column="0"  Appearance="Primary" Click="Go_Click"  Content="开始执行"/>
                 <ui:Button Grid.Row="0" Grid.Column="1"  Appearance="Primary" Click="Phone_Click" Background="CadetBlue" Content="获取号码"/>
+                <ui:Button Grid.Row="0" Grid.Column="2"  Appearance="Primary" Click="Stop_Click" Background="OrangeRed" Content="停止"/>
             </Grid>
           
             <TextBlock Grid.Row="9" Grid.Column="0"  FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="日志:" />

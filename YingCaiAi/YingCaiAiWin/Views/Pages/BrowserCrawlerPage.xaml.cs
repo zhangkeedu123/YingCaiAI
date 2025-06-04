@@ -19,6 +19,7 @@ namespace YingCaiAiWin.Views.Pages
         private bool _isInitialized = false;
         private bool _isphone = false;
         private bool _issearch = false;
+        private bool _isstop = false;
 
         private readonly ICustomerService _customerService;
 
@@ -177,17 +178,26 @@ namespace YingCaiAiWin.Views.Pages
                 AppendLog("✅ 没有找到数据。。。");
             }
 
-            var numC= Convert.ToInt32(((ContentControl)DataCount.SelectedItem).Content);
-
-            if (dataC < numC)
+            if (!_isstop)
             {
-                SearchByKeyword((dataC/20)+1);
+                var numC = Convert.ToInt32(((ContentControl)DataCount.SelectedItem).Content);
+
+                if (dataC < numC)
+                {
+                    SearchByKeyword((dataC / 20) + 1);
+                }
+                else
+                {
+                    dataC = 0;
+                    _issearch = false;
+                }
             }
             else
             {
-                dataC = 0;
-                _issearch = false;
+                _isstop = false;
             }
+
+            
 
         }
         /// <summary>
@@ -285,6 +295,27 @@ namespace YingCaiAiWin.Views.Pages
             }
         }
 
+        /// <summary>
+        /// 停止
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Stop_Click(object sender, RoutedEventArgs e)
+        {
+            if (_isphone||_issearch)
+            {
+                _isstop = true;
+                AppendLog("⏳ 正在停止");
+            }
+
+            if (!_isphone &&! _issearch)
+            {
+                _isstop = false;
+                AppendLog("✅ 没有任务");
+            }
+           
+        }
+
         private async Task<string> GetPhone(string name,string name1= "的电话")
         {
             AppendLog("⏳ 正在滚动页面...");
@@ -359,7 +390,12 @@ namespace YingCaiAiWin.Views.Pages
                             await Task.Delay(2000);
 
                         }
+                        if (_isstop)
+                        {
+                            break;
+                        }
                     }
+                    _isstop = false;
 
                     AppendLog($"✅ 获取电话结束。");
                 }
@@ -398,6 +434,7 @@ namespace YingCaiAiWin.Views.Pages
             var rand = new Random();
             return agents[rand.Next(agents.Length)];
         }
+
 
 
     }

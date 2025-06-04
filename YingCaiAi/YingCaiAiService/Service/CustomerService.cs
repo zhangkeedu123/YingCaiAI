@@ -34,7 +34,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data =await _dbHelper.QueryAsync<Customer>("SELECT  * FROM customer  where status=0 and phone is null order by id desc ");
+                var data =await _dbHelper.QueryAsync<Customer>("SELECT  * FROM customer  where status=0 and phone is null order by id desc LIMIT 20  ");
                 return  BaseDataModel.Instance.OK("", data);
             }
             catch (Exception ex)
