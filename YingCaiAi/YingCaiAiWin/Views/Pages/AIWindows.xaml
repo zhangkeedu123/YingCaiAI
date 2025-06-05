@@ -14,6 +14,7 @@
                                      IsDesignTimeCreatable=False}"
      d:DesignHeight="800"
      d:DesignWidth="1000"
+
     Title="客户服务系统" 
   >
     <!--WindowStartupLocation="CenterScreen"
@@ -292,20 +293,34 @@
 
 
             <!-- 底部搜索栏 -->
-            <ui:Card Grid.Row="3" Background="#4285F4" Margin="10,0,10,10" Padding="10">
-                <ui:TextBox x:Name="SearchBox" PlaceholderText="请输入搜索关键字，回车搜索"  Height="40"
-                           Icon="Search24" 
-                           VerticalAlignment="Center" 
-                           Background="White"
-                             AcceptsReturn="True" 
-                             TextWrapping="Wrap" 
-                            VerticalScrollBarVisibility="Auto"
-                            
-                            MaxLength="2147483647"
-                     
-                            PreviewKeyDown="SearchBox_PreviewKeyDown"
-                            />
+            <ui:Card Grid.Row="3"  Background="AliceBlue" Margin="10,0,10,10" Padding="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="60" />
+                    </Grid.ColumnDefinitions>
+                    <ui:TextBox x:Name="SearchBox" Grid.Column="0" PlaceholderText="请输入搜索关键字，回车搜索"  Height="40"
+           Icon="Search24" 
+           VerticalAlignment="Center" 
+           Background="White"
+             AcceptsReturn="True" 
+             TextWrapping="Wrap" 
+            VerticalScrollBarVisibility="Auto"
+            
+            MaxLength="2147483647"
+     
+            PreviewKeyDown="SearchBox_PreviewKeyDown"
+            />
+                    
+                    <CheckBox x:Name="IsNet"
+                        Grid.Column="1"
+                        Content="联网" />
+                </Grid>
+                
+
             </ui:Card>
+           
+           
         </Grid>
     </Grid>
 </Page>

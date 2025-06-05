@@ -1,4 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office.SpreadSheetML.Y2023.MsForms;
+using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlAgilityPack;
+using Microsoft.Playwright;
 using Microsoft.Web.WebView2.Core;
 using NPOI.SS.Formula.Functions;
 using System.Collections.ObjectModel;
@@ -53,6 +56,9 @@ namespace YingCaiAiWin.Views.Pages
         private readonly IAiRecordService _aiRecordService;
         private readonly IDocumentsService _service;
 
+        private bool isNet = false;
+
+        private IPage page;
 
         public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService, IDocumentsService service)
         {
@@ -80,12 +86,42 @@ namespace YingCaiAiWin.Views.Pages
                     }
                 };
 
-                //ChatBox.AddMessage("今天天气如何？", true);
-                //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
-            
+            //ChatBox.AddMessage("今天天气如何？", true);
+            //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
+            loadWeb();
           
         }
-      
+       private async void loadWeb()
+        {
+            try
+            {
+                if (page == null)
+                {
+                    var playwright = await Playwright.CreateAsync();
+                    var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+
+                    // 创建一个临时上下文（无缓存、无 Cookie）
+                    var context = await browser.NewContextAsync(new()
+                    {
+                        ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
+                        //UserAgent = GetRandomUserAgent(),  // 🧠 可选：随机 UA
+                    });
+                    page = await context.NewPageAsync();
+                    //var page = await browser.NewPageAsync();
+                    await page.GotoAsync($"https://chat.baidu.com/search", new PageGotoOptions
+                    {
+                        WaitUntil = WaitUntilState.NetworkIdle,
+                        Timeout = 40000 // 延长等待时间
+                    });
+                }
+            }
+            catch (Exception)
+            {
+
+                
+            }
+            
+        }
 
         /// <summary>
         /// 设置窗口大小
@@ -387,46 +423,72 @@ namespace YingCaiAiWin.Views.Pages
                 Stopwatch stopwatch = new Stopwatch();
                 // 开始计时
                 stopwatch.Start();
-                var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k = 10 });
-                if (response != null)
+                if (IsNet.IsChecked==false)
                 {
-                    // 停止计时
-                    stopwatch.Stop();
-                    if (response.Contains("</think>"))
+                    var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k = 10 });
+                    if (response != null)
                     {
-                        var aimodel= JsonSerializer.Deserialize<AiModelRes>(response);
-                        var aitext = aimodel.answer;
-                        int n = aitext.IndexOf("</think>");
-                        if (n > 0)
+                        // 停止计时
+                        stopwatch.Stop();
+                        if (response.Contains("</think>"))
                         {
-                            var retext = aitext.Substring(n +10);
-                            ChatBox.ReplaceLoadingBubble(retext, text);
-                            Scroll(); // 最后再滚动一次，确保展示完整
-
-                            Task.Run( () =>
+                            var aimodel = JsonSerializer.Deserialize<AiModelRes>(response);
+                            var aitext = aimodel.answer;
+                            int n = aitext.IndexOf("</think>");
+                            if (n > 0)
                             {
-                                // 获取执行时间
-                                TimeSpan elapsedTime = stopwatch.Elapsed;
-                                var ai = new AiRecord()
+                                var retext = aitext.Substring(n + 10);
+                                ChatBox.ReplaceLoadingBubble(retext, text);
+                                Scroll(); // 最后再滚动一次，确保展示完整
+
+                                Task.Run(() =>
                                 {
-                                    Question = text,
-                                    Answer = retext,
-                                    CreatedAt = DateTime.Now,
-                                    CreatedUser = AppUser.Instance.Username,
-                                    Times = (int)elapsedTime.TotalSeconds,
-                                };
-                                _aiRecordService.AddAsync(ai);
+                                    // 获取执行时间
+                                    TimeSpan elapsedTime = stopwatch.Elapsed;
+                                    var ai = new AiRecord()
+                                    {
+                                        Question = text,
+                                        Answer = retext,
+                                        CreatedAt = DateTime.Now,
+                                        CreatedUser = AppUser.Instance.Username,
+                                        Times = (int)elapsedTime.TotalSeconds,
+                                    };
+                                    _aiRecordService.AddAsync(ai);
 
-                            });
+                                });
+                            }
                         }
-                    }
 
+                    }
+                    else
+                    {
+                        ChatBox.ReplaceLoadingBubble("检索超时。。。");
+                        Scroll(); // 最后再滚动一次，确保展示完整
+
+                    }
                 }
                 else
                 {
-                    ChatBox.ReplaceLoadingBubble("检索超时。。。");
+                   string  retext = await GetNetSearch(text);
+                   ChatBox.ReplaceLoadingBubble(retext, text);
                     Scroll(); // 最后再滚动一次，确保展示完整
+                    Task.Run(() =>
+                    {
+                        // 获取执行时间
+                        TimeSpan elapsedTime = stopwatch.Elapsed;
+                        var ai = new AiRecord()
+                        {
+                            Question = text,
+                            Answer = retext,
+                            CreatedAt = DateTime.Now,
+                            CreatedUser = AppUser.Instance.Username,
+                            Times = (int)elapsedTime.TotalSeconds,
+                        };
+                        _aiRecordService.AddAsync(ai);
+
+                    });
                 }
+                
             }
             catch (Exception ex)
             {
@@ -460,8 +522,68 @@ namespace YingCaiAiWin.Views.Pages
         }
 
         #endregion
+  
 
-   
+        private async Task<string> GetNetSearch(string name)
+        {
+
+            if (page == null)
+            {
+                var playwright = await Playwright.CreateAsync();
+                var browser = await playwright.Chromium.LaunchAsync(new() { Headless = true });
+
+                // 创建一个临时上下文（无缓存、无 Cookie）
+                var context = await browser.NewContextAsync(new()
+                {
+                    ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
+                    //UserAgent = GetRandomUserAgent(),  // 🧠 可选：随机 UA
+                });
+                 page = await context.NewPageAsync();
+                //var page = await browser.NewPageAsync();
+                await page.GotoAsync($"https://chat.baidu.com/search", new PageGotoOptions
+                {
+                    WaitUntil = WaitUntilState.NetworkIdle,
+                    Timeout = 40000 // 延长等待时间
+                });
+            }
+           
+
+            await page.FillAsync("#chat-input-box", $"{name}");
+            await Task.Delay(1000);
+            await page.ClickAsync(".send-icon");
+            await Task.Delay(10000);
+            var div = "";
+            for (int i = 0; i < 8; i++)
+            {
+                // 获取当前页面完整 HTML
+                string content = await page.ContentAsync(); // 或 await page.InnerHTMLAsync("body")
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(content);
+                var root = htmlDoc.DocumentNode;
+                var divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
+
+                // 获取数量
+                int count = await divs.CountAsync();
+
+                if (count > 0)
+                {
+                    // 获取最后一个元素的文本
+                    div = await divs.Nth(count - 1).InnerTextAsync();
+                    break;
+                }
+
+                await Task.Delay(5000);
+            }
+           
+            string cleanedText = Regex.Replace(div, @"(\s\d+)(?=[。.\s]|$)", "");
+            string cleanedText1 = Regex.Replace(cleanedText, @"\s*(\r?\n)+\s*", "\n").Replace("\n。", "。");
+
+            //await browser.CloseAsync();
+            return cleanedText;
+
+        }
+
+
     }
 
     public class AiModelRes

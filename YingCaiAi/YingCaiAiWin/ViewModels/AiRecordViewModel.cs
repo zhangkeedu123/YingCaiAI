@@ -94,9 +94,7 @@ namespace YingCaiAiWin.ViewModels
 
                         else
                         {
-                            Growl.Error("删除失败！");
-                            Thread.Sleep(2500);
-                            Growl.Clear();
+                            
                         }
 
                     });
