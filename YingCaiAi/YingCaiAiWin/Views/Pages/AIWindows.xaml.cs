@@ -33,17 +33,6 @@ namespace YingCaiAiWin.Views.Pages
     {
         private List<Documents> questions = new List<Documents>();
 
-        private ObservableCollection<string> alternateQuestions = new ObservableCollection<string>
-        {
-            "如何提高招聘效率?",
-            "企业如何设置更有吸引力的职位?",
-            "如何查看应聘者简历?",
-            "如何联系客服人员?",
-            "平台使用有哪些注意事项?",
-            "如何提高职位曝光率?",
-            "如何评估招聘效果?"
-        };
-
         private bool isFullscreen = false;
         private bool isQuestionsAlternate = false;
         private string defaultHomePage = "https://www.baidu.com";
@@ -57,41 +46,41 @@ namespace YingCaiAiWin.Views.Pages
         private readonly IDocumentsService _service;
 
         private bool isNet = false;
-
+        private bool isSearch = true;
         private IPage page;
 
         public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService, IDocumentsService service)
         {
-         
-                ViewModel = viewModel;
-                _aiRecordService = aiRecordService;
-                _service = service;
-                _httpClient = new HttpClientHelper();
-                DataContext = this;
-                InitializeComponent();
-                InitializeBrowser();
-                LoadQuestions();
-                this.Loaded += (s, e) =>
+
+            ViewModel = viewModel;
+            _aiRecordService = aiRecordService;
+            _service = service;
+            _httpClient = new HttpClientHelper();
+            DataContext = this;
+            InitializeComponent();
+            InitializeBrowser();
+            LoadQuestions();
+            this.Loaded += (s, e) =>
+            {
+
+                var parentWindow = System.Windows.Window.GetWindow(this);
+                if (parentWindow != null)
                 {
-
-                    var parentWindow = System.Windows.Window.GetWindow(this);
-                    if (parentWindow != null)
+                    if (parentWindow.WindowState != WindowState.Minimized)
                     {
-                        if (parentWindow.WindowState != WindowState.Minimized)
-                        {
-                            parentWindow.WindowState = WindowState.Maximized;
-                        }
-                        parentWindow.StateChanged += Window_StateChangedAI;
-
+                        parentWindow.WindowState = WindowState.Maximized;
                     }
-                };
+                    parentWindow.StateChanged += Window_StateChangedAI;
+
+                }
+            };
 
             //ChatBox.AddMessage("今天天气如何？", true);
             //ChatBox.AddMessage("您好，请问有什么可以帮您？", false);
             loadWeb();
-          
+
         }
-       private async void loadWeb()
+        private async void loadWeb()
         {
             try
             {
@@ -118,9 +107,9 @@ namespace YingCaiAiWin.Views.Pages
             catch (Exception)
             {
 
-                
+
             }
-            
+
         }
 
         /// <summary>
@@ -135,11 +124,11 @@ namespace YingCaiAiWin.Views.Pages
             var parentWindow = System.Windows.Window.GetWindow(this);
             if (parentWindow != null)
             {
-                if(parentWindow.WindowState != WindowState.Minimized)
+                if (parentWindow.WindowState != WindowState.Minimized)
                 {
                     parentWindow.WindowState = WindowState.Maximized;
                 }
-                
+
                 //if (parentWindow.WindowState == WindowState.Maximized)
                 //{
                 //    Gridwin.Height = height - 130;
@@ -162,9 +151,9 @@ namespace YingCaiAiWin.Views.Pages
 
         private async void LoadQuestions()
         {
-            questions = await _service.GetAllSystemAsync("猜你想问")??new List<Documents>();
+            questions = await _service.GetAllSystemAsync("猜你想问") ?? new List<Documents>();
             Random rand = new Random();
-            QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count/2).ToList();
+            QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count / 2).ToList();
         }
 
 
@@ -193,12 +182,12 @@ namespace YingCaiAiWin.Views.Pages
                 {
                     e.Handled = true;
                     EmbeddedBrowser.CoreWebView2.Navigate(e.Uri);
-                   
+
                     if (EmbeddedBrowser.CoreWebView2 != null)
                     {
-                       // EmbeddedBrowser.CoreWebView2.ZoomFactor = 0.9;
+                        // EmbeddedBrowser.CoreWebView2.ZoomFactor = 0.9;
 
-                         EmbeddedBrowser.CoreWebView2.ExecuteScriptAsync(@"
+                        EmbeddedBrowser.CoreWebView2.ExecuteScriptAsync(@"
                                         document.body.style.zoom = '80%';
                                         document.body.style.overflowX = 'hidden';
                                         let style = document.createElement('style');
@@ -222,7 +211,7 @@ namespace YingCaiAiWin.Views.Pages
                 // 可以写日志
             }
 
-        
+
         }
         private void EmbeddedBrowser_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
         {
@@ -336,14 +325,36 @@ namespace YingCaiAiWin.Views.Pages
             {
                 string text = tool.Title;
 
-               
-               ViewModel.ShowCustomer(text);
-                //ChatBox.AddLoadingBubble();
-                // 滚动到底部
-               // Scroll();
-                // 关闭展开框
-                expander.IsExpanded = false;
-                await Task.Delay(2000);
+                if (isSearch)
+                {
+                    isSearch = false;
+                    if (text == "行业新闻")
+                    {
+                        text = "今日建筑化工行业相关新闻热点";
+                        ChatBox.AddMessage(text, true);
+
+                        ChatBox.AddLoadingBubble();
+                        // 滚动到底部
+                        Scroll();
+
+                        string retext = await GetNetSearch(text);
+                        ChatBox.ReplaceLoadingBubble(retext, text);
+                        Scroll(); // 最后再滚动一次，确保展示完整
+                        isSearch = true;
+                        return;
+                    }
+
+                    ViewModel.ShowCustomer(text);
+                    //ChatBox.AddLoadingBubble();
+                    // 滚动到底部
+                    // Scroll();
+                    // 关闭展开框
+                    expander.IsExpanded = false;
+                    isSearch = true;
+                    await Task.Delay(2000);
+                }
+
+
 
                 //ChatBox.ReplaceLoadingBubble(text,text);
 
@@ -359,18 +370,24 @@ namespace YingCaiAiWin.Views.Pages
         /// <param name="e"></param>
         private async void Question_Click(object sender, RoutedEventArgs e)
         {
+
             if (sender is CardAction card && card.DataContext is Documents question)
             {
+                if (isSearch)
+                {
+                    isSearch = false;
+                    var cards = sender as CardAction;
+                    string text = cards?.Tag?.ToString();
+                    ChatBox.AddMessage(text, true);
+                    ChatBox.AddLoadingBubble();
+                    // 滚动到底部
+                    Scroll();
 
-                var cards = sender as CardAction;
-                string text = cards?.Tag?.ToString();
-                ChatBox.AddMessage(text, true);
-                ChatBox.AddLoadingBubble();
-                // 滚动到底部
-                Scroll();
+                    await CallVectorizeApiAsync(text);
+                    Scroll(); // 最后再滚动一次，确保展示完整
+                    isSearch = true;
+                }
 
-                await CallVectorizeApiAsync(text);
-                Scroll(); // 最后再滚动一次，确保展示完整
             }
         }
 
@@ -390,7 +407,7 @@ namespace YingCaiAiWin.Views.Pages
 
 
         }
-       
+
         /// <summary>
         /// 搜索框事件
         /// </summary>
@@ -400,21 +417,28 @@ namespace YingCaiAiWin.Views.Pages
         {
 
             // 用户按下 Enter，并且没有按住 Shift
-            if   (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
-                {
+            if (e.Key == Key.Enter && Keyboard.Modifiers != ModifierKeys.Shift)
+            {
                 e.Handled = true; // 阻止默认回车换行
-                string text = SearchBox.Text?.Trim();
-                if (!string.IsNullOrWhiteSpace(text))
+                if (isSearch)
                 {
-                    ChatBox.AddMessage(text, true);
-                    SearchBox.Text = "";
-                    ChatBox.AddLoadingBubble();
-                    // 滚动到底部
-                    Scroll();
+                    isSearch = false;
+                    string text = SearchBox.Text?.Trim();
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        ChatBox.AddMessage(text, true);
+                        SearchBox.Text = "";
+                        ChatBox.AddLoadingBubble();
+                        // 滚动到底部
+                        Scroll();
 
-                    await CallVectorizeApiAsync(text);
+                        await CallVectorizeApiAsync(text);
+                    }
+                    isSearch = true;
                 }
             }
+
+
         }
         private async Task CallVectorizeApiAsync(string text)
         {
@@ -423,7 +447,7 @@ namespace YingCaiAiWin.Views.Pages
                 Stopwatch stopwatch = new Stopwatch();
                 // 开始计时
                 stopwatch.Start();
-                if (IsNet.IsChecked==false)
+                if (IsNet.IsChecked == false)
                 {
                     var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k = 10 });
                     if (response != null)
@@ -458,19 +482,20 @@ namespace YingCaiAiWin.Views.Pages
                                 });
                             }
                         }
+                        isSearch = true;
 
                     }
                     else
                     {
                         ChatBox.ReplaceLoadingBubble("检索超时。。。");
                         Scroll(); // 最后再滚动一次，确保展示完整
-
+                        isSearch = true;
                     }
                 }
                 else
                 {
-                   string  retext = await GetNetSearch(text);
-                   ChatBox.ReplaceLoadingBubble(retext, text);
+                    string retext = await GetNetSearch(text);
+                    ChatBox.ReplaceLoadingBubble(retext, text);
                     Scroll(); // 最后再滚动一次，确保展示完整
                     Task.Run(() =>
                     {
@@ -487,11 +512,13 @@ namespace YingCaiAiWin.Views.Pages
                         _aiRecordService.AddAsync(ai);
 
                     });
+                    isSearch = true;
                 }
-                
+
             }
             catch (Exception ex)
             {
+                isSearch = true;
                 ChatBox.ReplaceLoadingBubble("检索超时了。。。");
                 Scroll(); // 最后再滚动一次，确保展示完整
             }
@@ -522,7 +549,7 @@ namespace YingCaiAiWin.Views.Pages
         }
 
         #endregion
-  
+
 
         private async Task<string> GetNetSearch(string name)
         {
@@ -538,7 +565,7 @@ namespace YingCaiAiWin.Views.Pages
                     ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
                     //UserAgent = GetRandomUserAgent(),  // 🧠 可选：随机 UA
                 });
-                 page = await context.NewPageAsync();
+                page = await context.NewPageAsync();
                 //var page = await browser.NewPageAsync();
                 await page.GotoAsync($"https://chat.baidu.com/search", new PageGotoOptions
                 {
@@ -546,7 +573,7 @@ namespace YingCaiAiWin.Views.Pages
                     Timeout = 40000 // 延长等待时间
                 });
             }
-           
+
 
             await page.FillAsync("#chat-input-box", $"{name}");
             await Task.Delay(1000);
@@ -569,15 +596,19 @@ namespace YingCaiAiWin.Views.Pages
                 {
                     // 获取最后一个元素的文本
                     div = await divs.Nth(count - 1).InnerTextAsync();
-                    break;
+                    await Task.Delay(2000);
+                }
+                else
+                {
+                    await Task.Delay(5000);
                 }
 
-                await Task.Delay(5000);
+
             }
-           
+
             string cleanedText = Regex.Replace(div, @"(\s\d+)(?=[。.\s]|$)", "");
             string cleanedText1 = Regex.Replace(cleanedText, @"\s*(\r?\n)+\s*", "\n").Replace("\n。", "。");
-
+            isSearch = true;
             //await browser.CloseAsync();
             return cleanedText;
 

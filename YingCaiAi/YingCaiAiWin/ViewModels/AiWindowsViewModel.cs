@@ -48,12 +48,16 @@ namespace YingCaiAiWin.ViewModels
         private readonly IDocumentsService _service;
 
         private List<Documents> _documentList = [];
+
+        private List<AudioRecord> AudioRecordList = [];
+        private readonly IAudioRecordService _audioRecordService;
         private int coId ;
-        public AIWindowsViewModel(INavigationService navigationService, ICustomerService customerService, IDocumentsService documentsService )
+        public AIWindowsViewModel(INavigationService navigationService, ICustomerService customerService, IDocumentsService documentsService , IAudioRecordService audioRecordService)
         {
             if (!_isInitialized)
             {
                  _customerService = customerService;
+                _audioRecordService = audioRecordService;
                 _service = documentsService;
                 InitializeViewModel();
 
@@ -83,7 +87,7 @@ namespace YingCaiAiWin.ViewModels
                         new ToolItem { Icon = "Key24", Title = "招聘痛点" },
                         new ToolItem { Icon = "CheckmarkCircle24", Title = "推荐话术" },
                         new ToolItem { Icon = "ClipboardTextLtr20", Title = "企业套餐" },
-                        new ToolItem { Icon = "List24", Title = "优惠政策" },
+                        new ToolItem { Icon = "List24", Title = "行业新闻" },
                         new ToolItem { Icon = "Warning24", Title = "平台数据" },
                         new ToolItem { Icon = "Document24", Title = "售后服务" },
                         new ToolItem { Icon = "Shield24", Title = "心灵鸡汤" },
@@ -113,7 +117,7 @@ namespace YingCaiAiWin.ViewModels
                   };
 
             _documentList =await _service.GetAllSystemAsync();
-
+            AudioRecordList= await _audioRecordService.GetAllAsync();
             _isInitialized = true;
         }
 
@@ -184,7 +188,7 @@ namespace YingCaiAiWin.ViewModels
                 });
                 CardItems = newList;
             }
-            else if(title=="招聘痛点"||title=="企业套餐"||title == "平台数据" || title == "售后服务" || title == "优惠政策")
+            else if(title=="招聘痛点"||title=="企业套餐"||title == "平台数据" || title == "售后服务" )
             {
                 var newList = CardItems.Copy();
                 var i = new Random();
@@ -203,11 +207,27 @@ namespace YingCaiAiWin.ViewModels
                 }
              
             }
-            else if (title == "心灵鸡汤")
+            else if (title == "心灵鸡汤"||title == "推荐话术")
             {
+                var newList = CardItems.Copy();
+                var i = new Random();
+
+                newList.Add(new CardItem
+                {
+                    Title = title,
+                    Description = "正在努力加载中...",
+                    IconPath = Color[i.Next(0, 4)],
+                    CommandParam = Guid.NewGuid().ToString()
+                });
+                CardItems = newList;
+
                 Task.Run(async () => {
 
-                    var response =await new HttpClientHelper().PostDataAsync("milvus/ask", new { text = "请给我5句心灵鸡汤", top_k = 10 });
+
+                    var nlp = AudioRecordList.Select(m => m.Sentiment).ToArray();
+                    var audios = string.Join("\n\n", nlp);
+                    string text = title == "心灵鸡汤" ? "请给我5句心灵鸡汤" : $" 请结合我之前录音内容NLP分析的结果,总结经验后给我推荐新的销售话术。\n NLP结果如下：\n\n{audios}";
+                    var response =await new HttpClientHelper().PostDataAsync("milvus/ask", new { text, top_k = 10 });
                     if (response != null)
                     {
 
@@ -219,15 +239,14 @@ namespace YingCaiAiWin.ViewModels
                             if (n > 0)
                             {
                                 var newList = CardItems.Copy();
-                                var i = new Random();
                                 var retext = aitext.Substring(n + 10);
-                                
-                                newList.Add(new CardItem
+
+                                newList.ForEach(item =>
                                 {
-                                    Title = title,
-                                    Description = retext,
-                                    IconPath = Color[i.Next(0, 4)],
-                                    CommandParam = Guid.NewGuid().ToString()
+                                    if (item.Title.Equals(title))
+                                    {
+                                       item.Description = retext;
+                                    }
                                 });
                                 CardItems = newList;
                             }
@@ -237,6 +256,22 @@ namespace YingCaiAiWin.ViewModels
                 });
                 
             }
+            //else if ( title == "行业新闻")
+            //{
+            //    var newList = CardItems.Copy();
+            //    var i = new Random();
+
+            //    newList.Add(new CardItem
+            //    {
+            //        Title = title,
+            //        Description = "正在努力加载中...",
+            //        IconPath = Color[i.Next(0, 4)],
+            //        CommandParam = Guid.NewGuid().ToString()
+            //    });
+            //    CardItems = newList;
+
+
+            //}
          
         }
 

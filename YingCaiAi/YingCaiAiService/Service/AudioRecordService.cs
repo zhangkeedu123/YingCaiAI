@@ -35,12 +35,12 @@ namespace YingCaiAiService.Service
         /// </summary>
         /// <returns></returns>
         /// <exception cref="UserServiceException"></exception>
-        public async Task<BaseDataModel> GetAllAsync()
+        public async Task<List<AudioRecord>> GetAllAsync()
         {
             try
             {
-                var data = await _dbHelper.QueryAsync<AudioRecord>("SELECT * FROM audio_record where status=2 ORDER BY id");
-                return BaseDataModel.Instance.OK("", data);
+                var data = await _dbHelper.QueryAsync<AudioRecord>("SELECT * FROM audio_record where Sentiment !=null ORDER BY id desc LIMIT 3 ");
+                return data.ToList();
             }
             catch (Exception ex)
             {
