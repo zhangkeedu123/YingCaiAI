@@ -1,5 +1,17 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using Wpf.Ui.Abstractions.Controls;
 using YingCaiAiModel;
 using YingCaiAiWin.ViewModels;
@@ -7,32 +19,35 @@ using YingCaiAiWin.ViewModels;
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
-    /// AiRecordPage.xaml 的交互逻辑
+    /// UserCustomers.xaml 的交互逻辑
     /// </summary>
-    public partial class AiRecordPage : INavigableView<ViewModels.AiRecordViewModel>
+    public partial class UserCustomers : INavigableView<UserCustomersViewModel>
     {
-        public ViewModels.AiRecordViewModel ViewModel { get; }
+        public UserCustomersViewModel ViewModel { get; }
+
         private double height = SystemParameters.PrimaryScreenHeight;
-        public AiRecordPage(AiRecordViewModel viewModel)
+        public UserCustomers(UserCustomersViewModel viewModel)
         {
             ViewModel = viewModel;
+            InitializeComponent();
             DataContext = this;
 
-            InitializeComponent();
             this.Loaded += (s, e) =>
             {
                 var parentWindow = System.Windows.Window.GetWindow(this);
                 if (parentWindow != null)
                 {
-                    Window_StateChangedKB(s, e);
-                    parentWindow.StateChanged += Window_StateChangedKB;
+                    Window_StateChangedCUS(s, e);
+                    parentWindow.StateChanged += Window_StateChangedCUS;
 
                 }
             };
-        }
-        private void Window_StateChangedKB(object sender, EventArgs e)
-        {
 
+            // 在窗口的构造函数中添加
+        }
+
+        private void Window_StateChangedCUS(object sender, EventArgs e)
+        {
             var parentWindow = System.Windows.Window.GetWindow(this);
             if (parentWindow != null)
             {
@@ -49,11 +64,12 @@ namespace YingCaiAiWin.Views.Pages
             }
 
         }
+
         private async void PhoneTextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (sender is TextBlock tb && tb.DataContext is AiRecord model)
+            if (sender is TextBlock tb && tb.DataContext is Customer model)
             {
-                await ViewModel.GetNLP(model.Answer);
+                await ViewModel.GetPhone();
             }
         }
     }

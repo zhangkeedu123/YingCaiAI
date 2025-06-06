@@ -81,7 +81,7 @@
                         <Border Grid.Row="1"  ClipToBounds="True">
                             <wv2:WebView2 x:Name="EmbeddedBrowser"
                                   NavigationCompleted="EmbeddedBrowser_NavigationCompleted"
-                                  Source="https://www.baidu.com/"
+                                  Source="https://www.800hr.com/"
                                    />
                         </Border>
                     </Grid>

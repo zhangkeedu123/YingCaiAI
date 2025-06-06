@@ -86,7 +86,8 @@ public partial class MainWindowViewModel : ViewModel
 
                  MenuItemsSource = new object[]
                 {
-                        new NavigationViewItem("客户信息", typeof(Views.Pages.Customers)),
+                       new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)),
+                        new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)),
                         new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)),
                   },
             },

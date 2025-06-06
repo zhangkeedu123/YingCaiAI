@@ -104,10 +104,10 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTemplateColumn Header="答案"  Width="*"  >
+                        <!--<DataGridTemplateColumn Header="答案"  Width="*"  >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                   <TextBox
+                                   <TextBox 
                                     Text="{Binding Answer}"
                                     IsReadOnly="True"
                                     BorderThickness="0"
@@ -117,7 +117,30 @@
                                     Cursor="IBeam" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>-->
+                        <DataGridTemplateColumn Header="答案" Width="220">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="立即查看" x:Name="SentimentTextBlock"
+                                     Foreground="Blue"
+                                     TextDecorations="Underline"
+                                     Cursor="Hand"
+                                     VerticalAlignment="Center"
+                                               TextWrapping="Wrap"
+                                     MouseLeftButtonUp="PhoneTextBlock_MouseLeftButtonUp"/>
+                                    <!--<DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Answer}" Value="">
+                                            <Setter TargetName="SentimentTextBlock" Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Answer}" Value="{x:Null}">
+                                            <Setter TargetName="SentimentTextBlock" Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+
+                                    </DataTemplate.Triggers>-->
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
+
                         <DataGridTextColumn Header="耗时/s"  Binding="{Binding Times}" Width="120"  >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">

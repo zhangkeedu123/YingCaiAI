@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
 
@@ -35,11 +37,13 @@ namespace YingCaiAiWin.ViewModels
 
         [ObservableProperty]
         private AiRecord _aiRecords = new AiRecord();
-        public AiRecordViewModel(INavigationService navigationService, IAiRecordService service)
+        private readonly IContentDialogService _contentDialogService;
+        public AiRecordViewModel(INavigationService navigationService, IAiRecordService service, IContentDialogService contentDialogService)
         {
             if (!_isInitialized)
             {
                 _service = service;
+                _contentDialogService = contentDialogService;
                 InitializeViewModel();
 
             }
@@ -109,7 +113,35 @@ namespace YingCaiAiWin.ViewModels
 
 
         }
+        [RelayCommand]
+        public async Task GetNLP(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+            var data = new { text };
+            var AudioRecord=new AudioRecord() {  Sentiment=text};
+            var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
+            {
+                Title = "答案",
+                Content = new Views.Pages.ShowNLPControl
+                {
+                    DataContext = AudioRecord,
 
+                },
+                //PrimaryButtonText = "保存",
+                //SecondaryButtonText = "取消",
+                CloseButtonText = "关闭",
+            });
+
+            if (dialog == ContentDialogResult.Primary)
+            {
+
+
+            }
+
+        }
 
 
         /// <summary>

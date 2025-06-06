@@ -111,6 +111,50 @@ namespace YingCaiAiService.Service
                 throw new UserServiceException("获取失败", ex);
             }
         }
+
+        public BaseDataModel GetUserPageAsync(int pageIndex, Customer cus)
+        {
+            try
+            {
+                string sql = "WHERE 1=1 ";
+                var parameters = new DynamicParameters();
+                if (cus.Status != null && cus.Status != 0)
+                {
+                    if (cus.Status == 1)
+                    {
+                        sql += " and  status =0 ";
+                    }
+                    else if (cus.Status == 2)
+                    {
+                        sql += " and  status =1 ";
+                    }
+                    else
+                    {
+                        sql += " and  status =2 ";
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(cus.Name))
+                {
+                    sql += $" and ( name LIKE @Name or job_title LIKE @JobTitle   )";
+                    parameters.Add("Name", $"%{cus.Name}%");
+                    parameters.Add("JobTitle", $"%{cus.Name}%");
+                }
+                if (!string.IsNullOrWhiteSpace(cus.CreatedUser))
+                {
+                    sql += $" and  created_user =@CreatedUser ";
+                    parameters.Add("CreatedUser", cus.CreatedUser);
+                }
+
+                var data = _dbHelper.QueryPagedAsync<Customer>($"SELECT *  FROM customer\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM customer {sql}", parameters, pageIndex, 20).Result;
+
+                return BaseDataModel.Instance.OK(data.TotalCount.ToString(), data.Data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
         public async Task<BaseDataModel> AddListAsync(List<Customer> doc)
         {
             try
