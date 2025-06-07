@@ -103,9 +103,9 @@ namespace YingCaiAiWin.ViewModels
 
             await Task.Run(() =>
             {
-                var pids = string.Join(",", per.Where(m => m.IsSelected == true).Select(x => x.Id));
+                var pids = string.Join(",", per.Where(m => m.IsSelected == true).Select(x => x.Id))+",";
                 per.ForEach((item) => {
-                    pids += string.Join(",", item.Children.Where(m => m.IsSelected == true).Select(x => x.Id));
+                    pids += string.Join(",", item.Children.Where(m => m.IsSelected == true).Select(x => x.Id))+",";
                 });
                 SelectedRole.PerIds = pids;
                 var flag = _rolesService.AddRoleAsync(SelectedRole).Status;
@@ -134,7 +134,7 @@ namespace YingCaiAiWin.ViewModels
         private async Task OnSelectedRoleChanged(int  parameter)
         {
                 SelectedRole = Roles.Find(m => m.Id == parameter);
-                var ids = SelectedRole.PerIds;
+                var ids =  SelectedRole.PerIds.Split(",");
                 var temp = new List<Permission>();
                 foreach (var item in RolePermissions)
                 {

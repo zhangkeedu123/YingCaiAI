@@ -21,6 +21,7 @@ using YingCaiAiService.Service;
 using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.Services;
+using YingCaiAiWin.ViewModels;
 using static ICSharpCode.SharpZipLib.Zip.ExtendedUnixData;
 using TextBox = Wpf.Ui.Controls.TextBox;
 
@@ -72,16 +73,20 @@ namespace YingCaiAiWin.Views
             {
                 AppUser.Instance.Username = flag.UserName;
                 AppUser.Instance.Token = password;
-                AppUser.Instance.Role =flag.PerIds;
+                AppUser.Instance.Role =flag.PerIds.Split(",");
                 AppUser.Instance.RoleName = flag.RoleName;
                 AppUser.Instance.Id = flag.Id;
                 UserStorageHelper.SaveUser(AppUser.Instance); // 保存持久化
 
                 if (Application.Current.Windows.OfType<MainWindow>().Any())
                 {
-
-                    _navigationWindow!.ShowWindow();
-
+                   
+                     _navigationWindow!.ShowWindow();
+                    var mainWindow = Application.Current.Windows.OfType<MainWindow>().First();
+                    if (mainWindow.ViewModel is MainWindowViewModel vm)
+                    {
+                        vm.InitializeViewModel();
+                    }
                     _ = _navigationWindow.Navigate(typeof(Views.Pages.DashboardPage));
                     // 关闭登录窗口
                     Application.Current.Windows.OfType<Login>().FirstOrDefault()?.Close();

@@ -1,16 +1,12 @@
-﻿using HandyControl.Controls;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using HandyControl.Controls;
 using HandyControl.Data;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
+using YingCaiAiWin.Models;
 
 namespace YingCaiAiWin.ViewModels
 {
@@ -27,6 +23,9 @@ namespace YingCaiAiWin.ViewModels
         private int _pageCount = 1;
 
         [ObservableProperty]
+        private int _userId = 0;
+
+        [ObservableProperty]
         private Visibility _openedFilePathVisibility = Visibility.Collapsed;
 
         [ObservableProperty]
@@ -38,12 +37,18 @@ namespace YingCaiAiWin.ViewModels
         [ObservableProperty]
         private AiRecord _aiRecords = new AiRecord();
         private readonly IContentDialogService _contentDialogService;
-        public AiRecordViewModel(INavigationService navigationService, IAiRecordService service, IContentDialogService contentDialogService)
+
+        [ObservableProperty]
+        private List<YingCaiAiModel.Users> _users = new List<YingCaiAiModel.Users>();
+
+        public IUsersService _usersService { get; set; }
+        public AiRecordViewModel(INavigationService navigationService, IAiRecordService service, IContentDialogService contentDialogService, IUsersService usersService)
         {
             if (!_isInitialized)
             {
                 _service = service;
                 _contentDialogService = contentDialogService;
+                _usersService = usersService;
                 InitializeViewModel();
 
             }
@@ -51,10 +56,11 @@ namespace YingCaiAiWin.ViewModels
         }
         private async void InitializeViewModel()
         {
-             await LoadSampleData();
+            await LoadSampleData();
             _isInitialized = true;
-
-
+            var  userList=new List<YingCaiAiModel.Users>() { new YingCaiAiModel.Users() { Id = 0, UserName="全部" }  };
+            userList.AddRange( await _usersService.GetAllUserAsync());
+            Users = userList;
         }
 
 
@@ -62,10 +68,21 @@ namespace YingCaiAiWin.ViewModels
         private async Task LoadSampleData()
         {
 
-                Docs.Clear();
-                var data =await _service.GetAllPageAsync(_currentPage, _aiRecords);
-                Docs = data.Data as List<AiRecord> ?? new List<AiRecord>(); 
-                PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
+            Docs.Clear();
+            if (_userId != 0)
+            {
+                _aiRecords.CreatedUser = Users[_userId].UserName;
+            }
+            else
+            {
+                _aiRecords.CreatedUser = null;
+            }
+            
+            var data = await _service.GetAllPageAsync(_currentPage, _aiRecords);
+            Docs = data.Data as List<AiRecord> ?? new List<AiRecord>();
+            PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
+
+
 
         }
         [RelayCommand]
@@ -77,18 +94,25 @@ namespace YingCaiAiWin.ViewModels
         }
 
 
-      
+
 
         [RelayCommand]
         private void OnDelete(int parameter)
         {
+            if (AppUser.Instance.RoleName != "管理员")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
+
 
             Growl.Ask("是否确定删除", isConfirmed =>
             {
                 if (isConfirmed)
                 {
                     Growl.Clear();
-                    Task.Run(() => {
+                    Task.Run(() =>
+                    {
                         var flag = _service.DeleteAsync(parameter);
                         LoadSampleData();
                         if (flag.Status)
@@ -98,7 +122,7 @@ namespace YingCaiAiWin.ViewModels
 
                         else
                         {
-                            
+
                         }
 
                     });
@@ -121,7 +145,7 @@ namespace YingCaiAiWin.ViewModels
                 return;
             }
             var data = new { text };
-            var AudioRecord=new AudioRecord() {  Sentiment=text};
+            var AudioRecord = new AudioRecord() { Sentiment = text };
             var dialog = await _contentDialogService.ShowSimpleDialogAsync(new SimpleContentDialogCreateOptions()
             {
                 Title = "答案",

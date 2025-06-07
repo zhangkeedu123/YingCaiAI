@@ -1,5 +1,6 @@
 ﻿
 
+using HandyControl.Controls;
 using HtmlAgilityPack;
 using Microsoft.Playwright;
 using System.Collections;
@@ -9,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
+using YingCaiAiWin.Models;
 namespace YingCaiAiWin.Views.Pages
 {
     /// <summary>
@@ -240,6 +242,12 @@ namespace YingCaiAiWin.Views.Pages
         /// <param name="e"></param>
         private void Go_Click(object sender, RoutedEventArgs e)
         {
+            if (AppUser.Instance.RoleName != "管理员")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
+
 
             if (_isphone)
             {
@@ -270,6 +278,12 @@ namespace YingCaiAiWin.Views.Pages
         /// <param name="e"></param>
         private void Phone_Click(object sender, RoutedEventArgs e)
         {
+            if (AppUser.Instance.RoleName != "管理员")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
+
 
             if (_isphone)
             {
@@ -302,6 +316,12 @@ namespace YingCaiAiWin.Views.Pages
         /// <param name="e"></param>
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
+            if (AppUser.Instance.RoleName != "管理员")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
+
             if (_isphone||_issearch)
             {
                 _isstop = true;

@@ -12,6 +12,7 @@ using Wpf.Ui.Extensions;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
 using YingCaiAiService.Service;
+using YingCaiAiWin.Models;
 using YingCaiAiWin.Views.Pages;
 
 namespace YingCaiAiWin.ViewModels
@@ -110,6 +111,12 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private void OnDelete(int parameter)
         {
+            if (AppUser.Instance.RoleName != "管理员")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
+
 
             Growl.Ask("是否确定删除", isConfirmed =>
             {
@@ -154,7 +161,11 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         public async Task OnShowUserDialog(int parameter)
         {
-            
+            if (AppUser.Instance.RoleName != "管理员")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
 
             if (parameter != 0)
             {

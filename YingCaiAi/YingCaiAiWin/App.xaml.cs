@@ -47,7 +47,7 @@ namespace YingCaiAiWin
          _ = services.AddSingleton<INavigationService, NavigationService>();
 
          // Main window with navigation
-         _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();
+     
          //_ = services.AddSingleton<ViewModels.MainWindowViewModel>();
         _ = services.AddSingleton<IContentDialogService, ContentDialogService>();
            
@@ -61,8 +61,8 @@ namespace YingCaiAiWin
                  GalleryAssembly.Asssembly
              );
 
-         
-         _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
+             _ = services.AddSingleton<INavigationWindow, Views.MainWindow>();
+             _ = services.Configure<AppConfig>(context.Configuration.GetSection(nameof(AppConfig)));
 
              // 配置数据库帮助类
              _ = services.AddScoped<DapperHelper>();

@@ -53,7 +53,9 @@
                     hc:InfoElement.Placeholder="选择用户"
                     Width="170"
                     Margin="0,0,20,0"
-                    SelectedValue="{Binding ViewModel.AiRecords.CreatedUser}"
+                    ItemsSource="{Binding ViewModel.Users}"
+                    DisplayMemberPath="UserName"
+                    SelectedIndex="{Binding ViewModel.UserId }"
                     >
                 </hc:ComboBox>
 

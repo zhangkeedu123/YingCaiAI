@@ -35,7 +35,7 @@ namespace YingCaiAiWin.Views.Pages
 
         private bool isFullscreen = false;
         private bool isQuestionsAlternate = false;
-        private string defaultHomePage = "https://www.baidu.com";
+        private string defaultHomePage = "https://www.800hr.com/";
         private double height = SystemParameters.PrimaryScreenHeight;
 
         private readonly HttpClientHelper _httpClient;
@@ -47,7 +47,7 @@ namespace YingCaiAiWin.Views.Pages
 
         private bool isNet = false;
         private bool isSearch = true;
-        private IPage page;
+        private IPage page=null;
 
         public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService, IDocumentsService service)
         {

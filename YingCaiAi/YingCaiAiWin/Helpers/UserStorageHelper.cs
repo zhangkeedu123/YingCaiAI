@@ -23,16 +23,25 @@ namespace YingCaiAiWin.Helpers
         {
             if (File.Exists(filePath))
             {
-                var json = File.ReadAllText(filePath);
-                var loadedUser = JsonSerializer.Deserialize<AppUser>(json);
-
-                if (loadedUser != null)
+                try
                 {
-                    AppUser.Instance.Username = loadedUser.Username;
-                    AppUser.Instance.Id = loadedUser.Id;
-                    AppUser.Instance.Token = loadedUser.Token;
-                    AppUser.Instance.Role = loadedUser.Role;
+                    var json = File.ReadAllText(filePath);
+                    var loadedUser = JsonSerializer.Deserialize<AppUser>(json);
+
+                    if (loadedUser != null)
+                    {
+                        AppUser.Instance.Username = loadedUser.Username;
+                        AppUser.Instance.Id = loadedUser.Id;
+                        AppUser.Instance.Token = loadedUser.Token;
+                        AppUser.Instance.Role = loadedUser.Role;
+                    }
                 }
+                catch (Exception ex)
+                {
+
+                    File.Delete(filePath);
+                }
+             
             }
         }
 
