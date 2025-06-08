@@ -44,6 +44,8 @@
     <PackageReference Include="InputSimulator" Version="1.0.4" />
     <PackageReference Include="LiveCharts" Version="0.9.7" />
     <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="LiveChartsCore" Version="2.0.0-rc5.4" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-rc5.4" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="MdXaml" Version="1.27.0" />
@@ -62,7 +64,11 @@
     <ProjectReference Include="..\YingCaiAiModel\YingCaiAiModel.csproj" />
     <ProjectReference Include="..\YingCaiAiService\YingCaiAiService.csproj" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Include="bin\Debug\net8.0-windows\Microsoft.Playwright.dll">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\applicationIcon-256.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

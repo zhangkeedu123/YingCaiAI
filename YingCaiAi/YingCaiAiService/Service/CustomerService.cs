@@ -34,7 +34,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data =await _dbHelper.QueryAsync<Customer>("SELECT  * FROM customer  where status=0 and phone is null order by id desc LIMIT 20  ");
+                var data =await _dbHelper.QueryAsync<Customer>("SELECT  * FROM customer  where status=0 and (phone is null or phone ='' ) order by id desc LIMIT 20  ");
                 return  BaseDataModel.Instance.OK("", data);
             }
             catch (Exception ex)
@@ -43,12 +43,12 @@ namespace YingCaiAiService.Service
             }
         }
 
-        public async Task<BaseDataModel> GetAllNameAsync()
+        public async Task<List<Customer>> GetAllNameAsync()
         {
             try
             {
                 var data = await _dbHelper.QueryAsync<Customer>("SELECT Name FROM customer  ");
-                return BaseDataModel.Instance.OK("", data);
+                return data.ToList();
             }
             catch (Exception ex)
             {

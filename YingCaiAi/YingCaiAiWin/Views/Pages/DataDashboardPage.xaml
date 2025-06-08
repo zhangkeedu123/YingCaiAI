@@ -7,10 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+    xmlns:lvcc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="数据大屏"
    d:DesignHeight="650"
   d:DesignWidth="1000"
+      d:DataContext="{d:DesignInstance local:DataDashboardPage,                   IsDesignTimeCreatable=False}"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -56,7 +58,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="#F8FAFF" x:Name="gridBox" MinHeight="700">
+    <Grid Background="#F8FAFF" x:Name="gridBox" MaxHeight="800">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -248,7 +250,7 @@
         <!-- 图表区域 -->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
 
@@ -297,46 +299,17 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <Grid Margin="65,15,15,0">
-                            <TextBlock Text="待处理数据" FontSize="16" FontWeight="Bold" Foreground="IndianRed"/>
+                        <Grid Margin="15,15,15,0">
+                            <TextBlock Text="机器GPU状态" FontSize="16" FontWeight="Bold" Foreground="IndianRed"/>
                             <!--<ComboBox Width="120" HorizontalAlignment="Right" SelectedIndex="0">
                                 <ComboBoxItem Content="上个月"/>
                             </ComboBox>-->
                         </Grid>
+                        <lvcc:CartesianChart  Series="{Binding ViewModel.GpuSeries}" Height="330"  Grid.Row="1" Margin="15" YAxes="{Binding  ViewModel.YAxes}" XAxes="{Binding ViewModel.XAxes}"  >
+                          
 
-                        <Grid Grid.Row="1" Margin="15" MaxWidth="300">
-                            <ItemsControl ItemsSource="{Binding ViewModel.LatestTransactions}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0,10">
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Description}" FontWeight="SemiBold" Foreground="#333"/>
-                                            </StackPanel>
-                                            <TextBlock Text="{Binding Amount}" 
-                                          Foreground="{Binding AmountColor}" 
-                                          HorizontalAlignment="Right" 
-                                          VerticalAlignment="Center"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel>
-                                            <StackPanel.Resources>
-                                                <Style TargetType="Grid">
-                                                    <Setter Property="Margin" Value="0,5"/>
-                                                    <Style.Triggers>
-                                                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                                            <Setter Property="Background" Value="#F5F5F5"/>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </StackPanel.Resources>
-                                        </StackPanel>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                            </ItemsControl>
-                        </Grid >
+                        </lvcc:CartesianChart>
+                        
                     
                     </Grid>
                 </hc:Card>

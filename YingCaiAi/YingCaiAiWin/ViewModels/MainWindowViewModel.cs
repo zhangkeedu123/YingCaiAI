@@ -33,6 +33,7 @@ public partial class MainWindowViewModel : ViewModel
     )]
     public MainWindowViewModel(INavigationService navigationService)
     {
+
         if (!_isInitialized)
         {
             InitializeViewModel();

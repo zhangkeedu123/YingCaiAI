@@ -4,10 +4,12 @@
 // All Rights Reserved.
 using System.Collections.ObjectModel;
 using System.Windows.Documents;
+using System.Windows.Navigation;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using YingCaiAiService.IService;
 using YingCaiAiWin.Models;
+using YingCaiAiWin.Views;
 namespace YingCaiAiWin.ViewModels;
 
 public partial class DashboardViewModel : ViewModel
@@ -67,6 +69,13 @@ public partial class DashboardViewModel : ViewModel
         },
              new CardItem
         {
+            Title = "客户抓取",
+            Description = "自动化获取客户数据资料...",
+            IconPath = "pack://application:,,,/Assets/WinUiGallery/data.png",
+            CommandParam = "Navigation"
+        },
+             new CardItem
+        {
             Title = "数据大屏",
             Description = "销售额数据，新增合同数，各项指标分析...",
             IconPath = "pack://application:,,,/Assets/WinUiGallery/data.png",
@@ -81,8 +90,8 @@ public partial class DashboardViewModel : ViewModel
         } ,
              new CardItem
         {
-            Title = "机器监控",
-            Description = "设备监控，设备预警...",
+            Title = "录音管理",
+            Description = "上传录音，NLP分析...",
             IconPath = "pack://application:,,,/Assets/WinUiGallery/jiqijiankong.png",
             CommandParam = "Navigation"
         } ,
@@ -96,6 +105,36 @@ public partial class DashboardViewModel : ViewModel
         };
 
         _isInitialized = true;
+    }
+
+    [RelayCommand]
+    private void OnCardClick(string parameter)
+    {
+        if (Application.Current.Windows.OfType<MainWindow>().Any())
+        {
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().First();
+           if(parameter == "客户管理")
+               _ = mainWindow.Navigate(typeof(Views.Pages.Customers));
+            if (parameter == "AI辅助窗口")
+                _ = mainWindow.Navigate(typeof(Views.Pages.AIWindows));
+            if (parameter == "知识库管理")
+                _ = mainWindow.Navigate(typeof(Views.Pages.KnowledgeBase));
+            if (parameter == "话术管理")
+                _ = mainWindow.Navigate(typeof(Views.Pages.TrainingDataPage));
+            if (parameter == "数据大屏")
+                _ = mainWindow.Navigate(typeof(Views.Pages.DataDashboardPage));
+            if (parameter == "客户管理")
+                _ = mainWindow.Navigate(typeof(Views.Pages.Customers));
+            if (parameter == "用户管理")
+                _ = mainWindow.Navigate(typeof(Views.Pages.UsersPage));
+            if (parameter == "录音管理")
+                _ = mainWindow.Navigate(typeof(Views.Pages.AudioRecordPage));
+            if (parameter == "客户抓取")
+                _ = mainWindow.Navigate(typeof(Views.Pages.BrowserCrawlerPage));
+            if (parameter == "系统设置")
+                _ = mainWindow.Navigate(typeof(Views.Pages.SettingsPage));
+
+        }
     }
 }
 

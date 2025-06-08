@@ -21,7 +21,7 @@ namespace YingCaiAiWin.Services
         public object? GetPage(Type pageType)
         {
             // 👇 只缓存 AIWindows和BrowserCrawlerPage 页面
-            if (pageType == typeof(AIWindows)||pageType==typeof(BrowserCrawlerPage))
+            if (pageType == typeof(AIWindows)||pageType==typeof(BrowserCrawlerPage)||pageType == typeof(DataDashboardPage))
             {
                 if (!_cachedPages.ContainsKey(pageType))
                 {

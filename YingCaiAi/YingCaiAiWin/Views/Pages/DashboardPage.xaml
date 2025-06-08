@@ -86,8 +86,8 @@
                               Margin="4"
                               Padding="0"
                               VerticalAlignment="Stretch"
-                              Command="{Binding DataContext.CardClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                              CommandParameter="{Binding CommandParam}"
+                              Command="{Binding ViewModel.CardClickCommand, RelativeSource={RelativeSource AncestorType=local:DashboardPage}}"
+                              CommandParameter="{Binding Title}"
                               IsChevronVisible="False">         
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -96,9 +96,9 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Image
-                  Width="60"
-                  Margin="24,0,0,0"
-                  Source="{Binding IconPath}" />
+                                      Width="60"
+                                      Margin="24,0,0,0"
+                                      Source="{Binding IconPath}" />
 
                                 <StackPanel Grid.Column="1" Margin="24" VerticalAlignment="Center">
                                     <ui:TextBlock

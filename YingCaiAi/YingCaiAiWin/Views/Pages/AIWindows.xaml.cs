@@ -580,6 +580,7 @@ namespace YingCaiAiWin.Views.Pages
             await page.ClickAsync(".send-icon");
             await Task.Delay(10000);
             var div = "";
+            int divC = 0;
             for (int i = 0; i < 8; i++)
             {
                 // 获取当前页面完整 HTML
@@ -588,19 +589,25 @@ namespace YingCaiAiWin.Views.Pages
                 htmlDoc.LoadHtml(content);
                 var root = htmlDoc.DocumentNode;
                 var divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
-
+                var copys = page.Locator("div.cs-answer-hover-menu");
                 // 获取数量
                 int count = await divs.CountAsync();
-
-                if (count > 0)
+                int countcopy = await copys.CountAsync();
+                if (count * 2 == countcopy)
                 {
                     // 获取最后一个元素的文本
                     div = await divs.Nth(count - 1).InnerTextAsync();
-                    await Task.Delay(2000);
+                    if (divC==div.Length)
+                    {
+                        break;
+                    }
+                    divC = div.Length;
+                    await Task.Delay(3000);
+                   
                 }
                 else
                 {
-                    await Task.Delay(5000);
+                    await Task.Delay(3000);
                 }
 
 
