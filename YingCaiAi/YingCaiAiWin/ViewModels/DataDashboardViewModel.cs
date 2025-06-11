@@ -77,7 +77,7 @@ namespace YingCaiAiWin.ViewModels
 
           
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(4); 
+            _timer.Interval = TimeSpan.FromSeconds(3); 
             _timer.Tick += async (s, e) => await RefreshData();
             _timer.Start();
             InitializeData();
