@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using HandyControl.Controls;
 using HandyControl.Data;
+using System.Windows.Input;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
@@ -42,6 +43,9 @@ namespace YingCaiAiWin.ViewModels
         private List<YingCaiAiModel.Users> _users = new List<YingCaiAiModel.Users>();
 
         public IUsersService _usersService { get; set; }
+
+   
+
         public AiRecordViewModel(INavigationService navigationService, IAiRecordService service, IContentDialogService contentDialogService, IUsersService usersService)
         {
             if (!_isInitialized)

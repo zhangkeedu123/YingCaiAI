@@ -1,16 +1,13 @@
-﻿using DocumentFormat.OpenXml.Office.SpreadSheetML.Y2023.MsForms;
-using DocumentFormat.OpenXml.Wordprocessing;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Microsoft.Playwright;
 using Microsoft.Web.WebView2.Core;
-using NPOI.SS.Formula.Functions;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
+using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -18,11 +15,12 @@ using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
 using YingCaiAiModel;
 using YingCaiAiService.IService;
-using YingCaiAiService.Service;
 using YingCaiAiWin.Helpers;
 using YingCaiAiWin.Models;
 using YingCaiAiWin.ViewModels;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
+using MenuItem = System.Windows.Controls.MenuItem;
+using System.Windows.Forms;
+using HandyControl.Controls;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -49,17 +47,22 @@ namespace YingCaiAiWin.Views.Pages
         private bool isSearch = true;
         private IPage page=null;
 
-        public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService, IDocumentsService service)
+        private UserMemo UserMemo = new UserMemo();
+        private IUserMemoService _userMemoService;
+        public AIWindows(AIWindowsViewModel viewModel, IAiRecordService aiRecordService, IDocumentsService service, IUserMemoService userMemoService)
         {
 
             ViewModel = viewModel;
             _aiRecordService = aiRecordService;
             _service = service;
+            _userMemoService = userMemoService;
             _httpClient = new HttpClientHelper();
             DataContext = this;
+            ViewModel.LoadMemoAction = LoadMemo; // 绑定方法
             InitializeComponent();
             InitializeBrowser();
             LoadQuestions();
+            LoadMemo();
             this.Loaded += (s, e) =>
             {
 
@@ -154,6 +157,25 @@ namespace YingCaiAiWin.Views.Pages
             questions = await _service.GetAllSystemAsync("猜你想问") ?? new List<Documents>();
             Random rand = new Random();
             QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count / 2).ToList();
+
+        }
+
+        private async void LoadMemo()
+        {
+            var usermodel = await _userMemoService.GetByUserAsync(AppUser.Instance.Username, ViewModel.coId);
+            if (usermodel != null)
+            {
+                UserMemo = usermodel;
+                var range = new TextRange(RootTextBox.Document.ContentStart, RootTextBox.Document.ContentEnd);
+                using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(UserMemo.Content)))
+                {
+                    range.Load(stream, System.Windows.DataFormats.Xaml);
+                }
+            }
+            else {
+                UserMemo = new UserMemo();
+                
+            }
         }
 
 
@@ -300,7 +322,7 @@ namespace YingCaiAiWin.Views.Pages
             }
         }
 
-        private void AddressBar_KeyDown(object sender, KeyEventArgs e)
+        private void AddressBar_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -413,7 +435,7 @@ namespace YingCaiAiWin.Views.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void SearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        private async void SearchBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
 
             // 用户按下 Enter，并且没有按住 Shift
@@ -533,7 +555,7 @@ namespace YingCaiAiWin.Views.Pages
 
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                var scrollViewer = FindParent<ScrollViewer>(newStackPanel);
+                var scrollViewer = FindParent<System.Windows.Controls.ScrollViewer>(newStackPanel);
                 scrollViewer?.ScrollToEnd();
             }), DispatcherPriority.Background);
         }
@@ -585,7 +607,7 @@ namespace YingCaiAiWin.Views.Pages
             {
                 // 获取当前页面完整 HTML
                 string content = await page.ContentAsync(); // 或 await page.InnerHTMLAsync("body")
-                var htmlDoc = new HtmlDocument();
+                var htmlDoc = new HtmlAgilityPack.HtmlDocument();
                 htmlDoc.LoadHtml(content);
                 var root = htmlDoc.DocumentNode;
                 var divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
@@ -620,6 +642,100 @@ namespace YingCaiAiWin.Views.Pages
             return cleanedText;
 
         }
+
+        //富文本设置相关
+        private void SetColor_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is MenuItem item && item.Tag is string colorName)
+            {
+                var selection = RootTextBox.Selection;
+                if (!selection.IsEmpty)
+                {
+                    selection.ApplyPropertyValue(TextElement.ForegroundProperty, new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString(colorName)));
+                }
+            }
+        }
+        private void SetBold_Click(object sender, RoutedEventArgs e)
+        {
+            var selection = RootTextBox.Selection;
+            if (!selection.IsEmpty)
+            {
+                var weight = selection.GetPropertyValue(TextElement.FontWeightProperty);
+                selection.ApplyPropertyValue(TextElement.FontWeightProperty,
+                    weight != DependencyProperty.UnsetValue && (FontWeight)weight == FontWeights.Bold ? FontWeights.Normal : FontWeights.Bold);
+            }
+        }
+
+        private void SetItalic_Click(object sender, RoutedEventArgs e)
+        {
+            var selection = RootTextBox.Selection;
+            if (!selection.IsEmpty)
+            {
+                var style = selection.GetPropertyValue(TextElement.FontStyleProperty);
+                selection.ApplyPropertyValue(TextElement.FontStyleProperty,
+                    style != DependencyProperty.UnsetValue && (FontStyle)style == FontStyles.Italic ? FontStyles.Normal : FontStyles.Italic);
+            }
+        }
+
+        private void SetUnderline_Click(object sender, RoutedEventArgs e)
+        {
+            var selection = RootTextBox.Selection;
+            if (!selection.IsEmpty)
+            {
+                var textRange = new TextRange(selection.Start, selection.End);
+                var decorations = textRange.GetPropertyValue(Inline.TextDecorationsProperty) as TextDecorationCollection;
+
+                if (decorations == TextDecorations.Underline)
+                    textRange.ApplyPropertyValue(Inline.TextDecorationsProperty, null);
+                else
+                    textRange.ApplyPropertyValue(Inline.TextDecorationsProperty, TextDecorations.Underline);
+            }
+        }
+
+        private void IncreaseFontSize_Click(object sender, RoutedEventArgs e)
+        {
+            AdjustFontSize(2);
+        }
+
+        private void DecreaseFontSize_Click(object sender, RoutedEventArgs e)
+        {
+            AdjustFontSize(-2);
+        }
+
+  
+
+        private void AdjustFontSize(double delta)
+        {
+            var selection = RootTextBox.Selection;
+            if (!selection.IsEmpty)
+            {
+                object currentSize = selection.GetPropertyValue(TextElement.FontSizeProperty);
+                if (currentSize != DependencyProperty.UnsetValue && double.TryParse(currentSize.ToString(), out double size))
+                {
+                    selection.ApplyPropertyValue(TextElement.FontSizeProperty, size + delta);
+                }
+            }
+        }
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+          
+                var range = new TextRange(RootTextBox.Document.ContentStart, RootTextBox.Document.ContentEnd);
+            
+            using (var stream = new MemoryStream())
+            {
+                range.Save(stream, System.Windows.DataFormats.Xaml);
+                UserMemo.Content= Encoding.UTF8.GetString(stream.ToArray());
+            }
+            if (UserMemo.Id <1)
+            {
+                UserMemo.CusId = ViewModel.coId;
+                UserMemo.CreatedUser = AppUser.Instance.Username;
+            }
+            _userMemoService.AddUserMemoAsync(UserMemo);
+            Growl.Success("操作成功");
+        }
+
+
 
 
     }

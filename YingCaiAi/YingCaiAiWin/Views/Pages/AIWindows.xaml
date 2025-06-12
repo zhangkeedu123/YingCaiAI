@@ -14,7 +14,8 @@
                                      IsDesignTimeCreatable=False}"
      d:DesignHeight="800"
      d:DesignWidth="1000"
-
+       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+   ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Title="客户服务系统" 
   >
     <!--WindowStartupLocation="CenterScreen"
@@ -169,6 +170,77 @@
                     </Grid>
 
                 </TabItem>
+                <TabItem Header="备忘录">
+                    <Grid MinHeight="725">
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#f3e7ee" Offset="0.0"/>
+                                <GradientStop Color="#f3dbe9" Offset="0.5"/>
+                                <GradientStop Color="#e3d3f0" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Menu
+                                Grid.Row="0"
+                                Background="Transparent"
+                                FontSize="14">
+                            <ui:MenuItem Header="颜色" Icon="{ui:SymbolIcon Color24}">
+                                <MenuItem Click="SetColor_Click" Tag="Red" Header="红" />
+                                <MenuItem Click="SetColor_Click" Tag="Yellow" Header="黄" />
+                                <MenuItem Click="SetColor_Click" Tag="Green" Header="绿" />
+                                <MenuItem Click="SetColor_Click" Tag="Blue" Header="蓝" />
+                                <MenuItem Click="SetColor_Click" Tag="Black" Header="黑" />
+                             
+                                <MenuItem Click="SetColor_Click" Tag="White" Header="白" />
+                            </ui:MenuItem>
+
+                            <Separator />
+                            <ui:MenuItem Click="SetBold_Click" Icon="{ui:SymbolIcon TextBold20}" />
+                            <ui:MenuItem  Click="SetItalic_Click" Icon="{ui:SymbolIcon TextItalic20}" />
+                            <ui:MenuItem Click="SetUnderline_Click" Icon="{ui:SymbolIcon TextUnderline20}" />
+                            <Separator />
+                            <ui:MenuItem  Click="IncreaseFontSize_Click" Icon="{ui:SymbolIcon Add24}" />
+                            <ui:MenuItem Click="DecreaseFontSize_Click" Icon="{ui:SymbolIcon Subtract24}" />
+                            <Separator />
+                            <ui:MenuItem Header="保存" Icon="{ui:SymbolIcon CalendarWeekStart24}"   Click="Save_Click" >
+                            </ui:MenuItem>
+                            <Separator />
+                           
+                        </Menu>
+
+                        <RichTextBox
+                        x:Name="RootTextBox"
+                        Grid.Row="1"
+                        Height="700"
+                        Padding="0,6"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        VerticalScrollBarVisibility="Visible">
+                            <RichTextBox.Document>
+                                <FlowDocument FontFamily="{StaticResource ContentControlThemeFontFamily}">
+                                    <FlowDocument.Blocks>
+                                        <Paragraph>
+                                            <Run>这里是</Run>
+                                            <Run xml:lang="zh-cn">个人</Run>
+                                            <Run>备忘录，可以记录一些客户资料标签等。</Run>
+                                            <Span FontWeight="Bold">
+                                                <Run>开始记录吧。</Run>
+                                            </Span>
+                                        </Paragraph>
+                                        
+                                    </FlowDocument.Blocks>
+                                </FlowDocument>
+                                
+                               
+                            </RichTextBox.Document>
+                        </RichTextBox>
+                    </Grid>
+
+                </TabItem>
+
             </TabControl>
         </ui:Card>
         <!-- 右侧客服界面 -->
@@ -311,16 +383,16 @@
      
             PreviewKeyDown="SearchBox_PreviewKeyDown"
             />
-                    
+
                     <CheckBox x:Name="IsNet"
                         Grid.Column="1"
                         Content="联网" />
                 </Grid>
-                
+
 
             </ui:Card>
-           
-           
+
+
         </Grid>
     </Grid>
 </Page>

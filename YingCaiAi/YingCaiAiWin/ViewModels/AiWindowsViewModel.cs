@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using Wpf.Ui;
@@ -51,7 +52,15 @@ namespace YingCaiAiWin.ViewModels
 
         private List<AudioRecord> AudioRecordList = [];
         private readonly IAudioRecordService _audioRecordService;
-        private int coId ;
+        public int coId=0 ;
+
+        public Action? LoadMemoAction { get; set; }
+
+        public ICommand LoadCommand => new RelayCommand(async () =>
+        {
+            // 调用 View 中的方法（如 LoadQuestions）
+            LoadMemoAction?.Invoke();
+        });
         public AIWindowsViewModel(INavigationService navigationService, ICustomerService customerService, IDocumentsService documentsService , IAudioRecordService audioRecordService)
         {
             if (!_isInitialized)
@@ -70,7 +79,9 @@ namespace YingCaiAiWin.ViewModels
             if (coId!=coid)
             {
                 coId = coid;
+              
                 InitializeViewModel(); // 每次进入页面重新加载数据
+                
             }
          
             
@@ -102,7 +113,7 @@ namespace YingCaiAiWin.ViewModels
                     CusName = Customers?.Name;
                 }
             }
-           
+            LoadCommand.Execute(LoadMemoAction);
 
             CardItems = new()
                 {
