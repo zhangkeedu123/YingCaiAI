@@ -21,6 +21,7 @@ using YingCaiAiWin.ViewModels;
 using MenuItem = System.Windows.Controls.MenuItem;
 using System.Windows.Forms;
 using HandyControl.Controls;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace YingCaiAiWin.Views.Pages
 {
@@ -154,9 +155,11 @@ namespace YingCaiAiWin.Views.Pages
 
         private async void LoadQuestions()
         {
-            questions = await _service.GetAllSystemAsync("猜你想问") ?? new List<Documents>();
-            Random rand = new Random();
-            QuestionsList.ItemsSource = questions.OrderBy(x => rand.Next()).Take(questions.Count / 2).ToList();
+            
+
+            questions = await _service.GetAllSystemAsync() ?? new List<Documents>();
+            
+            QuestionsList.ItemsSource = questions.Where(m=>m.Filename!="企业套餐").ToList();
 
         }
 
@@ -385,6 +388,49 @@ namespace YingCaiAiWin.Views.Pages
 
         }
 
+        private async void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (e.NewValue is System.Windows.Controls.TreeViewItem selectedItem)
+            {
+                string header = selectedItem.Header.ToString();
+                //System.Windows.MessageBox.Show($"你点击了：{header}");
+                // 可根据 header 名称进一步处理逻辑
+                selectedItem.IsSelected = false;
+
+                string text = header;
+
+                if (isSearch)
+                {
+                    isSearch = false;
+                    if (text == "行业新闻")
+                    {
+                        text = "今日建筑化工行业相关新闻热点";
+                        ChatBox.AddMessage(text, true);
+
+                        ChatBox.AddLoadingBubble();
+                        // 滚动到底部
+                        Scroll();
+
+                        string retext = await GetNetSearch(text);
+                        ChatBox.ReplaceLoadingBubble(retext, text);
+                        Scroll(); // 最后再滚动一次，确保展示完整
+                        isSearch = true;
+                        return;
+                    }
+
+                    ViewModel.ShowCustomer(text);
+                    //ChatBox.AddLoadingBubble();
+                    // 滚动到底部
+                    // Scroll();
+                    // 关闭展开框
+                    expander.IsExpanded = false;
+                    isSearch = true;
+                    await Task.Delay(2000);
+                }
+            }
+        }
+
+
         /// <summary>
         /// 猜你想问
         /// </summary>
@@ -395,20 +441,49 @@ namespace YingCaiAiWin.Views.Pages
 
             if (sender is CardAction card && card.DataContext is Documents question)
             {
-                if (isSearch)
-                {
-                    isSearch = false;
-                    var cards = sender as CardAction;
-                    string text = cards?.Tag?.ToString();
-                    ChatBox.AddMessage(text, true);
-                    ChatBox.AddLoadingBubble();
-                    // 滚动到底部
-                    Scroll();
 
-                    await CallVectorizeApiAsync(text);
-                    Scroll(); // 最后再滚动一次，确保展示完整
-                    isSearch = true;
+                if (!question.IsNet && !question.IsAi)
+                {
+                    ViewModel.ShowCard(question.Filename,question.Content);
                 }
+                 if (!question.IsNet && question.IsAi)
+                {
+                    if (isSearch)
+                    {
+                        isSearch = false;
+                        var cards = sender as CardAction;
+                        string text = cards?.Tag?.ToString();
+                        ChatBox.AddMessage(text, true);
+                        ChatBox.AddLoadingBubble();
+                        // 滚动到底部
+                        Scroll();
+
+                        await CallVectorizeApiAsync(text);
+                        Scroll(); // 最后再滚动一次，确保展示完整
+                        isSearch = true;
+                    }
+                }
+                if(question.IsNet && question.IsAi)
+                {
+                    if (isSearch)
+                    {
+                        isSearch = false;
+                        ChatBox.AddMessage(question.Filename, true);
+
+                        ChatBox.AddLoadingBubble();
+                        // 滚动到底部
+                        Scroll();
+
+                        string retext = await GetNetSearch(question.Filename);
+                        ChatBox.ReplaceLoadingBubble(retext, question.Filename);
+                        Scroll(); // 最后再滚动一次，确保展示完整
+                        isSearch = true;
+                        return;
+                    }
+                       
+                }
+
+                
 
             }
         }
@@ -569,6 +644,10 @@ namespace YingCaiAiWin.Views.Pages
 
             return FindParent<T>(parentObject);
         }
+
+
+  
+
 
         #endregion
 

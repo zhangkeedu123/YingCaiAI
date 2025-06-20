@@ -20,8 +20,8 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                 string sql = @"INSERT INTO documents (filename, content, status,status_name, created_at)
-                         VALUES (@Filename, @Content, @Status,@StatusName, @CreatedAt)";
+                 string sql = @"INSERT INTO documents (filename, content, status,status_name, created_at,is_net,is_ai)
+                         VALUES (@Filename, @Content, @Status,@StatusName, @CreatedAt,@IsNet,@IsAi)";
                 var data = await _dbHelper.InsertDocumentsAsync(sql, doc);
                 return BaseDataModel.Instance.OK("", data);
             }
@@ -49,11 +49,9 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                if (fileName == null || fileName == "")
-                {
-                    return (await _dbHelper.QueryAsync<Documents>("SELECT * FROM Documents where status=5 ORDER BY id")).ToList();
-                }
-                return (await _dbHelper.QueryAsync<Documents>($"SELECT * FROM Documents where status=5 and filename='{fileName}' ORDER BY id")).ToList();
+                
+               return (await _dbHelper.QueryAsync<Documents>("SELECT * FROM Documents where status=5 ORDER BY id")).ToList();
+              
                
             }
             catch (Exception ex)
@@ -123,7 +121,7 @@ namespace YingCaiAiService.Service
                     parameters.Add("Content", $"%{documents.Filename}%");
                 }
 
-                var data = _dbHelper.QueryPagedAsync<Documents>($"SELECT id, filename, content,created_at,status_name,status FROM Documents\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM Documents {sql}", parameters, pageIndex, 20).Result;
+                var data = _dbHelper.QueryPagedAsync<Documents>($"SELECT * FROM Documents\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM Documents {sql}", parameters, pageIndex, 20).Result;
 
                 return BaseDataModel.Instance.OK(data.TotalCount.ToString(), data.Data);
             }
@@ -168,7 +166,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                var data = await _dbHelper.ExecuteAsync("update Documents set filename=@Filename, content=@Content where id=@Id", dc);
+                var data = await _dbHelper.ExecuteAsync("update Documents set filename=@Filename, content=@Content,is_net=@IsNet,is_ai=@IsAi where id=@Id", dc);
                 return data > 0 ? BaseDataModel.Instance.OK("") : BaseDataModel.Instance.Error("");
             }
             catch (Exception ex)

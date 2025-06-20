@@ -18,5 +18,9 @@ namespace YingCaiAiModel
 
         public string StatusName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
+
+        public bool IsNet { get; set; }
+
+        public bool IsAi { get; set; }
     }
 }

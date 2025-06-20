@@ -94,7 +94,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" Visibility="Hidden" />
 
-                        <DataGridTextColumn Header="类别" Binding="{Binding Filename}" MinWidth="240" >
+                        <DataGridTextColumn Header="标题" Binding="{Binding Filename}" MinWidth="240" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center" />
@@ -111,7 +111,22 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                      
+                        <DataGridTextColumn Header="是否调用AI" Binding="{Binding IsAi}" MinWidth="140" >
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="是否联网" Binding="{Binding IsNet}" MinWidth="140" >
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                    <Setter Property="FontWeight" Value="SemiBold" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="上传时间" Binding="{Binding CreatedAt, StringFormat=yyyy-MM-dd HH:mm}"  MinWidth="120" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">

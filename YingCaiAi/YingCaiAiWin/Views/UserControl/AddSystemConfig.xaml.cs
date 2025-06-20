@@ -34,6 +34,27 @@ namespace YingCaiAiWin.Views.Pages
         {
             Filename.Text = DocumentsEdit.Filename;
             Content.Text = DocumentsEdit.Content;
+            if (DocumentsEdit.IsAi)
+            {
+                radio1_yes.IsChecked = true;
+                radio1_no.IsChecked =false;
+            }
+            else
+            {
+                radio1_yes.IsChecked = false;
+                radio1_no.IsChecked = true;
+            }
+            if (DocumentsEdit.IsNet)
+            {
+                radio2_yes.IsChecked = true;
+                radio2_no.IsChecked = false;
+            }
+            else
+            {
+                radio2_yes.IsChecked = false;
+                radio2_no.IsChecked = true;
+            }
+
         }
 
         protected async override void OnButtonClick(ContentDialogButton button)
@@ -52,12 +73,14 @@ namespace YingCaiAiWin.Views.Pages
             obj = false;
             if (string.IsNullOrWhiteSpace(Filename.Text.Trim()))
             {
-                ErrorInfoBar.Message = "类别不能为空！请重新输入!";
+                ErrorInfoBar.Message = "标题不能为空！请重新输入!";
                 ErrorInfoBar.IsOpen = true;
                 obj = true;
                 return;
             }
-            if (string.IsNullOrWhiteSpace(Content.Text.Trim()))
+            DocumentsEdit.IsAi = radio1_yes.IsChecked??false;
+            DocumentsEdit.IsNet = radio2_yes.IsChecked??false;
+            if (!DocumentsEdit.IsAi && !DocumentsEdit.IsNet&&string.IsNullOrWhiteSpace(Content.Text.Trim()))
             {
                 ErrorInfoBar.Message = "内容不能为空！请重新输入!";
                 ErrorInfoBar.IsOpen = true;
@@ -66,18 +89,17 @@ namespace YingCaiAiWin.Views.Pages
             }
             if (DocumentsEdit.Id == null || DocumentsEdit.Id < 1)
             {
-                if (!Filename.Text.Trim().Contains("猜你想问"))
-                {
-                    var temp = await _service.GetByFileNameAsync(Filename.Text.Trim());
-                    if (temp != null && temp.Id > 0)
-                    {
-                        ErrorInfoBar.Message = "已存在相同类名！";
-                        ErrorInfoBar.IsOpen = true;
-                        return;
 
-                    }
+                var temp = await _service.GetByFileNameAsync(Filename.Text.Trim());
+                if (temp != null && temp.Id > 0)
+                {
+                    ErrorInfoBar.Message = "已存在相同标题！";
+                    ErrorInfoBar.IsOpen = true;
+                    return;
+
                 }
-              
+
+
                 DocumentsEdit.Status = 5;
                 DocumentsEdit.CreatedAt = DateTime.Now;
             }

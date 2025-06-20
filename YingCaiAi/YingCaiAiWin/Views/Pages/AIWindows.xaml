@@ -131,7 +131,8 @@
                                                    Text="{Binding Title}"
                                                    TextTrimming="CharacterEllipsis"
                                                    TextWrapping="NoWrap"
-                                                   ToolTip="{Binding Title}" />
+                                                               Foreground="#335bff"
+                                                    />
                                                     <Button Content="✕" Grid.Column="0" Grid.Row="1"
                                                          FontWeight="Bold"
                                                          VerticalAlignment="Top"
@@ -155,7 +156,8 @@
                                                 Padding="10,0,0,17"
                                                 Margin="0,10,0,0"
                                                             MaxHeight="250"
-                                                Foreground="{DynamicResource  DarkPrimaryBrush}"
+                                                Foreground="Black"
+                                                            FontFamily="Microsoft YaHei"
                                                             />
                                                     </ScrollViewer>
                                                 </StackPanel>
@@ -288,7 +290,7 @@
                         <Border Height="auto" BorderThickness="1,0,1,1" BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource RegionBrush}" CornerRadius="0,0,4,4" >
 
                             <ui:Card  Padding="10">
-                                <ItemsControl ItemsSource="{Binding ViewModel.ToolItems}">
+                                <!--<ItemsControl ItemsSource="{Binding ViewModel.ToolItems}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <UniformGrid Columns="4" />
@@ -307,7 +309,19 @@
                                             </ui:Card>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                </ItemsControl>-->
+
+                                <TreeView AllowDrop="True" SelectedItemChanged="TreeView_SelectedItemChanged" >
+                                    <TreeViewItem Header="开发前准备" IsExpanded="True">
+                                        <TreeViewItem Header="客户资料"/>
+                                        <TreeViewItem Header="智能方案"/>
+                                        <TreeViewItem Header="推荐话术"/>
+                                        <TreeViewItem Header="模拟对话"/>
+                                    </TreeViewItem>
+                                    <TreeViewItem Header="售后方案" IsExpanded="True">
+                                        <TreeViewItem Header="客户数据"/>
+                                    </TreeViewItem>
+                                </TreeView>
                             </ui:Card>
 
 
@@ -322,20 +336,20 @@
                                 <StackPanel>
                                     <Grid Margin="0,0,0,10">
                                         <TextBlock Text="猜你想问" FontSize="16" FontWeight="SemiBold" />
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Cursor="Hand" MouseDown="RefreshQuestions_Click">
+                                        <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Cursor="Hand" MouseDown="RefreshQuestions_Click">
                                             <ui:SymbolIcon Symbol="ArrowSync24" Foreground="#4285F4" />
                                             <TextBlock Text="换一批" Foreground="#4285F4" Margin="5,0,0,0" />
-                                        </StackPanel>
+                                        </StackPanel>-->
                                     </Grid>
 
                                     <ItemsControl x:Name="QuestionsList">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <ui:CardAction Padding="12" Margin="0,0,0,10" Click="Question_Click" Tag="{Binding Content}" >
+                                                <ui:CardAction Padding="12" Margin="0,0,0,10" Click="Question_Click" Tag="{Binding Filename}" >
                                                     <Grid  >
                                                         <StackPanel Orientation="Horizontal">
                                                             <ui:SymbolIcon Symbol="QuestionCircle24" Foreground="#4285F4" Margin="0,0,10,0" />
-                                                            <TextBlock  Text="{Binding Content}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                            <TextBlock  Text="{Binding Filename}" VerticalAlignment="Center" TextWrapping="Wrap" />
                                                         </StackPanel>
 
                                                     </Grid>

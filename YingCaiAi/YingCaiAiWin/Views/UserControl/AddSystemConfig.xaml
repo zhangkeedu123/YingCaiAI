@@ -20,8 +20,10 @@
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:AddSystemConfig}" />
     </ui:ContentDialog.Resources>
 
-    <Grid Margin="10" Width="500" Height="400">
+    <Grid Margin="10" Width="500" Height="450">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -32,7 +34,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- 用户名 -->
-        <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="类别:" />
+        <TextBlock Grid.Row="0" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="标题:" />
         <TextBox Grid.Row="0" Grid.Column="1" Height="40" Margin="0,4" x:Name="Filename"   />
 
         <TextBlock Grid.Row="1" Grid.Column="0" FontFamily="block"  FontWeight="Black"   VerticalAlignment="Center" Text="内容:" />
@@ -51,7 +53,19 @@
                   AcceptsReturn="True"
                  AcceptsTab="True"
             />
-        <ui:InfoBar Title="错误"   Grid.Row="2" Grid.Column="1" Height="80" x:Name="ErrorInfoBar"  Message="" IsOpen="False"  Severity="Error"  />
+        <TextBlock Grid.Row="2" Grid.Column="0" FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="是否调用AI:" />
+        <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+            <RadioButton x:Name="radio1_yes" Content="是" GroupName="GroupAI" Margin="0,0,10,0"/>
+            <RadioButton x:Name="radio1_no" Content="否" IsChecked="True"  GroupName="GroupAI"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" FontFamily="Comic Sans MS" FontWeight="Black" VerticalAlignment="Center" Text="是否联网:" />
+        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+            <RadioButton x:Name="radio2_yes" Content="是" GroupName="GroupNetwork" Margin="0,0,10,0"/>
+            <RadioButton x:Name="radio2_no" Content="否" IsChecked="True" GroupName="GroupNetwork"/>
+        </StackPanel>
+
+        <ui:InfoBar Title="错误"   Grid.Row="4" Grid.Column="1" Height="80" x:Name="ErrorInfoBar"  Message="" IsOpen="False"  Severity="Error"  />
     </Grid>
 
 
