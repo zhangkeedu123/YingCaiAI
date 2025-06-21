@@ -73,15 +73,24 @@ namespace YingCaiAiWin.ViewModels
         {
 
             Docs.Clear();
-            if (_userId != 0)
-            {
-                _aiRecords.CreatedUser = Users[_userId].UserName;
-            }
-            else
+          
+            var roleName = AppUser.Instance.RoleName;
+           
+            if (roleName == "管理员"&&UserId==0)
             {
                 _aiRecords.CreatedUser = null;
             }
+            else if (roleName == "管理员"&&UserId!=0 )
+            {
+                _aiRecords.CreatedUser = Users[UserId].UserName;
+            }
+            else if (roleName != "管理员")
+            {
+                _aiRecords.CreatedUser = AppUser.Instance.Username;
+            }
             
+            
+
             var data = await _service.GetAllPageAsync(_currentPage, _aiRecords);
             Docs = data.Data as List<AiRecord> ?? new List<AiRecord>();
             PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
