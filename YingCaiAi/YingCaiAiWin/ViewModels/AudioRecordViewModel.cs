@@ -57,6 +57,10 @@ namespace YingCaiAiWin.ViewModels
 
         [ObservableProperty]
         private List<Users> _users = new List<Users>();
+
+        [ObservableProperty]
+        private int _userId = 0;
+
         private readonly IContentDialogService _contentDialogService;
         public IUsersService _usersService { get; set; }
         public AudioRecordViewModel(INavigationService navigationService, IAudioRecordService service, IUsersService usersService, IContentDialogService contentDialogService)
@@ -158,7 +162,20 @@ namespace YingCaiAiWin.ViewModels
         {
 
             Docs.Clear();
+            var roleName = AppUser.Instance.RoleName;
 
+            if (roleName == "管理员" && UserId == 0)
+            {
+                _audioRecordM.UserId = 0;
+            }
+            else if (roleName == "管理员" && UserId != 0)
+            {
+                _audioRecordM.UserId = Users[UserId].Id;
+            }
+            else if (roleName != "管理员")
+            {
+                _audioRecordM.UserId = AppUser.Instance.Id;
+            }
             Task.Run(async () =>
             {
                 var data = await _service.GetAllPageAsync(_currentPage, _audioRecordM);

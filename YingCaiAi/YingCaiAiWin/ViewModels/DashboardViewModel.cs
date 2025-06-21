@@ -37,7 +37,75 @@ public partial class DashboardViewModel : ViewModel
     }
     private void InitializeViewModel()
     {
-        CardItems = new()
+        CardItems = new List<CardItem>();
+        if (AppUser.Instance.Username != null && AppUser.Instance.RoleName != "管理员")
+        {
+            if (AppUser.Instance.Role.Contains("2") || AppUser.Instance.Role.Contains("3"))
+            {
+                CardItems.Add(new CardItem() {
+                    Title = "客户管理",
+                    Description = "客户爬虫, 客户资料, 客户标签...",
+                    IconPath = "pack://application:,,,/Assets/WinUiGallery/user.png",
+                    CommandParam = "BasicInput"
+                });
+            }
+             if (AppUser.Instance.Role.Contains("5"))
+            {
+                CardItems.Add(new CardItem() {
+                    Title = "AI辅助窗口",
+                    Description = "AI实时互动，推荐话术...",
+                    IconPath = "pack://application:,,,/Assets/WinUiGallery/ai.png",
+                    CommandParam = "DialogsAndFlyouts"
+                });
+            } 
+            if (AppUser.Instance.Role.Contains("8") || AppUser.Instance.Role.Contains("9"))
+            {
+                CardItems.Add(new CardItem()
+                {
+                    Title = "知识库管理",
+                    Description = "查阅专业知识，更新知识库.",
+                    IconPath = "pack://application:,,,/Assets/WinUiGallery/books.png",
+                    CommandParam = "Navigation"
+                });
+            }
+            
+            if (AppUser.Instance.Role.Contains("12") || AppUser.Instance.Role.Contains("13") )
+            {
+                CardItems.Add(new CardItem()
+                {
+                    Title = "客户管理",
+                    Description = "自动化获取客户数据资料...",
+                    IconPath = "pack://application:,,,/Assets/WinUiGallery/data.png",
+                    CommandParam = "Navigation"
+                });
+            }
+            
+            if (AppUser.Instance.Role.Contains("16") || AppUser.Instance.Role.Contains("17"))
+            {
+                CardItems.Add(new CardItem()
+                {
+                    Title = "录音管理",
+                    Description = "新建话术，情绪分析，录音管理...",
+                    IconPath = "pack://application:,,,/Assets/WinUiGallery/huashu.png",
+                    CommandParam = "Navigation"
+                });
+            }
+            
+            if (AppUser.Instance.Role.Contains("19") || AppUser.Instance.Role.Contains("20"))
+            {
+                CardItems.Add(new CardItem()
+                {
+                    Title = "AI记录",
+                    Description = "销售额数据，新增合同数，各项指标分析...",
+                    IconPath = "pack://application:,,,/Assets/WinUiGallery/data.png",
+                    CommandParam = "Navigation"
+                });
+            }
+
+        }
+        else
+        {
+            CardItems = new()
     {
         new CardItem
         {
@@ -103,6 +171,8 @@ public partial class DashboardViewModel : ViewModel
             CommandParam = "Navigation"
         }
         };
+        }
+           
 
         _isInitialized = true;
     }
@@ -133,6 +203,8 @@ public partial class DashboardViewModel : ViewModel
                 _ = mainWindow.Navigate(typeof(Views.Pages.BrowserCrawlerPage));
             if (parameter == "系统设置")
                 _ = mainWindow.Navigate(typeof(Views.Pages.SettingsPage));
+            if (parameter == "AI记录")
+                _ = mainWindow.Navigate(typeof(Views.Pages.AiRecordPage));
 
         }
     }

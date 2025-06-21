@@ -52,7 +52,7 @@
                     hc:InfoElement.Placeholder="选择用户"
                     Width="170"
                     Margin="0,0,20,0"
-                    SelectedIndex="{Binding ViewModel.AudioRecordM.UserId}"
+                    SelectedIndex="{Binding ViewModel.UserId }"
                     ItemsSource="{Binding ViewModel.Users}"
                     DisplayMemberPath="UserName"
                     >
