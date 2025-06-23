@@ -1,8 +1,10 @@
 ﻿
 
+using DocumentFormat.OpenXml.Wordprocessing;
 using HandyControl.Controls;
 using HtmlAgilityPack;
 using Microsoft.Playwright;
+using NPOI.SS.Formula.Functions;
 using System.Collections;
 using System.Net.Http;
 using System.Text.Json;
@@ -623,7 +625,7 @@ namespace YingCaiAiWin.Views.Pages
             await Task.Delay(10000);
             var div = "";
             int divC = 0;
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 15; i++)
             {
                 // 获取当前页面完整 HTML
                 string content = await page.ContentAsync(); // 或 await page.InnerHTMLAsync("body")
@@ -631,31 +633,31 @@ namespace YingCaiAiWin.Views.Pages
                 htmlDoc.LoadHtml(content);
                 var root = htmlDoc.DocumentNode;
                 var divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
+                var divsQ = page.Locator("div.index_question-container__VKhsH");
                 var copys = page.Locator("div.cs-answer-hover-menu");
                 // 获取数量
                 int count = await divs.CountAsync();
                 int countcopy = await copys.CountAsync();
-                if (count * 2 == countcopy)
+                int countQ = await divsQ.CountAsync();
+
+                var likes = page.Locator("span", new() { HasTextString = "赞" });
+                int likeCount = await likes.CountAsync();
+                if (count*2 == likeCount&& countQ*2 == likeCount)
                 {
-                    // 获取最后一个元素的文本
                     div = await divs.Nth(count - 1).InnerTextAsync();
-                    if (divC == div.Length)
-                    {
-                        break;
-                    }
-                    divC = div.Length;
-                    await Task.Delay(3000);
+                    break;
                 }
-                else
+                await Task.Delay(3000);
+                if (i == 14)
                 {
-                    await Task.Delay(3000);
+                    div = await divs.Nth(count - 1).InnerTextAsync();
                 }
-
+              //  div = await divs.Nth(count - 1).InnerTextAsync();
             }
-
+          
             string cleanedText = Regex.Replace(div, @"(\s\d+)(?=[。.\s]|$)", "");
             string cleanedText1 = Regex.Replace(cleanedText, @"\s*(\r?\n)+\s*", "\n").Replace("\n。", "。");
-
+            AppendLog("✅ " + name + name1+":" + cleanedText1);
 
             return cleanedText1;
 
@@ -718,8 +720,8 @@ namespace YingCaiAiWin.Views.Pages
         private void AppendLog(string message)
         {
             var timestamp = DateTime.Now.ToString("HH:mm:ss");
-            var paragraph = new Paragraph();
-            paragraph.Inlines.Add(new Run($"[{timestamp}] {message}\n"));
+            var paragraph = new System.Windows.Documents.Paragraph();
+            paragraph.Inlines.Add(new System.Windows.Documents.Run($"[{timestamp}] {message}\n"));
             StatusTextBlock.Document.Blocks.Add(paragraph);
             StatusTextBlock.ScrollToEnd();
         }

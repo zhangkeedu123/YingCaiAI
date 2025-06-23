@@ -229,7 +229,7 @@ CommandParameter="{Binding Id}"  />
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Button
-                                             Content="去联系"
+                                             Content="联系"
                                              Style="{StaticResource  ButtonDashedPrimary}"
                                              hc:IconElement.Width="14"
                                              FontSize="12"

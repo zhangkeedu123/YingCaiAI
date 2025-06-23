@@ -74,7 +74,26 @@ public partial class MainWindowViewModel : ViewModel
                     MenuItemsSource = MenuItemsSource
                 });
             }
+            if (AppUser.Instance.Role.Contains("12") || AppUser.Instance.Role.Contains("13") || AppUser.Instance.Role.Contains("14"))
+            {
+                var MenuItemsSource = new List<NavigationViewItem>();
+                if (AppUser.Instance.Role.Contains("12"))
+                    MenuItemsSource.Add(new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)));
 
+
+                if (AppUser.Instance.Role.Contains("13"))
+                    MenuItemsSource.Add(new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)));
+                if (AppUser.Instance.Role.Contains("14"))
+                    MenuItemsSource.Add(new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)));
+
+                naItems.Add(new NavigationViewItem()
+                {
+                    Content = "客户管理",
+                    Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+
+                    MenuItemsSource = MenuItemsSource
+                });
+            }
             if (AppUser.Instance.Role.Contains("5") )
             {
                 naItems.Add(new NavigationViewItem()
@@ -104,26 +123,7 @@ public partial class MainWindowViewModel : ViewModel
                 });
             }
 
-            if (AppUser.Instance.Role.Contains("12") || AppUser.Instance.Role.Contains("13") || AppUser.Instance.Role.Contains("14"))
-            {
-                var MenuItemsSource = new List<NavigationViewItem>();
-                if (AppUser.Instance.Role.Contains("12"))
-                    MenuItemsSource.Add(new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)));
-
-
-                if (AppUser.Instance.Role.Contains("13"))
-                    MenuItemsSource.Add(new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)));
-                if (AppUser.Instance.Role.Contains("14"))
-                    MenuItemsSource.Add(new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)));
-
-                naItems.Add(new NavigationViewItem()
-                {
-                    Content = "客户管理",
-                    Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-
-                    MenuItemsSource = MenuItemsSource
-                });
-            }
+       
 
             if (AppUser.Instance.Role.Contains("16") || AppUser.Instance.Role.Contains("17"))
             {
@@ -189,6 +189,18 @@ public partial class MainWindowViewModel : ViewModel
                         new NavigationViewItem("角色管理", typeof(Views.Pages.RolesPage))
                   },
             },
+             new NavigationViewItem()
+            {
+               Content = "客户管理",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
+
+                 MenuItemsSource = new object[]
+                {
+                       new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)),
+                        new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)),
+                        new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)),
+                  },
+            },
             new NavigationViewItem()
             {
                 Content = "Ai窗口",
@@ -206,18 +218,7 @@ public partial class MainWindowViewModel : ViewModel
                         new NavigationViewItem("系统配置", typeof(Views.Pages.SystemConfigPage)),
                   },
             },
-              new NavigationViewItem()
-            {
-               Content = "客户管理",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.DataHistogram24 },
-
-                 MenuItemsSource = new object[]
-                {
-                       new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)),
-                        new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)),
-                        new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)),
-                  },
-            },
+             
                new NavigationViewItem()
             {
                Content = "话术管理",

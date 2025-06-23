@@ -258,7 +258,7 @@ CommandParameter="{Binding Id}"  />
                                              CommandParameter="{Binding  Id}"
                                              />-->
                                         <Button
-                                            Content="认领客户"
+                                            Content="锁定客户"
                                            
                                             Style="{StaticResource ButtonDashedPrimary}"
                                             hc:IconElement.Width="14"

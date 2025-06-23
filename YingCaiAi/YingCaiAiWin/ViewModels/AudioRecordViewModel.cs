@@ -162,19 +162,28 @@ namespace YingCaiAiWin.ViewModels
         {
 
             Docs.Clear();
-            var roleName = AppUser.Instance.RoleName;
+            //var roleName = AppUser.Instance.RoleName;
 
-            if (roleName == "管理员" && UserId == 0)
-            {
-                _audioRecordM.UserId = 0;
-            }
-            else if (roleName == "管理员" && UserId != 0)
+            //if (roleName == "管理员" && UserId == 0)
+            //{
+            //    _audioRecordM.UserId = 0;
+            //}
+            //else if (roleName == "管理员" && UserId != 0)
+            //{
+            //    _audioRecordM.UserId = Users[UserId].Id;
+            //}
+            //else if (roleName != "管理员")
+            //{
+            //    _audioRecordM.UserId = AppUser.Instance.Id;
+            //}
+
+            if (UserId != 0)
             {
                 _audioRecordM.UserId = Users[UserId].Id;
             }
-            else if (roleName != "管理员")
+            else
             {
-                _audioRecordM.UserId = AppUser.Instance.Id;
+                _audioRecordM.UserId = 0;
             }
             Task.Run(async () =>
             {
