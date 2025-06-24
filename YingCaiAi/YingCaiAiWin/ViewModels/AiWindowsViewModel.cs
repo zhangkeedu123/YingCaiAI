@@ -52,6 +52,7 @@ namespace YingCaiAiWin.ViewModels
 
         private List<AudioRecord> AudioRecordList = [];
         private readonly IAudioRecordService _audioRecordService;
+        private readonly IAiRecordService _aiRecordService;
         public int coId=0 ;
 
         private string remand = "| 场景 | 原话 | 改进话术 | |------|------|----------| | 开场 | \"我想看看招聘可以支持你\" | \"我们服务过XX家建筑企业，平均帮助客户节省30%招聘成本，看到贵司正在招聘工程类岗位，想和您聊聊...\" | | 价值传递 | \"我们有PC端、公众号、APP\" | \"我们的PC端实时更新建筑行业人才库，覆盖XX万专业简历，您可随时筛选，同时支持微信端一键触达候选人\" | | 行动引导 | \"方便的话加一下我的微信\" | \"我现在把建筑英才网的行业解决方案发到微信，您看看是否需要我们针对贵司的XX岗位做一次免费简历匹配测试？\" ";
@@ -62,12 +63,13 @@ namespace YingCaiAiWin.ViewModels
             // 调用 View 中的方法（如 LoadQuestions）
             LoadMemoAction?.Invoke();
         });
-        public AIWindowsViewModel(INavigationService navigationService, ICustomerService customerService, IDocumentsService documentsService , IAudioRecordService audioRecordService)
+        public AIWindowsViewModel(INavigationService navigationService, ICustomerService customerService, IDocumentsService documentsService , IAudioRecordService audioRecordService , IAiRecordService aiRecordService)
         {
             if (!_isInitialized)
             {
                  _customerService = customerService;
                 _audioRecordService = audioRecordService;
+                _aiRecordService = aiRecordService;
                 _service = documentsService;
                 InitializeViewModel();
 
@@ -216,11 +218,12 @@ namespace YingCaiAiWin.ViewModels
 
                 string text = $"请结合客户资料，和我公司的企业套餐总结之后给我推荐新的销售专业话术和为客户推荐合适套餐，内容要准确无误。\n\n 客户名称：{Customers.Name} ,介绍： {Customers?.Intro ?? "建筑英才网拥有超过1400多万份建筑行业人才简历，涵盖中高级人才库及紧缺专业人才库，日均新增注册用户约5000人，远超综合类平台。建筑英才网与60余所建筑类高校合作，搭建校园招聘体系。针对中高端岗位需求，提供一对一猎头服务，依托五年以上从业经验的专业人才库，满足企业高管、设计院专家等稀缺岗位招聘需求。90%以上的企业客户选择续费合作，日均保持3万个有效职位，访问量达120万次，反映用户对平台专业性的高度依赖。建筑英才网自2000年成立以来，多次被评为行业标杆，如“中国十大网络招聘机构”，并与多家建筑企业、高校建立战略合作，形成品牌壁垒。" } 企业正在招聘的职位：{Customers?.JobTitle},薪资：{Customers?.Salary} \n\n 企业套餐：{des}";
                 Task.Run(async () => {
-
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
                     var response = await new HttpClientHelper().PostDataAsync("milvus/ask", new { text, top_k = 10 });
                     if (response != null)
                     {
-
+                        stopwatch.Stop();
                         if (response.Contains("</think>"))
                         {
                             var aimodel = JsonSerializer.Deserialize<AiModelRes>(response);
@@ -241,6 +244,22 @@ namespace YingCaiAiWin.ViewModels
                                     }
                                 });
                                 CardItems = newList;
+                                TimeSpan elapsedTime = stopwatch.Elapsed;
+                                Task.Run( () =>
+                                {
+                                    // 获取执行时间
+                                   
+                                    var ai = new AiRecord()
+                                    {
+                                        Question = title,
+                                        Answer = retext,
+                                        CreatedAt = DateTime.Now,
+                                        CreatedUser = AppUser.Instance.Username,
+                                        Times = (int)elapsedTime.TotalSeconds,
+                                    };
+                                    _aiRecordService.AddAsync(ai);
+
+                                });
                             }
                         }
 
@@ -277,11 +296,12 @@ namespace YingCaiAiWin.ViewModels
                          text = $" 请结合我之前录音内容NLP分析的结果,总结经验后给我推荐新的销售话术。\n NLP结果如下：\n\n{audios}";
                     }
 
-                       
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
                     var response =await new HttpClientHelper().PostDataAsync("milvus/ask", new { text, top_k = 10 });
                     if (response != null)
                     {
-
+                        stopwatch.Stop();
                         if (response.Contains("</think>"))
                         {
                             var aimodel = JsonSerializer.Deserialize<AiModelRes>(response);
@@ -303,6 +323,22 @@ namespace YingCaiAiWin.ViewModels
                                     }
                                 });
                                 CardItems = newList;
+                                TimeSpan elapsedTime = stopwatch.Elapsed;
+                                Task.Run(() =>
+                                {
+                                    // 获取执行时间
+                               
+                                    var ai = new AiRecord()
+                                    {
+                                        Question = title,
+                                        Answer = retext,
+                                        CreatedAt = DateTime.Now,
+                                        CreatedUser = AppUser.Instance.Username,
+                                        Times = (int)elapsedTime.TotalSeconds,
+                                    };
+                                    _aiRecordService.AddAsync(ai);
+
+                                });
                             }
                         }
 

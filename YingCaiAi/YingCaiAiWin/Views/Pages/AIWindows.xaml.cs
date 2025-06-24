@@ -402,21 +402,7 @@ namespace YingCaiAiWin.Views.Pages
                 if (isSearch)
                 {
                     isSearch = false;
-                    if (text == "行业新闻")
-                    {
-                        text = "今日建筑化工行业相关新闻热点";
-                        ChatBox.AddMessage(text, true);
-
-                        ChatBox.AddLoadingBubble();
-                        // 滚动到底部
-                        Scroll();
-
-                        string retext = await GetNetSearch(text);
-                        ChatBox.ReplaceLoadingBubble(retext, text);
-                        Scroll(); // 最后再滚动一次，确保展示完整
-                        isSearch = true;
-                        return;
-                    }
+                  
 
                     ViewModel.ShowCustomer(text);
                     //ChatBox.AddLoadingBubble();
