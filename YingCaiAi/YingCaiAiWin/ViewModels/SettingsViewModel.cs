@@ -3,11 +3,25 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using HandyControl.Controls;
+using YingCaiAiService.IService;
+using YingCaiAiWin.Models;
+
 namespace YingCaiAiWin.ViewModels;
 
 public partial class SettingsViewModel : ViewModel
 {
     private bool _isInitialized = false;
+    public IUsersService _usersService { get; set; }
+    [ObservableProperty]
+    private string _Password;
+    public SettingsViewModel(IUsersService usersService)
+    {
+        _usersService = usersService;
+
+    }
+
+
 
     [ObservableProperty]
     private string _appVersion = string.Empty;
@@ -67,5 +81,38 @@ public partial class SettingsViewModel : ViewModel
 
                 break;
         }
+    }
+
+    [RelayCommand]
+    private async void OnChangePwd()
+    {
+        var user = AppUser.Instance.Username;
+        var userm = await _usersService.GetUserByNameAsync(user);
+
+
+        if (!string.IsNullOrWhiteSpace(Password))
+        {
+            userm.PasswordHash = new Helpers.FileHelper().ToMD5(Password);
+        }
+        await Task.Run(() => {
+            var flag = _usersService.UpdateUserAsync(userm).Status;
+
+            if (flag)
+            {
+                Growl.Success("操作成功");
+            }
+            else
+            {
+                Growl.Error("操作失败！");
+
+                Thread.Sleep(2500);
+                Growl.Clear();
+
+            }
+
+        });
+      
+
+
     }
 }

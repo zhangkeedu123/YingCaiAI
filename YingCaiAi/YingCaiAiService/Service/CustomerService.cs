@@ -69,6 +69,21 @@ namespace YingCaiAiService.Service
             }
         }
 
+        public async Task<BaseDataModel> GetByMyAsync(string user)
+        {
+            try
+            {
+                var data = await _dbHelper.QueryAsync<Customer>($"SELECT id FROM customer  where status<3 and  created_user =@CreatedUser  ",new { CreatedUser= user });
+                return BaseDataModel.Instance.OK("", data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
+
+
         public BaseDataModel GetAllPageAsync(int pageIndex, Customer cus)
         {
             try
@@ -116,7 +131,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                string sql = "WHERE 1=1 ";
+                string sql = "WHERE 1=1 and  status <3 ";
                 var parameters = new DynamicParameters();
                 if (cus.Status != null && cus.Status != 0)
                 {
@@ -133,6 +148,37 @@ namespace YingCaiAiService.Service
                         sql += " and  status =2 ";
                     }
                 }
+                if (!string.IsNullOrWhiteSpace(cus.Name))
+                {
+                    sql += $" and ( name LIKE @Name or job_title LIKE @JobTitle   )";
+                    parameters.Add("Name", $"%{cus.Name}%");
+                    parameters.Add("JobTitle", $"%{cus.Name}%");
+                }
+                if (!string.IsNullOrWhiteSpace(cus.CreatedUser))
+                {
+                    sql += $" and  created_user =@CreatedUser ";
+                    parameters.Add("CreatedUser", cus.CreatedUser);
+                }
+
+                var data = _dbHelper.QueryPagedAsync<Customer>($"SELECT *  FROM customer\r\n   {sql}    ORDER BY id desc  \r\n    LIMIT @Limit OFFSET @Offset; SELECT COUNT(1) FROM customer {sql}", parameters, pageIndex, 20).Result;
+
+                return BaseDataModel.Instance.OK(data.TotalCount.ToString(), data.Data);
+            }
+            catch (Exception ex)
+            {
+                throw new UserServiceException("获取失败", ex);
+            }
+        }
+
+        public BaseDataModel GetDownPageAsync(int pageIndex, Customer cus)
+        {
+            try
+            {
+                string sql = "WHERE 1=1 ";
+                var parameters = new DynamicParameters();
+              
+                sql += " and  status >2 ";
+
                 if (!string.IsNullOrWhiteSpace(cus.Name))
                 {
                     sql += $" and ( name LIKE @Name or job_title LIKE @JobTitle   )";

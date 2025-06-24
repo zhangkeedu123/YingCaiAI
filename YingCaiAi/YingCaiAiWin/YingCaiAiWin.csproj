@@ -124,4 +124,14 @@
 <ItemGroup>
   <Content Include="800hr.ico" />
 </ItemGroup>
+<ItemGroup>
+  <Compile Update="Views\Pages\DownCustomers.xaml.cs">
+    <SubType>Code</SubType>
+  </Compile>
+</ItemGroup>
+<ItemGroup>
+  <Page Update="Views\Pages\DownCustomers.xaml">
+    <SubType>Designer</SubType>
+  </Page>
+</ItemGroup>
 </Project>

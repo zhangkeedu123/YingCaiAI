@@ -57,7 +57,7 @@ namespace YingCaiAiModel
         public string Remark { get; set; }
 
         /// <summary>
-        /// 是否标记 0未联系 ，1已联系，2 联系不上，
+        /// 是否标记 0未联系 ，1已联系，2 联系不上，3 归档中，4 已归档
         /// </summary>
 
         public int? Status { get; set; }

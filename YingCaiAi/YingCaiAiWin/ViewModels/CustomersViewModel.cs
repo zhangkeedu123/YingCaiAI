@@ -153,6 +153,15 @@ namespace YingCaiAiWin.ViewModels
                 {
                     if (CustomerUser.Area == "1")
                     {
+
+                        var  count = (await _customerService.GetByMyAsync(AppUser.Instance.Username)).Data as List<Customer>;
+
+                        if (count.Count > 50)
+                        {
+                            Growl.Info("最多可以锁定50个客户！");
+                            return;
+                        }
+
                         CustomerUser.CreatedUser = AppUser.Instance.Username;
                     }
                 }
@@ -185,6 +194,11 @@ namespace YingCaiAiWin.ViewModels
         [RelayCommand]
         private void OnDelete()
         {
+            if (AppUser.Instance.RoleName != "管理员"&& AppUser.Instance.RoleName != "主管")
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
 
             Growl.Ask("是否确定删除", isConfirmed =>
             {

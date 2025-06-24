@@ -142,14 +142,29 @@ CommandParameter="{Binding Id}"  />
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="公司名" Binding="{Binding Name}" MinWidth="120" >
+                        <!--<DataGridTextColumn Header="公司名" Binding="{Binding Name}" MinWidth="120" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="VerticalAlignment" Value="Center" />
                                     <Setter Property="FontWeight" Value="SemiBold" />
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        </DataGridTextColumn>-->
+                        <DataGridTemplateColumn Header="公司名"   MinWidth="120"  >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox
+                                       Text="{Binding Name}"
+                                       IsReadOnly="True"
+                                       BorderThickness="0"
+                                       Background="Transparent"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center" 
+                                        FontWeight="SemiBold"
+                                       Cursor="IBeam" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Header="地区" Binding="{Binding Area}" MinWidth="120" >
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">

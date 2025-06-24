@@ -15,8 +15,10 @@ namespace YingCaiAiService.IService
         Task<BaseDataModel> UpdateAsync(Customer cus);
         BaseDataModel DeleteAsync(int?[] id);
         Task<BaseDataModel> GetByIdAsync(int id);
+        Task<BaseDataModel> GetByMyAsync(string user);
         BaseDataModel GetAllPageAsync(int pageIndex, Customer cus);
         BaseDataModel GetUserPageAsync(int pageIndex, Customer cus);
+        BaseDataModel GetDownPageAsync(int pageIndex, Customer cus);
         Task<List<Customer>> GetAllNameAsync();
 
         Task<BaseDataModel> UpdateUserAsync(Customer customer);

@@ -17,7 +17,7 @@ using NPOI.Util;
 
 namespace YingCaiAiWin.ViewModels
 {
-    public partial class UserCustomersViewModel : ViewModel
+    public partial class DownCustomersViewModel : ViewModel
     {
         private bool _isInitialized = false;
 
@@ -48,7 +48,7 @@ namespace YingCaiAiWin.ViewModels
 
         [ObservableProperty]
         private bool _isAllSelected;
-        public UserCustomersViewModel(INavigationService navigationService, ICustomerService customerService, IContentDialogService contentDialogService)
+        public DownCustomersViewModel(INavigationService navigationService, ICustomerService customerService, IContentDialogService contentDialogService)
         {
 
             if (!_isInitialized)
@@ -79,13 +79,18 @@ namespace YingCaiAiWin.ViewModels
             Task.Run(() =>
             {
                 var roleName = AppUser.Instance.RoleName;
-                if (roleName != null && roleName != "")
+                if (!(roleName == "管理员"||roleName == "主管"))
                 {
-                    
-                   _customerSer.CreatedUser = AppUser.Instance.Username;
-                    
+
+                    _customerSer.CreatedUser = AppUser.Instance.Username;
+
                 }
-                var data = _customerService.GetUserPageAsync(_currentPage, _customerSer);
+                else
+                {
+                    _customerSer.CreatedUser = null;
+                }
+               
+                var data = _customerService.GetDownPageAsync(_currentPage, _customerSer);
                 CustomersList = data.Data as List<Customer>;
                 PageCount = Convert.ToInt32(Math.Ceiling(Convert.ToInt32(data.Message) / 20f));
 
@@ -100,7 +105,52 @@ namespace YingCaiAiWin.ViewModels
             LoadSampleData();
         }
 
-     
+        [RelayCommand]
+        private async void OnDownStatus(int parameter)
+        {
+            if (!(AppUser.Instance.RoleName == "管理员" || AppUser.Instance.RoleName == "主管"))
+            {
+                Growl.Info(" 您没有权限操作 ！");
+                return;
+            }
+
+            Growl.Ask("是否确定归档？", isConfirmed =>
+            {
+                if (isConfirmed)
+                {
+
+
+                    Task.Run(async () =>
+                    {
+                        var cus = (await _customerService.GetByIdAsync(parameter)).Data as Customer;
+                        cus.Status = 4;
+                        cus.StatusName = "已归档";
+                        var flag = await _customerService.UpdateUserAsync(cus);
+
+                        if (flag.Status)
+                        {
+                            Growl.Success("操作成功");
+                            LoadSampleData();
+                        }
+                        else
+                        {
+                            Growl.Error("操作失败！");
+                        }
+                        await Task.Delay(2000);
+                        Growl.Clear();
+
+                    });
+                }
+                else
+                {
+
+                    Growl.Clear();
+                }
+                return true;
+            });
+
+        }
+
         /// <summary>
         /// 打标记
         /// </summary>
@@ -127,7 +177,7 @@ namespace YingCaiAiWin.ViewModels
                 if (CustomerUser.Name != "")
                 {
                     CustomerUser.Status = Convert.ToInt32(CustomerUser.Name);
-                    CustomerUser.StatusName = CustomerUser.Status == 1 ? "已联系" :  "联系不上";
+                    CustomerUser.StatusName = CustomerUser.Status == 1 ? "已联系" : CustomerUser.Status == 2 ? "联系不上" : "归档中";
                 }
 
 
@@ -171,53 +221,15 @@ namespace YingCaiAiWin.ViewModels
             }
         }
 
-        [RelayCommand]
-        private async  void OnDownCus(int parameter)
-        {
-           
 
-            Growl.Ask("是否确定归档", isConfirmed =>
-            {
-                if (isConfirmed)
-                {
-                    Growl.Clear();
-                    Task.Run(async () =>
-                    {
 
-                        var cus = (await _customerService.GetByIdAsync(parameter)).Data as Customer;
-                        cus.Status = 3;
-                        cus.StatusName = "归档中";
-                        var flag = await _customerService.UpdateAsync(cus);
-
-                        if (flag.Status)
-                        {
-                            Growl.Success("操作成功");
-                            LoadSampleData();
-                        }
-                        else
-                        {
-                            Growl.Error("操作失败！");
-                        }
-                        await Task.Delay(2000);
-                        Growl.Clear();
-
-                    });
-                }
-                else
-                {
-
-                    Growl.Clear();
-                }
-                return true;
-            });
-        }
 
         [RelayCommand]
         private void OnDelete()
         {
-           
+
             var count = CustomersList.Count(m => m.IsSelected && m.JobTitle != null);
-          
+
             if (count > 0)
             {
                 Growl.Info(" 您不能删除公共库的数据 ！");
@@ -232,7 +244,7 @@ namespace YingCaiAiWin.ViewModels
                     {
 
                         var select = CustomersList.Where(m => m.IsSelected);
-                       
+
                         if (select.Count() == 0)
                         {
                             Task.Run(() =>

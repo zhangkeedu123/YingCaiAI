@@ -64,18 +64,19 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <ui:PasswordBox Height="40" Margin="0,0,8,0"
+            <ui:TextBox Height="40" Margin="0,0,8,0"
                     PlaceholderText="Password..."
                     x:Name="PasswordBoxControl"
                     Icon="Password24"
-                    Grid.Column="0" Grid.Row="0" />
-
+                    Grid.Column="0" Grid.Row="0" Text="{Binding ViewModel.Password}" />
+                    
             <Button Content="确定" 
             Width="80"
             Height="35"
             Grid.Column="1"
-                    Grid.Row="0"
+            Grid.Row="0"
             Background="SkyBlue"
+            Command="{Binding ViewModel.ChangePwdCommand}"
             HorizontalAlignment="Right" />
             <TextBlock Grid.Row="1" Foreground="DarkBlue" Margin="0,12,0,0" Text="截图提取文字：CTRL+WIN+S/prt scr 截取图片,然后CTRL+SHIFT+X,再CTRL+V 粘贴" />
             <Button Content="退出登录" Grid.Row="2" Margin="0,20"

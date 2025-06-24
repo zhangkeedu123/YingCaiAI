@@ -78,7 +78,11 @@ public partial class MainWindowViewModel : ViewModel
             {
                 var MenuItemsSource = new List<NavigationViewItem>();
                 if (AppUser.Instance.Role.Contains("12"))
+                {
                     MenuItemsSource.Add(new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)));
+                    MenuItemsSource.Add(new NavigationViewItem("客户归档", typeof(Views.Pages.DownCustomers)));
+                }
+                   
 
 
                 if (AppUser.Instance.Role.Contains("13"))
@@ -197,8 +201,10 @@ public partial class MainWindowViewModel : ViewModel
                  MenuItemsSource = new object[]
                 {
                        new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)),
+                         new NavigationViewItem("客户归档", typeof(Views.Pages.DownCustomers)),
                         new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)),
                         new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)),
+
                   },
             },
             new NavigationViewItem()
