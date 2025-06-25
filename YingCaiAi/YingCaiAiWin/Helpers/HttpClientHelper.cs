@@ -10,15 +10,16 @@ namespace YingCaiAiWin.Helpers
 {
     public class HttpClientHelper
     {
-        private readonly HttpClient _httpClient;
+        private  HttpClient _httpClient;
         private readonly string _url = "http://113.105.116.171:8000/";
         public HttpClientHelper()
         {
-            _httpClient = new HttpClient();
+           // _httpClient = new HttpClient();
         }
 
         public async Task<string> GetDataAsync(int id)
         {
+            _httpClient = new HttpClient();
             var response = await _httpClient.GetAsync(_url);
             response.EnsureSuccessStatusCode();
 
@@ -30,7 +31,8 @@ namespace YingCaiAiWin.Helpers
         {
             var json = JsonSerializer.Serialize(data);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-
+            _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromSeconds(360);  // 10秒超时
             var response = await _httpClient.PostAsync(_url+url, content);
             response.EnsureSuccessStatusCode();
 

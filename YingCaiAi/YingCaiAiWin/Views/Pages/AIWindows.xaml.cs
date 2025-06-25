@@ -532,6 +532,7 @@ namespace YingCaiAiWin.Views.Pages
                 stopwatch.Start();
                 if (IsNet.IsChecked == false)
                 {
+                   
                     var response = await _httpClient.PostDataAsync("milvus/ask", new { text, top_k = 10 });
                     if (response != null)
                     {

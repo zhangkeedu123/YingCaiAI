@@ -156,7 +156,7 @@ namespace YingCaiAiWin.ViewModels
 
                         var  count = (await _customerService.GetByMyAsync(AppUser.Instance.Username)).Data as List<Customer>;
 
-                        if (count.Count > 50)
+                        if (count.Count >= 50)
                         {
                             Growl.Info("最多可以锁定50个客户！");
                             return;

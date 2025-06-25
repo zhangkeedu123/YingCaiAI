@@ -113,7 +113,7 @@ namespace YingCaiAiService.Service
                 }
                 if(!string.IsNullOrWhiteSpace(cus.CreatedUser))
                 {
-                    sql += $" and ( created_user =@CreatedUser or created_user is null or created_user ='' )";
+                    sql += $" and (   created_user is  null or created_user ='' )";
                     parameters.Add("CreatedUser", cus.CreatedUser);
                 }
 

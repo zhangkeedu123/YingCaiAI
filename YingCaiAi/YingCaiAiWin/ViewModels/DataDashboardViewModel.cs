@@ -111,7 +111,7 @@ namespace YingCaiAiWin.ViewModels
 
 
             // 初始化最新交易数据
-            InitializeTransactionData();
+            //InitializeTransactionData();
         }
 
         private async void InitializeChartData()
