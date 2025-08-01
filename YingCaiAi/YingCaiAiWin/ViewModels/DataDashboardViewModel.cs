@@ -210,7 +210,7 @@ namespace YingCaiAiWin.ViewModels
                     // 更新 CPU 曲线
                     var cpuSeries =CpuSeries.Copy();
                     var cpuValues = (ObservableCollection<double>)cpuSeries[0].Values;
-                    cpuValues.Add(status.cpu.memory_used_GB);
+                    cpuValues.Add(status.cpu?.memory_used_GB??0);
                     if (cpuValues.Count > 30) cpuValues.RemoveAt(0);
 
                      CpuSeries = cpuSeries;
@@ -257,7 +257,7 @@ namespace YingCaiAiWin.ViewModels
     // 接口响应数据类
     public class SystemStatusData
     {
-        public CpuInfo cpu { get; set; }
+        public CpuInfo ? cpu { get; set; }
         public GpuInfo[] gpus { get; set; }
     }
     public class CpuInfo
