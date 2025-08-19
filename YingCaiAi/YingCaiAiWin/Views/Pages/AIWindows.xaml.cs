@@ -688,12 +688,16 @@ namespace YingCaiAiWin.Views.Pages
                 int likeCount = await likes.CountAsync();
                 if (count * 2 == likeCount && countQ * 2 == likeCount)
                 {
+                    await Task.Delay(10000);
+                    divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
                     div = await divs.Nth(count - 1).InnerTextAsync();
                     break;
                 }
-                await Task.Delay(3000);
+                await Task.Delay(6000);
                 if (i == 14)
                 {
+                    await Task.Delay(10000);
+                     divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
                     div = await divs.Nth(count - 1).InnerTextAsync();
                 }
 
