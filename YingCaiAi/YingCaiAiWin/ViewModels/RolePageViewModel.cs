@@ -134,7 +134,7 @@ namespace YingCaiAiWin.ViewModels
         private async Task OnSelectedRoleChanged(int  parameter)
         {
                 SelectedRole = Roles.Find(m => m.Id == parameter);
-                var ids =  SelectedRole.PerIds.Split(",");
+                var ids =  SelectedRole.PerIds?.Split(",");
                 var temp = new List<Permission>();
                 foreach (var item in RolePermissions)
                 {

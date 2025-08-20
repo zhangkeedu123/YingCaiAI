@@ -58,7 +58,7 @@ public partial class DashboardViewModel : ViewModel
                     CommandParam = "DialogsAndFlyouts"
                 });
             } 
-            if (AppUser.Instance.Role.Contains("8") || AppUser.Instance.Role.Contains("9"))
+            if (AppUser.Instance.Role.Contains("13") || AppUser.Instance.Role.Contains("14"))
             {
                 CardItems.Add(new CardItem()
                 {
@@ -69,7 +69,7 @@ public partial class DashboardViewModel : ViewModel
                 });
             }
             
-            if (AppUser.Instance.Role.Contains("12") || AppUser.Instance.Role.Contains("13") )
+            if (AppUser.Instance.Role.Contains("9") || AppUser.Instance.Role.Contains("11") )
             {
                 CardItems.Add(new CardItem()
                 {
@@ -80,7 +80,7 @@ public partial class DashboardViewModel : ViewModel
                 });
             }
             
-            if (AppUser.Instance.Role.Contains("16") || AppUser.Instance.Role.Contains("17"))
+            if (AppUser.Instance.Role.Contains("16") || AppUser.Instance.Role.Contains("15"))
             {
                 CardItems.Add(new CardItem()
                 {
@@ -91,7 +91,7 @@ public partial class DashboardViewModel : ViewModel
                 });
             }
             
-            if (AppUser.Instance.Role.Contains("19") || AppUser.Instance.Role.Contains("20"))
+            if (AppUser.Instance.Role.Contains("17") || AppUser.Instance.Role.Contains("18"))
             {
                 CardItems.Add(new CardItem()
                 {

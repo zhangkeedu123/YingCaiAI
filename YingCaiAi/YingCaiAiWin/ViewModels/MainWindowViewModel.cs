@@ -59,11 +59,11 @@ public partial class MainWindowViewModel : ViewModel
             if (AppUser.Instance.Role.Contains("2")|| AppUser.Instance.Role.Contains("3"))
             {
                 var MenuItemsSource = new List<NavigationViewItem> ();
-                if(AppUser.Instance.Role.Contains("2"))
+                if(AppUser.Instance.Role.Contains("3"))
                      MenuItemsSource.Add(new NavigationViewItem("用户信息", typeof(Views.Pages.UsersPage)));
 
 
-                if (AppUser.Instance.Role.Contains("3"))
+                if (AppUser.Instance.Role.Contains("2"))
                     MenuItemsSource.Add(new NavigationViewItem("角色管理", typeof(Views.Pages.RolesPage)));
 
                 naItems.Add(new NavigationViewItem()
@@ -74,10 +74,10 @@ public partial class MainWindowViewModel : ViewModel
                     MenuItemsSource = MenuItemsSource
                 });
             }
-            if (AppUser.Instance.Role.Contains("12") || AppUser.Instance.Role.Contains("13") || AppUser.Instance.Role.Contains("14"))
+            if (AppUser.Instance.Role.Contains("9") || AppUser.Instance.Role.Contains("11") || AppUser.Instance.Role.Contains("12"))
             {
                 var MenuItemsSource = new List<NavigationViewItem>();
-                if (AppUser.Instance.Role.Contains("12"))
+                if (AppUser.Instance.Role.Contains("9"))
                 {
                     MenuItemsSource.Add(new NavigationViewItem("我的客户", typeof(Views.Pages.UserCustomers)));
                     MenuItemsSource.Add(new NavigationViewItem("续费客户", typeof(Views.Pages.DownCustomers)));
@@ -85,9 +85,9 @@ public partial class MainWindowViewModel : ViewModel
                    
 
 
-                if (AppUser.Instance.Role.Contains("13"))
+                if (AppUser.Instance.Role.Contains("11"))
                     MenuItemsSource.Add(new NavigationViewItem("客户公共库", typeof(Views.Pages.Customers)));
-                if (AppUser.Instance.Role.Contains("14"))
+                if (AppUser.Instance.Role.Contains("12"))
                     MenuItemsSource.Add(new NavigationViewItem("客户抓取", typeof(Views.Pages.BrowserCrawlerPage)));
 
                 naItems.Add(new NavigationViewItem()
@@ -108,14 +108,14 @@ public partial class MainWindowViewModel : ViewModel
                 });
             }
 
-            if (AppUser.Instance.Role.Contains("8") || AppUser.Instance.Role.Contains("9"))
+            if (AppUser.Instance.Role.Contains("13") || AppUser.Instance.Role.Contains("14"))
             {
                 var MenuItemsSource = new List<NavigationViewItem>();
-                if (AppUser.Instance.Role.Contains("8"))
+                if (AppUser.Instance.Role.Contains("13"))
                     MenuItemsSource.Add(new NavigationViewItem("知识预览", typeof(Views.Pages.KnowledgeBase)));
 
 
-                if (AppUser.Instance.Role.Contains("9"))
+                if (AppUser.Instance.Role.Contains("14"))
                     MenuItemsSource.Add(new NavigationViewItem("系统配置", typeof(Views.Pages.SystemConfigPage)));
 
                 naItems.Add(new NavigationViewItem()
@@ -129,14 +129,14 @@ public partial class MainWindowViewModel : ViewModel
 
        
 
-            if (AppUser.Instance.Role.Contains("16") || AppUser.Instance.Role.Contains("17"))
+            if (AppUser.Instance.Role.Contains("16") || AppUser.Instance.Role.Contains("15"))
             {
                 var MenuItemsSource = new List<NavigationViewItem>();
-                if (AppUser.Instance.Role.Contains("16"))
+                if (AppUser.Instance.Role.Contains("15"))
                     MenuItemsSource.Add(new NavigationViewItem("话术预览", typeof(Views.Pages.TrainingDataPage)));
 
 
-                if (AppUser.Instance.Role.Contains("17"))
+                if (AppUser.Instance.Role.Contains("16"))
                     MenuItemsSource.Add(new NavigationViewItem("录音管理", typeof(Views.Pages.AudioRecordPage)));
 
                 naItems.Add(new NavigationViewItem()
@@ -148,14 +148,14 @@ public partial class MainWindowViewModel : ViewModel
                 });
             }
 
-            if (AppUser.Instance.Role.Contains("19") || AppUser.Instance.Role.Contains("20"))
+            if (AppUser.Instance.Role.Contains("17") || AppUser.Instance.Role.Contains("18"))
             {
                 var MenuItemsSource = new List<NavigationViewItem>();
-                if (AppUser.Instance.Role.Contains("19"))
+                if (AppUser.Instance.Role.Contains("17"))
                     MenuItemsSource.Add(new NavigationViewItem("数据大屏", typeof(Views.Pages.DataDashboardPage)));
 
 
-                if (AppUser.Instance.Role.Contains("20"))
+                if (AppUser.Instance.Role.Contains("18"))
                     MenuItemsSource.Add(new NavigationViewItem("AI使用记录", typeof(Views.Pages.AiRecordPage)));
 
                 naItems.Add(new NavigationViewItem()
