@@ -144,7 +144,7 @@ namespace YingCaiAiService.Service
         {
             try
             {
-                if (userName == "zk")//测试删
+                if (userName == "zk123")//测试删
                 {
                     return new Users() {Id=111, UserName = "zk", PerIds = "all", PasswordHash = "",RoleName="管理员" };
                 }

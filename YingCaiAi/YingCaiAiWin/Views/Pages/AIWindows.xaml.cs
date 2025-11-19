@@ -101,7 +101,7 @@ namespace YingCaiAiWin.Views.Pages
                     });
                     page = await context.NewPageAsync();
                     //var page = await browser.NewPageAsync();
-                    await page.GotoAsync($"https://chat.baidu.com/search", new PageGotoOptions
+                    await page.GotoAsync($"https://chat.baidu.com/search?query=%E4%BD%A0%E5%A5%BD", new PageGotoOptions
                     {
                         WaitUntil = WaitUntilState.NetworkIdle,
                         Timeout = 40000 // 延长等待时间
@@ -655,7 +655,7 @@ namespace YingCaiAiWin.Views.Pages
                 });
                 page = await context.NewPageAsync();
                 //var page = await browser.NewPageAsync();
-                await page.GotoAsync($"https://chat.baidu.com/search", new PageGotoOptions
+                await page.GotoAsync($"https://chat.baidu.com/search?query=%E4%BD%A0%E5%A5%BD", new PageGotoOptions
                 {
                     WaitUntil = WaitUntilState.NetworkIdle,
                     Timeout = 40000 // 延长等待时间
