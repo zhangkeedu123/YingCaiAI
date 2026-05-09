@@ -220,8 +220,8 @@ namespace YingCaiAiWin.ViewModels
                    var gpu2value =  (List<double>)GpuSeries[1].Values;
 
                 
-                gpu1value.Add(status.gpus[0].utilization_percent);
-                gpu2value.Add(status.gpus[1].utilization_percent);
+                gpu1value.Add(status?.gpus?[0]?.utilization_percent??0);
+                gpu2value.Add(status?.gpus?[1]?.utilization_percent??0);
                 if (gpu1value.Count > 30) {
                     gpu1value.RemoveAt(0);
                     gpu2value.RemoveAt(0);

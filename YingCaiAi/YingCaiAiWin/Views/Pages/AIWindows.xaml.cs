@@ -661,11 +661,21 @@ namespace YingCaiAiWin.Views.Pages
                     Timeout = 40000 // 延长等待时间
                 });
             }
+            else
+            {
+                var divs = page.Locator("div.ai-entry-block.ai-markdown");
+                int divc = await divs.CountAsync();
+                if (divc > 0)
+                {
+                    await page.ClickAsync(".new-dialog-container-button");
+                    await Task.Delay(10000);
+                }
+            }
 
 
-            await page.FillAsync("#chat-input-box", $"{name}");
+            await page.FillAsync("#chat-textarea", $"{name}");
             await Task.Delay(1000);
-            await page.ClickAsync(".send-icon");
+            await page.ClickAsync(".ci-submit-button");
             await Task.Delay(10000);
             var div = "";
             int divC = 0;
@@ -676,29 +686,27 @@ namespace YingCaiAiWin.Views.Pages
                 var htmlDoc = new HtmlAgilityPack.HtmlDocument();
                 htmlDoc.LoadHtml(content);
                 var root = htmlDoc.DocumentNode;
-                var divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
-                var divsQ = page.Locator("div.index_question-container__VKhsH");
-                var copys = page.Locator("div.cs-answer-hover-menu");
+                var divs = page.Locator("div.ai-entry-block.ai-markdown");
+                var divsQ = page.GetByTestId("menu-btn-broadcast");
+                //var copys = page.Locator("div.cs-answer-hover-menu");
                 // 获取数量
                 int count = await divs.CountAsync();
-                int countcopy = await copys.CountAsync();
+               // int countcopy = await copys.CountAsync();
                 int countQ = await divsQ.CountAsync();
 
-                var likes = page.Locator("span", new() { HasTextString = "赞" });
-                int likeCount = await likes.CountAsync();
-                if (count * 2 == likeCount && countQ * 2 == likeCount)
+                if (count  == countQ&&count!=0)
                 {
                     await Task.Delay(10000);
-                    divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
-                    div = await divs.Nth(count - 1).InnerTextAsync();
+                    divs = page.Locator("div.ai-entry-block.ai-markdown");
+                    div = await divs.InnerTextAsync();
                     break;
                 }
                 await Task.Delay(6000);
                 if (i == 14)
                 {
                     await Task.Delay(10000);
-                     divs = page.Locator("div.cosd-markdown.cos-space-mt-lg");
-                    div = await divs.Nth(count - 1).InnerTextAsync();
+                     divs = page.Locator("div.ai-entry-block.ai-markdown");
+                    div = await divs.InnerTextAsync();
                 }
 
 
